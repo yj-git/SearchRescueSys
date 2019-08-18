@@ -1,0 +1,1 @@
+(wind)[https://www.echartsjs.com/examples/editor.html?c=global-wind-visualization&gl=1]

@@ -2,13 +2,23 @@
   <div id="flux_map">
     <l-map ref="basemap" :zoom="zoom" :center="center">
       <l-tile-layer :url="url"></l-tile-layer>
-      <l-wms-tile-layer
+      <!-- <l-wms-tile-layer
         :base-url="wmsUrl"
         :layers="wmsLayer.layers"
         :visible="wmsVisible"
         :styles="wmsStyles"
         :format="wmsFormat"
         :transparent="true"
+      ></l-wms-tile-layer>-->
+      <l-wms-tile-layer
+        v-for="layer in layers"
+        :key="layer.name"
+        :base-url="layer.baseUrl"
+        :layers="layer.layers"
+        :visible="layer.visible"
+        :styles="layer.style"
+        :format="layer.format"
+        :transparent="layer.transparent"
       ></l-wms-tile-layer>
     </l-map>
     <TimeBar></TimeBar>
@@ -37,7 +47,7 @@ import {
   LWMSTileLayer
 } from "vue2-leaflet";
 // import {
-
+import { WindModel } from "@/model/map/wind";
 // } from "vue2-leaflet"
 import { DivIcon, DivIconOptions } from "leaflet";
 import { ArrayPropsDefinition } from "vue/types/options";
@@ -72,7 +82,7 @@ export default class WindMap extends Vue {
   tempFluxDataMarker: any = null;
   color: String = "red";
   dialogTableVisible: boolean = true;
-
+  layers: Array<any> = [];
   wmsLayer: any = {
     name: "SearchRescue:view_my_wind_barbs_new",
     visible: true,
@@ -85,7 +95,20 @@ export default class WindMap extends Vue {
   wmsVisible: boolean = true;
   // current: String = this.current;
   // 初始化底图，加载数据
-  initMap(): void {}
+  initMap(): void {
+    // 尝试在此处对layer 数组进行初始化
+    this.layers.push(
+      new WindModel(
+        "",
+        "",
+        "SearchRescue:view_my_wind_barbs_new",
+        true,
+        "my_wind_dir_barbs_new",
+        "image/png",
+        true
+      )
+    );
+  }
   initTestSearchData(): void {
     var myself = this;
     // var mymap:any= this.$refs.basemap["mapObject"];
@@ -142,6 +165,30 @@ export default class WindMap extends Vue {
   onCurrent(val: String) {
     // this.wmsUrl='';
     console.log(`current:${val}`);
+    // TODO:[-] 注意在ts中对于String类型，不能直接通过+进行拼接，
+    var myself = this;
+    var defaultCurrent = "1990-01-02T6:00:00.0Z";
+    var finialUrl = "";
+    // var currentTemp=this.current;
+    if (myself.current == "") {
+      finialUrl = this.wmsBaseUrl.concat(`TIME=${defaultCurrent}`);
+      // return this.wmsBaseUrl;
+    } else {
+      finialUrl = this.wmsBaseUrl.concat(`TIME=${myself.current}`);
+    }
+    this.layers = [];
+    this.layers.push(
+      new WindModel(
+        "",
+        finialUrl,
+        "SearchRescue:view_my_wind_barbs_new",
+        true,
+        "my_wind_dir_barbs_new",
+        "image/png",
+        true
+      )
+    );
+    return finialUrl;
   }
 
   // get current(): String {
@@ -164,7 +211,18 @@ export default class WindMap extends Vue {
     } else {
       finialUrl = this.wmsBaseUrl.concat(`TIME=${myself.current}`);
     }
-
+    this.layers = [];
+    this.layers.push(
+      new WindModel(
+        "",
+        finialUrl,
+        "SearchRescue:view_my_wind_barbs_new",
+        true,
+        "my_wind_dir_barbs_new",
+        "image/png",
+        true
+      )
+    );
     return finialUrl;
   }
 }

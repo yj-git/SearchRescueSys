@@ -16,7 +16,7 @@ export default new Vuex.Store({
     current: ''
   },
   mutations: {
-    current(state, current) {
+    current(state: any, current: string) {
       state.current = current
     }
   }

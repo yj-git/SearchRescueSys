@@ -18,8 +18,12 @@
               <span>风流数据</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1-1">风场数据</el-menu-item>
-              <el-menu-item index="1-2">流场数据</el-menu-item>
+              <el-menu-item index="1-1">
+                <router-link to="/caselist">历史案例</router-link>
+              </el-menu-item>
+              <el-menu-item index="1-2">
+                <router-link to="/windmap">流场数据</router-link>
+              </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
           <el-submenu index="1">

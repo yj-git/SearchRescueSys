@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import CaseListContent from "./views/content/CaseListContent/CaseList.vue"
+import WindMap from "./views/content/wind/windMap.vue"
 // import Home from "./views/Home.vue";
 
 Vue.use(Router);
@@ -14,6 +15,11 @@ export default new Router({
       name: "caselist",
       component: CaseListContent
     },
+    {
+      path:"/windmap",
+      name:"windmap",
+      component:WindMap
+    }
     // {
     //   path: "/about",
     //   name: "about",

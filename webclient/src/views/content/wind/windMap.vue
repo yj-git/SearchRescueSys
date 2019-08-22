@@ -9,8 +9,8 @@
         :styles="wmsStyles"
         :format="wmsFormat"
         :transparent="true"
-      ></l-wms-tile-layer>-->
-      <l-wms-tile-layer
+      ></l-wms-tile-layer> -->
+      <!-- <l-wms-tile-layer
         v-for="layer in layers"
         :key="layer.name"
         :base-url="layer.baseUrl"
@@ -19,7 +19,7 @@
         :styles="layer.style"
         :format="layer.format"
         :transparent="layer.transparent"
-      ></l-wms-tile-layer>
+      ></l-wms-tile-layer>-->
     </l-map>
     <TimeBar></TimeBar>
   </div>
@@ -78,7 +78,8 @@ export default class WindMap extends Vue {
     latlngs: [],
     color: "yellow"
   };
-
+  // 当前显示的wind layer
+  windLayer: any = null;
   tempFluxDataMarker: any = null;
   color: String = "red";
   dialogTableVisible: boolean = true;
@@ -86,8 +87,11 @@ export default class WindMap extends Vue {
   wmsLayer: any = {
     name: "SearchRescue:view_my_wind_barbs_new",
     visible: true,
-    layers: "SearchRescue:view_my_wind_barbs_new"
+    format: "image/png",
+    layers: "SearchRescue:view_my_wind_barbs_new",
+    style: "my_wind_dir_barbs_new"
   };
+  defaultDateTimeStr: String = "1990-01-02T6:00:00.0Z";
   wmsBaseUrl: String = `http://localhost:8082/geoserver/SearchRescue/wms?`;
   // wmsUrl: String = `http://localhost:8082/geoserver/SearchRescue/wms?TIME=1990-01-01T6:00:00.0Z`;
   wmsFormat: String = "image/png";
@@ -109,20 +113,61 @@ export default class WindMap extends Vue {
       )
     );
   }
-  initTestSearchData(): void {
+
+  // 向当前layer中加入新的wind layer
+  insertWindLayer(currentStr: String): void {
+    var myself = this;
+    var basemap: any = this.$refs.basemap;
+    var mymap: any = basemap["mapObject"];
+    var current: String = currentStr;
+    // 每次插入新的layer时，需要先清除之前的layer
+    this.clearWindLayer();
+    if (currentStr === "") {
+      current = myself.defaultDateTimeStr;
+    } else {
+      current = currentStr;
+    }
+    // var wmsLayer = L.tileLayer.wms(`${myself.wmsBaseUrl}TIME=${current}`, {
+    //   layers: "SearchRescue:view_my_wind_barbs_new",
+    //   styles: "my_wind_dir_barbs_new",
+    //   format: "image/png",
+    //   transparent: true
+    // });
+    var wmsLayer = L.tileLayer.wms(`${myself.wmsBaseUrl}TIME=${current}`, {
+      layers: myself.wmsLayer.name,
+      styles: myself.wmsLayer.style,
+      format: myself.wmsLayer.format,
+      transparent: true
+    });
+    this.windLayer = wmsLayer;
+
+    var fluxDivIconTarget = wmsLayer.addTo(mymap);
+
+    this.tempFluxDataMarker = fluxDivIconTarget;
+  }
+  // 将传入的layer从map中删除
+  removeLayerFromMap(tempLay: any): void {}
+  initTestSearchData(val: String): void {
     var myself = this;
     // var mymap:any= this.$refs.basemap["mapObject"];
     // type mapType = "Vue" | "Element" | "Vue[]" | "Element[]";
     // TODO:[-] 19-08-17 :注意此处 若使用this.$refs.basemap["mapObject"] 会提示类型错误，只能使用如下的方式
     var basemap: any = this.$refs.basemap;
     var mymap: any = basemap["mapObject"];
-    var current: String = "1990-01-02T6:00:00.0Z";
+    var current: String = val;
+    this.clearWindLayer();
+    if (val === "") {
+      current = "1990-01-02T6:00:00.0Z";
+    } else {
+      current = val;
+    }
     var wmsLayer = L.tileLayer.wms(
-      `http://localhost:8082/geoserver/SearchRescue/wms?TIME='${current}'`,
+      `http://localhost:8082/geoserver/SearchRescue/wms?TIME=${current}`,
       {
         // gridraster:swh
         layers: "SearchRescue:view_my_wind_barbs_new",
         styles: "my_wind_dir_barbs_new",
+        // visible:true,
         // crs: L.CRS.EPSG4326,
         // layers: myself.wms_layer,
         // layers: 'gridraster:storm_nc',
@@ -130,15 +175,24 @@ export default class WindMap extends Vue {
         transparent: true
       }
     );
-
+    this.windLayer = wmsLayer;
     // console.log(typhoon_div_icon);
     var fluxDivIconTarget = wmsLayer.addTo(mymap);
 
     this.tempFluxDataMarker = fluxDivIconTarget;
   }
 
+  //清除wind layer
+  clearWindLayer(): void {
+    var basemap: any = this.$refs.basemap;
+    var mymap: any = basemap["mapObject"];
+    // 若当前的wind layer已选中，则从map中删除
+    if (this.windLayer != null) {
+      mymap.removeLayer(this.windLayer);
+    }
+  }
   opened(): void {
-    console.log("加载完毕");
+    // console.log("加载完毕");
   }
 
   showUavModal(): void {}
@@ -152,11 +206,13 @@ export default class WindMap extends Vue {
   // showTestData(temp: FluxData): void {}
   createMarker(): void {}
 
+  mounted() {
+    // this.initTestSearchData("");
+  }
+
   @Watch("dialogTableVisible")
   onVisible(val: boolean) {}
-  mounted() {
-    this.initMap();
-  }
+
   get computedTest() {
     return null;
   }
@@ -164,10 +220,11 @@ export default class WindMap extends Vue {
   @Watch("current")
   onCurrent(val: String) {
     // this.wmsUrl='';
-    console.log(`current:${val}`);
+    // console.log(`current:${val}`);
     // TODO:[-] 注意在ts中对于String类型，不能直接通过+进行拼接，
     var myself = this;
     var defaultCurrent = "1990-01-02T6:00:00.0Z";
+    // this.current = defaultCurrent;
     var finialUrl = "";
     // var currentTemp=this.current;
     if (myself.current == "") {
@@ -177,17 +234,24 @@ export default class WindMap extends Vue {
       finialUrl = this.wmsBaseUrl.concat(`TIME=${myself.current}`);
     }
     this.layers = [];
-    this.layers.push(
-      new WindModel(
-        "",
-        finialUrl,
-        "SearchRescue:view_my_wind_barbs_new",
-        true,
-        "my_wind_dir_barbs_new",
-        "image/png",
-        true
-      )
-    );
+    // this.layers.push(
+    //   new WindModel(
+    //     "",
+    //     finialUrl,
+    //     "SearchRescue:view_my_wind_barbs_new",
+    //     true,
+    //     "my_wind_dir_barbs_new",
+    //     "image/png",
+    //     true
+    //   )
+    // );
+
+    this.insertWindLayer(val);
+    // this.clearWmsLayer();
+    this.$nextTick(() => {
+      // this.$refs.basemap.mapObject.ANY_LEAFLET_MAP_METHOD();
+    });
+
     return finialUrl;
   }
 
@@ -199,6 +263,8 @@ export default class WindMap extends Vue {
     return this.$store.state.current;
   }
 
+  // @Watch("wmsUrl")
+  // 此处不再需要计算wmsUrl了
   get wmsUrl(): String {
     // TODO:[-] 注意在ts中对于String类型，不能直接通过+进行拼接，
     var myself = this;
@@ -212,17 +278,19 @@ export default class WindMap extends Vue {
       finialUrl = this.wmsBaseUrl.concat(`TIME=${myself.current}`);
     }
     this.layers = [];
-    this.layers.push(
-      new WindModel(
-        "",
-        finialUrl,
-        "SearchRescue:view_my_wind_barbs_new",
-        true,
-        "my_wind_dir_barbs_new",
-        "image/png",
-        true
-      )
-    );
+    // this.layers.push(
+    //   new WindModel(
+    //     "",
+    //     finialUrl,
+    //     "SearchRescue:view_my_wind_barbs_new",
+    //     true,
+    //     "my_wind_dir_barbs_new",
+    //     "image/png",
+    //     true
+    //   )
+    // );
+    this.initTestSearchData(defaultCurrent);
+    // this.clearWmsLayer();
     return finialUrl;
   }
 }

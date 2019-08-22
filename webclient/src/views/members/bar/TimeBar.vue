@@ -98,9 +98,54 @@ export default class center_map extends Vue {
     return ("0000000000000000" + num).substr(-length);
   }
 
+  // 鼠标移入时间line时的操作
   setProgressLine(event: any): void {
     console.log(this);
     console.log(event);
+    var myself = this;
+    var mainDom = document.getElementsByClassName("progress-line");
+    // 1 计算整个进度条的长度
+    var lenTotal = event.currentTarget.clientWidth;
+    // 2-1 计算后除以41分
+    // 2-2计算每一个格子的宽度
+    var cellWidth = lenTotal / 41;
+    // 3 获取鼠标选中的点的位置
+    var lenTarget = event.offsetX;
+    // 4 然后获取该位置属于的格子
+    var indexTarget = lenTarget / cellWidth;
+    var indexTargetCell = indexTarget;
+
+    // 4-s1 根据格子的位置获取该日的位置
+    var unit = 4;
+    var indexDate = indexTargetCell / unit;
+    // 5 将进度条中的填色部分宽度改变
+    var playedDom = document.getElementById("played");
+    if (playedDom != null) {
+      playedDom.style.width = event.offsetX + ".px";
+    }
+
+    // 6 显示数值
+    // 6-s1 根据选中的日期获取该日所在的位置的数值，以及children中的label
+    var dateTemp = myself.datelist[indexDate].children.filter(obj => {
+      return obj.value === indexTargetCell;
+    });
+    // 判断获取的dateTemp是否长度为1
+    if (dateTemp.length === 1) {
+      dateTemp = dateTemp[0];
+      myself.slideDateLabelr = dateTemp.label;
+      // myself.selectDate = dateTemp
+      var msg = document.getElementById("msg");
+      if (msg != null) {
+        msg.style.display = "block";
+        msg.style.left = event.offsetX + 10 + ".px";
+        // msg.style.top = e.clientY - 35 + ".px";
+        // 注意在vue组件中，若使用绝对定位，若在style中使用了scoped，则这个绝对定位是针对当前组件而言的
+        msg.style.top = event.offsetY - 35 + ".px";
+      }
+    }
+    // msg.innerText = dates[indexTarget];
+    // msg.html(dates[indexTarget]);
+    // console.log(indexTarget)
   }
   mounted() {
     var myself = this;

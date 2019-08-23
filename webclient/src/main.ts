@@ -17,9 +17,14 @@ import 'element-ui/lib/theme-chalk/index.css';
 import 'element-ui/lib/theme-chalk/index.css';
 // 引入echarts
 import "echarts";
+// 引入moment
+// import moment from "vue-moment";
+import moment from 'moment'
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+// Vue.use(moment);
+Vue.prototype.moment = moment;
 new Vue({
   router,
   store,

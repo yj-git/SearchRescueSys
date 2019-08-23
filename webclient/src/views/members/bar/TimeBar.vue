@@ -1,13 +1,13 @@
 <template>
   <div class="dateBar">
-    <div class="progress-line" @mouseover="setProgressLine">
+    <div class="progress-line" @mouseover="overProgressLine" @click="setTimeBar">
       <div id="played" class="played" style="width: 10px;"></div>
       <div class="avbl"></div>
       <i style="left: 85.6454px;"></i>
     </div>
     <div id="playpause" class="play-pause iconfont clickable off"></div>
     <div id="calendar">
-      <div class v-for="item in datelist" :key="item.id">{{item.label}}</div>
+      <div class v-for="item in datelist" :key="item.id">{{item.dateStr()}}</div>
     </div>
     <div id="msg">{{slideDateLabelr}}</div>
     <div id="staticmsg">{{staticDateLabel}}</div>
@@ -15,77 +15,12 @@
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { DateModel } from "@/model/bar/timebar";
+import moment from "moment";
 @Component({})
 export default class center_map extends Vue {
   mydata: any = null;
-  datelist: Array<any> = [
-    {
-      // value: 0,
-      label: "01日",
-      children: [
-        {
-          value: 0,
-          label: "01-00时"
-        },
-        {
-          value: 1,
-          label: "01-06时"
-        },
-        {
-          value: 2,
-          label: "01-12时"
-        },
-        {
-          value: 3,
-          label: "01-18时"
-        }
-      ]
-    },
-    {
-      // value: 0,
-      label: "02日",
-      children: [
-        {
-          value: 4,
-          label: "02-00时"
-        },
-        {
-          value: 5,
-          label: "02-06时"
-        },
-        {
-          value: 6,
-          label: "02-12时"
-        },
-        {
-          value: 7,
-          label: "02-18时"
-        }
-      ]
-    },
-    {
-      // value: 0,
-      label: "03日",
-      children: [
-        {
-          value: 8,
-          label: "03-00时"
-        },
-        {
-          value: 9,
-          label: "03-06时"
-        },
-        {
-          value: 10,
-          label: "03-12时"
-        },
-        {
-          value: 11,
-          label: "03-18时"
-        }
-      ]
-    }
-  ];
+  datelist: Array<DateModel> = [];
   // 选中的时间在datelist中对应的obj
   selectDate: any = null;
   selectHour: String = "";
@@ -93,31 +28,32 @@ export default class center_map extends Vue {
   slideDateLabelr: String = "";
   // 点击后固定在点击处的日期label
   staticDateLabel: String = "";
-
+  hoverCurrentDt: Date = new Date(1970, 1, 1);
+  selectedCurrentDt: Date = new Date(1970, 1, 1);
   prefixInteger(num: String, length: String): String {
     return ("0000000000000000" + num).substr(-length);
   }
 
   // 鼠标移入时间line时的操作
-  setProgressLine(event: any): void {
-    console.log(this);
-    console.log(event);
+  overProgressLine(event: any): void {
+    // console.log(this);
+    // console.log(event);
     var myself = this;
     var mainDom = document.getElementsByClassName("progress-line");
     // 1 计算整个进度条的长度
     var lenTotal = event.currentTarget.clientWidth;
-    // 2-1 计算后除以41分
+    // 2-1 计算后除以12份（计算72小时的，间隔6小时一个，共12个格子）
     // 2-2计算每一个格子的宽度
-    var cellWidth = lenTotal / 41;
+    var cellWidth = lenTotal / 12;
     // 3 获取鼠标选中的点的位置
     var lenTarget = event.offsetX;
     // 4 然后获取该位置属于的格子
     var indexTarget = lenTarget / cellWidth;
-    var indexTargetCell = indexTarget;
+    var indexTargetCell = parseInt(indexTarget.toString());
 
     // 4-s1 根据格子的位置获取该日的位置
     var unit = 4;
-    var indexDate = indexTargetCell / unit;
+    var indexDate = parseInt((indexTargetCell / unit).toString());
     // 5 将进度条中的填色部分宽度改变
     var playedDom = document.getElementById("played");
     if (playedDom != null) {
@@ -126,13 +62,15 @@ export default class center_map extends Vue {
 
     // 6 显示数值
     // 6-s1 根据选中的日期获取该日所在的位置的数值，以及children中的label
-    var dateTemp = myself.datelist[indexDate].children.filter(obj => {
+    var dateTemp = myself.datelist[indexDate].children.filter((obj: any) => {
       return obj.value === indexTargetCell;
     });
     // 判断获取的dateTemp是否长度为1
     if (dateTemp.length === 1) {
-      dateTemp = dateTemp[0];
-      myself.slideDateLabelr = dateTemp.label;
+      let currentDate = dateTemp[0];
+      myself.hoverCurrentDt = currentDate.date;
+      // myself.tempCurrentDt=currentDate.
+      myself.slideDateLabelr = currentDate.datetimeStr();
       // myself.selectDate = dateTemp
       var msg = document.getElementById("msg");
       if (msg != null) {
@@ -147,8 +85,55 @@ export default class center_map extends Vue {
     // msg.html(dates[indexTarget]);
     // console.log(indexTarget)
   }
+  setTimeBar(event: any): void {
+    // console.log("点击事件");
+    this.selectedCurrentDt = this.hoverCurrentDt;
+  }
+  initDateList(): void {
+    // this.moment()
+    //TODO:[*] 注意new Date时，month为从0开始
+    var currentTemp = new Date(1990, 0, 1, 0, 0);
+    // 转换成时间戳
+    var currentStamp = currentTemp.getTime();
+
+    var interval: number = 6 * 60 * 60 * 1000;
+    // var temp = currentTemp.setHours(currentTemp.getHours() + 6);
+    // console.log(temp);
+    for (var i = 0; i < 3; i++) {
+      this.datelist.push(
+        new DateModel(i, new Date(currentStamp + i * 4 * interval), [])
+      );
+      for (var j = 0; j < 4; j++) {
+        this.datelist[i].children.push(
+          new DateModel(
+            i * 4 + j,
+            new Date(currentStamp + (i * 4 + j) * interval)
+          )
+        );
+      }
+    }
+
+    // this.datelist.push(
+    //   new DateModel(1, "02日", [
+    //     new DateModel(4, "02-00时"),
+    //     new DateModel(5, "02-06时"),
+    //     new DateModel(6, "02-12时"),
+    //     new DateModel(7, "02-18时")
+    //   ])
+    // );
+    // this.datelist.push(
+    //   new DateModel(2, "03日", [
+    //     new DateModel(8, "03-00时"),
+    //     new DateModel(9, "03-06时"),
+    //     new DateModel(10, "03-12时"),
+    //     new DateModel(11, "03-18时")
+    //   ])
+    // );
+  }
   mounted() {
-    var myself = this;
+    // var myself = this;
+    // 初始化时间列表
+    this.initDateList();
     // 鼠标点击抬起
     // $(".progress-line").mouseup(function(e) {
     //   // console.log(e)
@@ -244,6 +229,20 @@ export default class center_map extends Vue {
   get computedTest() {
     return null;
   }
+  @Watch("selectedCurrentDt")
+  onSelectedCurrentDt(dt: Date) {
+    // 当修改 当前选中的dt 修改vuex中的对应的值
+    // 修改vuex中的 current （注意：current为str类型）
+    // TODO:[*] 注意此处
+    /*
+      dt:Thu Feb 01 1990 12:00:00 GMT+0800 (中国标准时间)
+      dt.toUTCString():
+        "Thu, 01 Feb 1990 04:00:00 GMT"
+      dt.toISOString():
+        "1990-02-01T04:00:00.000Z"
+    */
+    this.$store.commit("current", dt.toISOString());
+  }
 }
 </script>
 <style scoped>
@@ -272,7 +271,7 @@ export default class center_map extends Vue {
   right: 0;
   bottom: 50px;
   white-space: nowrap;
-  width: 500px;
+  width: 600px;
 }
 
 #calendar {
@@ -353,6 +352,7 @@ export default class center_map extends Vue {
 #msg {
   position: absolute;
   display: none;
+  color: #000;
 }
 #staticmsg {
   position: absolute;

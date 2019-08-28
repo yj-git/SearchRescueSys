@@ -88,8 +88,10 @@ export default class WindMap extends Vue {
     name: "SearchRescue:view_my_wind_barbs_new",
     visible: true,
     format: "image/png",
-    layers: "SearchRescue:view_my_wind_barbs_new",
-    style: "my_wind_dir_barbs_new"
+    // layers: "SearchRescue:view_my_wind_barbs_new",
+    // style: "my_wind_dir_barbs_new"
+    layers: "SearchRescue:view_current_new_dir_abs",
+    style: "my_current_dir_abs_new"
   };
   defaultDateTimeStr: String = "1990-01-02T6:00:00.0Z";
   wmsBaseUrl: String = `http://localhost:8082/geoserver/SearchRescue/wms?`;

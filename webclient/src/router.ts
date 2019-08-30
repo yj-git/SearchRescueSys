@@ -1,24 +1,30 @@
-import Vue from "vue";
-import Router from "vue-router";
-import CaseListContent from "./views/content/CaseListContent/CaseList.vue"
-import WindMap from "./views/content/wind/windMap.vue"
+import Vue from 'vue'
+import Router from 'vue-router'
+import CaseListContent from './views/content/CaseListContent/CaseList.vue'
+import WindMap from './views/content/wind/windMap.vue'
+import CurrentMap from './views/content/current/currentMap.vue'
 // import Home from "./views/Home.vue";
 
-Vue.use(Router);
+Vue.use(Router)
 
 export default new Router({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
-      path: "/caselist",
-      name: "caselist",
+      path: '/caselist',
+      name: 'caselist',
       component: CaseListContent
     },
     {
-      path:"/windmap",
-      name:"windmap",
-      component:WindMap
+      path: '/windmap',
+      name: 'windmap',
+      component: WindMap
+    },
+    {
+      path: '/currentmap',
+      name: 'currentmap',
+      component: CurrentMap
     }
     // {
     //   path: "/about",
@@ -30,4 +36,4 @@ export default new Router({
     //     import(/* webpackChunkName: "about" */ "./views/About.vue")
     // }
   ]
-});
+})

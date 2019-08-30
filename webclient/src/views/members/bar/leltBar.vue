@@ -22,7 +22,10 @@
                 <router-link to="/caselist">历史案例</router-link>
               </el-menu-item>
               <el-menu-item index="1-2">
-                <router-link to="/windmap">流场数据</router-link>
+                <router-link to="/windmap">风场数据</router-link>
+              </el-menu-item>
+              <el-menu-item index="1-3">
+                <router-link to="/currentmap">流场数据</router-link>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>

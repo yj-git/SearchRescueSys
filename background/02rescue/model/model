@@ -1,4 +1,0 @@
-from mongengine import *
-
-class SearchRescueModel():
-    pass

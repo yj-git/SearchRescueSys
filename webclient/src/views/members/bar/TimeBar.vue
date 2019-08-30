@@ -1,13 +1,28 @@
 <template>
   <div class="dateBar">
-    <div class="progress-line" @mouseover="overProgressLine" @click="setTimeBar">
-      <div id="played" class="played" style="width: 10px;"></div>
+    <div
+      class="progress-line"
+      @mouseover="overProgressLine"
+      @click="setTimeBar"
+    >
+      <div
+        id="played"
+        class="played"
+        style="width: 10px;"
+      ></div>
       <div class="avbl"></div>
       <i style="left: 85.6454px;"></i>
     </div>
-    <div id="playpause" class="play-pause iconfont clickable off"></div>
+    <div
+      id="playpause"
+      class="play-pause iconfont clickable off"
+    ></div>
     <div id="calendar">
-      <div class v-for="item in datelist" :key="item.id">{{item.dateStr()}}</div>
+      <div
+        class
+        v-for="item in datelist"
+        :key="item.id"
+      >{{item.dateStr()}}</div>
     </div>
     <div id="msg">{{slideDateLabelr}}</div>
     <div id="staticmsg">{{staticDateLabel}}</div>
@@ -18,7 +33,7 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { DateModel } from "@/model/bar/timebar";
 import moment from "moment";
 @Component({})
-export default class center_map extends Vue {
+export default class time_bar extends Vue {
   mydata: any = null;
   datelist: Array<DateModel> = [];
   // 选中的时间在datelist中对应的obj
@@ -92,7 +107,8 @@ export default class center_map extends Vue {
   initDateList(): void {
     // this.moment()
     //TODO:[*] 注意new Date时，month为从0开始
-    var currentTemp = new Date(1990, 0, 1, 0, 0);
+    // var currentTemp = new Date(1990, 0, 1, 0, 0);
+    var currentTemp = new Date(2016, 6, 20, 12, 0);
     // 转换成时间戳
     var currentStamp = currentTemp.getTime();
 

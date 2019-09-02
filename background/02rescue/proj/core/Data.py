@@ -58,3 +58,31 @@ class SearchRescueData(BaseData):
         if (len(notMatch) == 0):
             # 没有不匹配的变量
             pass
+
+    def get_all_data(self):
+        all_data_dict = {'lat': self.get_lat_data,
+                        'lon': self.get_lon_data,
+                        'time': self.get_time_data,
+                        'xwind': self.get_xwind_data}
+        return all_data_dict
+
+    @property
+    def get_lat_data(self):
+        return self.ds['lat'][:][0].data
+
+    @property
+    def get_lat_data(self):
+        return self.ds['lon'][:][0].data
+
+    @property
+    def get_lon_data(self):
+        return self.ds['lon'][:][0].data
+
+    @property
+    def get_time_data(self):
+        # return self.ds['time'][:][0].data
+        return nc.num2date(self.ds['time'][:], 'seconds since 1970-1-1 00:00:00')
+
+    @property
+    def get_xwind_data(self):
+        return self.ds['x_wind'][:][0].data

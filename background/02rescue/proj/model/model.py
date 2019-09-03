@@ -21,7 +21,7 @@ class SearchRescueModel(Document):
     '''
         搜救数据
     '''
-    status = StringField()
+    status = IntField()
     time = DateTimeField()
     point = PointField()
     current=EmbeddedDocumentField(CurrentModel)

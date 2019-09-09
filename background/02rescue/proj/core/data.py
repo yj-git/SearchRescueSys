@@ -98,7 +98,7 @@ class SearchRescueData(BaseData):
             #     # float or int: ['point'])
             #     search_model.save()
             # TODO:[*] 19-09-06 此处重新修改了，因为要根据两维进行遍历所以上面的方式不再适用
-            self.circulation(self.file)
+            self.circulation(self.code)
             # pass
 
     def circulation(self, code: str):
@@ -210,3 +210,8 @@ class SearchRescueData(BaseData):
         '''
         # 正常有25个
         return self.dict_dimension['time'].size
+
+    @property
+    def code(self):
+        code = os.path.splitext(self.file)[0]
+        return code

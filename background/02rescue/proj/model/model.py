@@ -21,9 +21,10 @@ class SearchRescueModel(Document):
     '''
         搜救数据
     '''
-    code=StringField()
+    code = StringField()
+    num = StringField()
     status = IntField()
     time = DateTimeField()
     point = PointField()
-    current=EmbeddedDocumentField(CurrentModel)
-    wind=EmbeddedDocumentField(WindModel)
+    current = EmbeddedDocumentField(CurrentModel)
+    wind = EmbeddedDocumentField(WindModel)

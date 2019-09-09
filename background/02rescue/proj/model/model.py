@@ -28,3 +28,17 @@ class SearchRescueModel(Document):
     point = PointField()
     current = EmbeddedDocumentField(CurrentModel)
     wind = EmbeddedDocumentField(WindModel)
+
+
+class SearchRescueAvgModel(Document):
+    '''
+        搜救数据
+            对数据进行平均计算
+    '''
+    code = StringField()
+    num = StringField()
+    status = IntField()
+    time = DateTimeField()
+    point = PointField()
+    current = EmbeddedDocumentField(CurrentModel)
+    wind = EmbeddedDocumentField(WindModel)

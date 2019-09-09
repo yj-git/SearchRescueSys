@@ -101,7 +101,7 @@ class SearchRescueData(BaseData):
             self.circulation(self.file)
             # pass
 
-    def circulation(self, code: str):
+    def circulation_bak(self, code: str):
         '''
             循环写入
         :return:
@@ -131,6 +131,50 @@ class SearchRescueData(BaseData):
             y_index = y_index + 1
             pass
 
+    def circulation(self, code: str):
+        '''
+            循环写入
+        :return:
+        '''
+        x_index = 0
+        y_index = 0
+
+        for x_time_temp in range(self.get_x_time - 1):
+            # 0-99
+            for y_trajectory_temp in range(self.get_y_trajectory - 1):
+                # 0-24
+                wind_temp = model.WindModel(x=self.ds['x_wind'][y_trajectory_temp, x_time_temp],
+                                            y=self.ds['y_wind'][y_trajectory_temp, x_time_temp])
+                current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
+                                                  y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
+                # point = [all_data['lon'][i], all_data['lat'][i]]
+                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 2),
+                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 2)]
+                time_temp = self.get_time_data[x_time_temp]
+                status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
+                search_model = model.SearchRescueModel(time=time_temp, point=point_temp, current=current_temp,
+                                                       wind=wind_temp, status=status_temp, code=code,
+                                                       num=str(y_trajectory_temp))
+                search_model.save()
+                y_index = y_index + 1
+            # 对当前的时间对应的所有点进行平均
+            # 0-24
+            wind_temp = model.WindModel(x=self.ds['x_wind'][:].data[:].T[x_time_temp].mean(),
+                                        y=self.ds['y_wind'][:].data[:].T[x_time_temp].mean())
+            current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][:].data[:].T[x_time_temp].mean(),
+                                              y=self.ds['x_sea_water_velocity'][:].data[:].T[x_time_temp].mean())
+            point_temp = [round(self.ds['lon'][:].data[:].T[x_time_temp].mean().item(), 4),
+                          round(self.ds['lat'][:].data[:].T[x_time_temp].mean().item(), 4)]
+            time_temp = self.get_time_data[x_time_temp]
+            status_temp = self.ds['status'][:].data[:].T[x_time_temp].mean()
+            search_avg_model = model.SearchRescueAvgModel(time=time_temp, point=point_temp, current=current_temp,
+                                                      wind=wind_temp, status=status_temp, code=code,
+                                                      num=str(y_trajectory_temp))
+            search_avg_model.save()
+        x_index = x_index + 1
+        pass
+
+
     def get_all_data(self, type):
         all_data_dict = {'lat': self.get_lat_data,
                          'lon': self.get_lon_data,
@@ -142,9 +186,11 @@ class SearchRescueData(BaseData):
                          'ycurrent': self.get_ycurrent_data}
         return all_data_dict
 
+
     @property
     def get_lat_data(self):
         return self.ds['lat'][:][0].data
+
 
     # @property
     # def get_lat_data(self):
@@ -154,30 +200,37 @@ class SearchRescueData(BaseData):
     def get_lon_data(self):
         return self.ds['lon'][:][0].data
 
+
     @property
     def get_time_data(self):
         # return self.ds['time'][:][0].data
         return nc.num2date(self.ds['time'][:], 'seconds since 1970-1-1 00:00:00')
 
+
     @property
     def get_xwind_data(self):
         return self.ds['x_wind'][:][0].data
+
 
     @property
     def get_ywind_data(self):
         return self.ds['y_wind'][:][0].data
 
+
     @property
     def get_status_data(self):
         return self.ds['status'][:][0].data
+
 
     @property
     def get_xcurrent_data(self):
         return self.ds['x_sea_water_velocity'][:][0].data
 
+
     @property
     def get_ycurrent_data(self):
         return self.ds['y_sea_water_velocity'][:][0].data
+
 
     def init_dimensions_dict(self):
         '''
@@ -193,6 +246,7 @@ class SearchRescueData(BaseData):
         # self.dict_dimension[temp.name] = temp
         # return self.dict_dimension
 
+
     @property
     def get_y_trajectory(self):
         '''
@@ -201,6 +255,7 @@ class SearchRescueData(BaseData):
         '''
         # 正常有100组
         return self.dict_dimension['trajectory'].size
+
 
     @property
     def get_x_time(self):

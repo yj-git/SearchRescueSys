@@ -11,6 +11,8 @@ _MONGODB_PORT = 27017
 # mac 13
 # DIR = r"/Users/drno/Documents/01Proj/SearchRescueSys/data/demo_data"
 # 7540
-DIR = r"D:\02proj\SearchRescueSys\data\demo_data"
+# DIR = r"D:\02proj\SearchRescueSys\data\demo_data"
+# aw
+DIR = r"D:\01proj\SearchRescueSys\data\demo_data"
 
 FILE_NAME = 'qz_ty1_100p.nc'

@@ -79,7 +79,7 @@ class SearchRescueData(BaseData):
                 # point = [float(all_data['lon'][i]), float(all_data['lat'][i])]
                 # 注意此处的是np.float32类型，需要转换为float使用 .item()即可
                 # TODO:[-] 注意使用mongoengine中的预定义的point类型，只接受python原生的float类型，不支持float32类型
-                search_model = model.SearchRescueModel(time=all_data['time'][i], point=point, current=current_temp,
+                search_model = model.SearchRescueModel(code=self.get_code,time=all_data['time'][i], point=point, current=current_temp,
                                                        wind=wind_temp, status=all_data['status'][i])
                 # mongoengine.errors.ValidationError: ValidationError(SearchRescueModel:None) (Both
                 #                                                                              values ([118.9177, 24.735289]) in point
@@ -107,6 +107,9 @@ class SearchRescueData(BaseData):
     # @property
     # def get_lat_data(self):
     #     return self.ds['lon'][:][0].data
+    @property
+    def get_code(self):
+        return self.file.split('.')[0]
 
     @property
     def get_lon_data(self):

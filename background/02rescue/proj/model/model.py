@@ -21,6 +21,7 @@ class SearchRescueModel(Document):
     '''
         搜救数据
     '''
+    code = StringField()
     status = IntField()
     time = DateTimeField()
     point = PointField()

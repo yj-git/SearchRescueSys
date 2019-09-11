@@ -28,6 +28,7 @@ class SearchRescueModelSerializer(serializers.Serializer):
     point = serializers.DictField()
     current = WindModelSerializer()
     wind = CurrentModelSerializer()
+    num=serializers.CharField()
 
 
 class SimpleValMidModelSerializer(serializers.Serializer):

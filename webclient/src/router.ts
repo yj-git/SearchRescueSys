@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import CaseListContent from './views/content/CaseListContent/CaseList.vue'
 import WindMap from './views/content/wind/windMap.vue'
 import CurrentMap from './views/content/current/currentMap.vue'
+import RescueMap from './views/content/rescue/rescueContent.vue'
 // import Home from "./views/Home.vue";
 
 Vue.use(Router)
@@ -25,6 +26,11 @@ export default new Router({
       path: '/currentmap',
       name: 'currentmap',
       component: CurrentMap
+    },
+    {
+      path: '/rescuemap',
+      name: 'rescuemap',
+      component: RescueMap
     }
     // {
     //   path: "/about",

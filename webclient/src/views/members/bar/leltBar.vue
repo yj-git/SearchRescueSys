@@ -36,9 +36,8 @@
             </template>
             <el-menu-item-group>
               <template slot="title">案例查询</template>
-              <el-menu-item index="1-1">条件搜索</el-menu-item>
               <el-menu-item index="1-2">
-                <router-link to="/caselist">历史案例</router-link>
+                <router-link to="/rescuemap">历史案例</router-link>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>

@@ -50,14 +50,13 @@ export default class time_bar extends Vue {
   }
 
   @Prop(Date)
-  // targetDate?: Date;
-  targetDate!: Date;
+  targetDate: Date = new Date();
 
   @Prop(Number)
-  days!: number;
+  days: number = 1;
 
   @Prop(Number)
-  interval!: number;
+  interal: number = 4;
 
   // 鼠标移入时间line时的操作
   overProgressLine(event: any): void {
@@ -119,32 +118,43 @@ export default class time_bar extends Vue {
     // this.moment()
     //TODO:[*] 注意new Date时，month为从0开始
     // var currentTemp = new Date(1990, 0, 1, 0, 0);
-    // var currentTemp = new Date(2016, 6, 20, 12, 0);
-    var currentTemp = this.targetDate;
+    var currentTemp = new Date(2016, 6, 20, 12, 0);
     // 转换成时间戳
     var currentStamp = currentTemp.getTime();
 
-    var tempTimeInterval: number = this.interval * 60 * 60 * 1000;
-    let countIntervalByDay = 24 / this.interval;
+    var interval: number = 6 * 60 * 60 * 1000;
     // var temp = currentTemp.setHours(currentTemp.getHours() + 6);
     // console.log(temp);
-    for (var i = 0; i < this.days; i++) {
+    for (var i = 0; i < 3; i++) {
       this.datelist.push(
-        new DateModel(
-          i,
-          new Date(currentStamp + i * countIntervalByDay * tempTimeInterval),
-          []
-        )
+        new DateModel(i, new Date(currentStamp + i * 4 * interval), [])
       );
-      for (var j = 0; j < countIntervalByDay; j++) {
+      for (var j = 0; j < 4; j++) {
         this.datelist[i].children.push(
           new DateModel(
-            i * countIntervalByDay + j,
-            new Date(currentStamp + j * tempTimeInterval)
+            i * 4 + j,
+            new Date(currentStamp + (i * 4 + j) * interval)
           )
         );
       }
     }
+
+    // this.datelist.push(
+    //   new DateModel(1, "02日", [
+    //     new DateModel(4, "02-00时"),
+    //     new DateModel(5, "02-06时"),
+    //     new DateModel(6, "02-12时"),
+    //     new DateModel(7, "02-18时")
+    //   ])
+    // );
+    // this.datelist.push(
+    //   new DateModel(2, "03日", [
+    //     new DateModel(8, "03-00时"),
+    //     new DateModel(9, "03-06时"),
+    //     new DateModel(10, "03-12时"),
+    //     new DateModel(11, "03-18时")
+    //   ])
+    // );
   }
   mounted() {
     // var myself = this;

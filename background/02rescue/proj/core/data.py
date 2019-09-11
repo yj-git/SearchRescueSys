@@ -98,7 +98,7 @@ class SearchRescueData(BaseData):
             #     # float or int: ['point'])
             #     search_model.save()
             # TODO:[*] 19-09-06 此处重新修改了，因为要根据两维进行遍历所以上面的方式不再适用
-            self.circulation(self.file)
+            self.circulation(self.get_code)
             # pass
 
     def circulation_bak(self, code: str):
@@ -118,8 +118,8 @@ class SearchRescueData(BaseData):
                 current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
                                                   y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
                 # point = [all_data['lon'][i], all_data['lat'][i]]
-                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 2),
-                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 2)]
+                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item()),
+                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item())]
                 time_temp = self.get_time_data[x_time_temp]
                 status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
                 search_model = model.SearchRescueModel(time=time_temp, point=point_temp, current=current_temp,
@@ -148,8 +148,8 @@ class SearchRescueData(BaseData):
                 current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
                                                   y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
                 # point = [all_data['lon'][i], all_data['lat'][i]]
-                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 2),
-                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 2)]
+                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(),6),
+                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(),6)]
                 time_temp = self.get_time_data[x_time_temp]
                 status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
                 search_model = model.SearchRescueModel(time=time_temp, point=point_temp, current=current_temp,
@@ -265,3 +265,7 @@ class SearchRescueData(BaseData):
         '''
         # 正常有25个
         return self.dict_dimension['time'].size
+
+    @property
+    def get_code(self):
+        return os.path.splitext(self.file)[0]

@@ -1,33 +1,13 @@
 <template>
   <div id="rescue_map">
-    <l-map
-      ref="basemap"
-      :zoom="zoom"
-      :center="center"
-    >
+    <l-map ref="basemap" :zoom="zoom" :center="center">
       <l-tile-layer :url="url"></l-tile-layer>
-      <l-polyline
-        :lat-lngs="polyline.latlngs"
-        :fill="false"
-        :color="polyline.color"
-      ></l-polyline>
+      <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
 
-      <l-circle
-        v-for="temp in rescuePointList"
-        :key="temp.id"
-        :lat-lng="temp.latlon"
-      />
-      <l-circle
-        v-for="temp in rescueScatterPlotList"
-        :key="temp.id"
-        :lat-lng="temp"
-      />
+      <l-circle v-for="temp in rescuePointList" :key="temp.id" :lat-lng="temp.latlon" />
+      <l-circle v-for="temp in rescueScatterPlotList" :key="temp.id" :lat-lng="temp" />
     </l-map>
-    <TimeBar
-      :targetDate="startDate"
-      :days="days"
-      :interval="interval"
-    ></TimeBar>
+    <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
   </div>
 </template>
 <script lang='ts'>
@@ -75,13 +55,14 @@ export default class RescueMap extends Vue {
   rescuePointList: Array<RescuePointRealDataMidModel> = [];
   targetDate: Date = new Date();
   // timebar的起始时间
-  startDate: Date = new Date(2016, 6, 22, 3, 0);
+  // startDate: Date = new Date(2016, 6, 22, 3, 0);
+  startDate: Date = new Date(2016, 6, 22, 16, 0);
   // TODO:[*] 19-09-10 子组件timebar
   // timebar共有多少天
-  days: number = 1;
+  days: number = 3;
   // 当前时刻的散点图
   rescueScatterPlotList: Array<number[]> = [];
-  interval: number = 2;
+  interval: number = 24;
   polyline: any = {
     latlngs: [],
     color: "yellow"

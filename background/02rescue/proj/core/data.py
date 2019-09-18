@@ -69,6 +69,11 @@ class BaseData:
     def get_code(self):
         return os.path.splitext(self.file)[0]
 
+    @property
+    def get_time_data(self):
+        # return self.ds['time'][:][0].data
+        return nc.num2date(self.ds['time'][:], 'seconds since 1970-1-1 00:00:00')
+
 
 class BaseCorrdinateAxis:
     '''
@@ -262,10 +267,10 @@ class SearchRescueData(BaseData, BaseCorrdinateAxis):
     def get_lon_data(self):
         return self.ds['lon'][:][0].data
 
-    @property
-    def get_time_data(self):
-        # return self.ds['time'][:][0].data
-        return nc.num2date(self.ds['time'][:], 'seconds since 1970-1-1 00:00:00')
+    # @property
+    # def get_time_data(self):
+    #     # return self.ds['time'][:][0].data
+    #     return nc.num2date(self.ds['time'][:], 'seconds since 1970-1-1 00:00:00')
 
     @property
     def get_xwind_data(self):
@@ -319,8 +324,10 @@ class SearchRescueData(BaseData, BaseCorrdinateAxis):
 
 class OilSpillingData(BaseData, BaseCorrdinateAxis):
     def __init__(self, dir: str, file: str):
-        super(SearchRescueData, self).__init__(dir, file)
-        super(SearchRescueData, self).__init__(self.dict_dimension)
+        BaseData.__init__(self, dir, file)
+        BaseCorrdinateAxis.__init__(self, self.dict_dimension)
+        # super(OilSpillingData, self).__init__(dir, file)
+        # super(OilSpillingData, self).__init__(self.dict_dimension)
 
     def insert2DB(self):
         '''
@@ -366,15 +373,17 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
                                             evaporated=self.ds['mass_evaporated'][y_trajectory_temp, x_time_temp],
                                             dispersed=self.ds['mass_dispersed'][y_trajectory_temp, x_time_temp])
                 # 油的model
-                oil_temp = model.OilModel(density=self.ds['density'][y_trajectory_temp, x_time_temp],
+                # TODO:[*] 19-09-19 注意self.ds['density']对数组进行索引是一个masked_array
+                # 有可能是masked的，所以需要判断
+                oil_temp = model.OilModel(density=self.ds['density'][y_trajectory_temp, x_time_temp] if self.ds['density'][y_trajectory_temp, x_time_temp].mask==True else None,
                                           film_thickness=self.ds['oil_film_thickness'][y_trajectory_temp, x_time_temp])
 
                 wt_temp = self.ds['sea_water_temperature'][y_trajectory_temp, x_time_temp]
                 water_fraction = self.ds['water_fraction'][y_trajectory_temp, x_time_temp]
                 oil_model = model.OilSpillingModel(time=time_temp, point=point_temp, current=current_temp,
-                                                      wind=wind_temp, status=status_temp, code=code,
-                                                      wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
-                                                      oil=oil_temp)
+                                                   wind=wind_temp, status=status_temp, code=code,
+                                                   wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+                                                   oil=oil_temp)
                 oil_model.save()
                 y_index = y_index + 1
             # 对当前的时间对应的所有点进行平均
@@ -398,10 +407,43 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
             wt_temp = self.ds['sea_water_temperature'][:].T[x_time_temp].mean()
             water_fraction = self.ds['water_fraction'][:].T[x_time_temp].mean()
             oil_avg_model = model.OilspillingAvgModel(time=time_temp, point=point_temp, current=current_temp,
-                                               wind=wind_temp, status=status_temp, code=code,
-                                               wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
-                                               oil=oil_temp)
+                                                      wind=wind_temp, status=status_temp, code=code,
+                                                      wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+                                                      oil=oil_temp)
 
             oil_avg_model.save()
         x_index = x_index + 1
         pass
+
+
+from .common import DataType
+
+
+class DataFactory:
+    '''
+        data 工厂方法 ，用于对上面的 两类 data 对象进行解耦
+    '''
+    switch = {
+        DataType.Oil_Spilling: OilSpillingData,
+        DataType.Search_Rescue: SearchRescueData
+    }
+
+    factory = None
+
+    def _build_data(self, type: DataType):
+        '''
+            根据传入的 type 返回对应的 data class
+        :param type:
+        :return:
+        '''
+        self.factory = self.switch[type]
+
+    def __init__(self, type: DataType):
+        if self.factory is None:
+            self._build_data(type)
+
+    def run(self, dir_path: str, file_name: str):
+        if self.factory is not None:
+            data_temp = self.factory(dir_path, file_name)
+            data_temp.init()
+            data_temp.insert2DB()

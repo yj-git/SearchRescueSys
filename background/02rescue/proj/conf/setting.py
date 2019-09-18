@@ -15,4 +15,7 @@ _MONGODB_PORT = 27017
 # aw
 DIR = r"D:\01proj\SearchRescue\SearchRescueSys\data\demo_data"
 
-FILE_NAME = 'qz_ty1_100p.nc'
+# 搜救
+# FILE_NAME = 'qz_ty1_100p.nc'
+# 溢油
+FILE_NAME = 'sanjioil.nc'

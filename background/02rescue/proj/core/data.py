@@ -14,6 +14,8 @@ class BaseData:
     '''
         所有data的父类，主要用来记录filename，dirpath等信息
     '''
+    ds = None
+    dict_dimension = {}
 
     def __init__(self, dir, file):
         self.dir = dir
@@ -30,19 +32,6 @@ class BaseData:
         # return os.path.join(self.dir.decode('utf-8'), self.file)
         return os.path.join(self.dir, self.file)
 
-
-class SearchRescueData(BaseData):
-    '''
-        本类直接操作nc文件，读取出搜救model需要的数据并写入mongo
-    '''
-
-    ds = None
-    dict_dimension = {}
-
-    def __init__(self, dir: str, file: str):
-        super(SearchRescueData, self).__init__(dir, file)
-
-    # @staticmethod
     def init(self):
         '''
             根据fullpath，读取对应的文件
@@ -57,6 +46,15 @@ class SearchRescueData(BaseData):
         if (self.dict_dimension == {}):
             self.init_dimensions_dict()
 
+    def init_dimensions_dict(self):
+        '''
+            初始化维度字典
+        :return:
+        '''
+        for index, temp in enumerate(self.ds.dimensions.values()):
+            # print(temp)
+            self.dict_dimension[temp.name] = temp
+
     def checkNotMatchVariables(self, *args):
         '''
             获取不在ns的变量中的值
@@ -66,6 +64,73 @@ class SearchRescueData(BaseData):
         not_match_variables = []
         not_match_variables = [temp not in self.ds.variables.keys() for temp in list(args)[0]]
         return any(not_match_variables)
+
+    @property
+    def get_code(self):
+        return os.path.splitext(self.file)[0]
+
+
+class BaseCorrdinateAxis:
+    '''
+        坐标轴父类，将溢油与搜救的获取坐标轴的方法抽象在此
+        溢油的维度只有 trajectory 与 time 两个维度
+    '''
+
+    def __init__(self, dict_temp: {}):
+        self.dict_dimension = dict_temp
+
+    @property
+    def get_x_time(self):
+        '''
+            获取 time 维度 的长度
+        :return:
+        '''
+        # 正常有25个
+        return self.dict_dimension['time'].size
+
+    @property
+    def get_y_trajectory(self):
+        '''
+            获取 轨迹 维度 的长度
+        :return:
+        '''
+        # 正常有100组
+        return self.dict_dimension['trajectory'].size
+
+
+class SearchRescueData(BaseData, BaseCorrdinateAxis):
+    '''
+        本类直接操作nc文件，读取出搜救model需要的数据并写入mongo
+    '''
+
+    def __init__(self, dir: str, file: str):
+        super(SearchRescueData, self).__init__(dir, file)
+        super(SearchRescueData, self).__init__(self.dict_dimension)
+
+    # @staticmethod
+    # def init(self):
+    #     '''
+    #         根据fullpath，读取对应的文件
+    #     :return:
+    #     '''
+    #     # 初始化ds以及维度字典
+    #     if (self.ds is None):
+    #         self.ds = nc.Dataset(self.fullpath)
+    #         print(self.ds)
+    #         print('-----')
+    #         print(self.ds.variables)
+    #     if (self.dict_dimension == {}):
+    #         self.init_dimensions_dict()
+
+    # def checkNotMatchVariables(self, *args):
+    #     '''
+    #         获取不在ns的变量中的值
+    #     :param args:
+    #     :return:
+    #     '''
+    #     not_match_variables = []
+    #     not_match_variables = [temp not in self.ds.variables.keys() for temp in list(args)[0]]
+    #     return any(not_match_variables)
 
     def insert2DB(self):
         '''
@@ -77,7 +142,7 @@ class SearchRescueData(BaseData):
         if (not_match is False):
             # 没有不匹配的变量
             # 获取需要的数据
-            all_data = self.get_all_data('xwind')
+            # all_data = self.get_all_data('xwind')
             # 写入数据库
             # 1 先连接数据库
             my_connet()
@@ -148,8 +213,8 @@ class SearchRescueData(BaseData):
                 current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
                                                   y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
                 # point = [all_data['lon'][i], all_data['lat'][i]]
-                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(),6),
-                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(),6)]
+                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 6),
+                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 6)]
                 time_temp = self.get_time_data[x_time_temp]
                 status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
                 search_model = model.SearchRescueModel(time=time_temp, point=point_temp, current=current_temp,
@@ -168,12 +233,11 @@ class SearchRescueData(BaseData):
             time_temp = self.get_time_data[x_time_temp]
             status_temp = self.ds['status'][:].data[:].T[x_time_temp].mean()
             search_avg_model = model.SearchRescueAvgModel(time=time_temp, point=point_temp, current=current_temp,
-                                                      wind=wind_temp, status=status_temp, code=code,
-                                                      num=str(y_trajectory_temp))
+                                                          wind=wind_temp, status=status_temp, code=code,
+                                                          num=str(y_trajectory_temp))
             search_avg_model.save()
         x_index = x_index + 1
         pass
-
 
     def get_all_data(self, type):
         all_data_dict = {'lat': self.get_lat_data,
@@ -186,11 +250,9 @@ class SearchRescueData(BaseData):
                          'ycurrent': self.get_ycurrent_data}
         return all_data_dict
 
-
     @property
     def get_lat_data(self):
         return self.ds['lat'][:][0].data
-
 
     # @property
     # def get_lat_data(self):
@@ -200,72 +262,146 @@ class SearchRescueData(BaseData):
     def get_lon_data(self):
         return self.ds['lon'][:][0].data
 
-
     @property
     def get_time_data(self):
         # return self.ds['time'][:][0].data
         return nc.num2date(self.ds['time'][:], 'seconds since 1970-1-1 00:00:00')
 
-
     @property
     def get_xwind_data(self):
         return self.ds['x_wind'][:][0].data
-
 
     @property
     def get_ywind_data(self):
         return self.ds['y_wind'][:][0].data
 
-
     @property
     def get_status_data(self):
         return self.ds['status'][:][0].data
-
 
     @property
     def get_xcurrent_data(self):
         return self.ds['x_sea_water_velocity'][:][0].data
 
-
     @property
     def get_ycurrent_data(self):
         return self.ds['y_sea_water_velocity'][:][0].data
 
+    # TODO:[-] 19-09-18 此处已经封装至 BaseCorrdinateAxis 父类中
+    # def init_dimensions_dict(self):
+    #     '''
+    #         初始化维度字典
+    #     :return:
+    #     '''
+    #     for index, temp in enumerate(self.ds.dimensions.values()):
+    #         # print(temp)
+    #         self.dict_dimension[temp.name] = temp
 
-    def init_dimensions_dict(self):
+    # @property
+    # def get_y_trajectory(self):
+    #     '''
+    #         获取 轨迹 维度 的长度
+    #     :return:
+    #     '''
+    #     # 正常有100组
+    #     return self.dict_dimension['trajectory'].size
+
+    # @property
+    # def get_x_time(self):
+    #     '''
+    #         获取 time 维度 的长度
+    #     :return:
+    #     '''
+    #     # 正常有25个
+    #     return self.dict_dimension['time'].size
+    #
+
+
+class OilSpillingData(BaseData, BaseCorrdinateAxis):
+    def __init__(self, dir: str, file: str):
+        super(SearchRescueData, self).__init__(dir, file)
+        super(SearchRescueData, self).__init__(self.dict_dimension)
+
+    def insert2DB(self):
         '''
-            初始化维度字典
+            读取文件并写入mongo
         :return:
         '''
-        for index, temp in enumerate(self.ds.dimensions.values()):
-            print(temp)
-            self.dict_dimension[temp.name] = temp
-        # if self.dict_dimension == {}:
-        #     for temp in self.ds.dimension.values():
-        #         print(temp)
-        # self.dict_dimension[temp.name] = temp
-        # return self.dict_dimension
+        variables = ['lat', 'lon', 'time', 'x_wind', 'y_wind', 'y_sea_water_velocity', 'x_sea_water_velocity',
+                     'sea_water_temperature', 'mass_oil', 'mass_evaporated', 'mass_dispersed', 'water_fraction',
+                     'density', 'oil_film_thickness']
+        not_match = self.checkNotMatchVariables(variables)
+        if (not_match is False):
+            # 没有不匹配的变量
+            # 写入数据库
+            # 1 先连接数据库
+            my_connet()
+            #     # TODO:[-] 注意使用mongoengine中的预定义的point类型，只接受python原生的float类型，不支持float32类型
+            # TODO:[*] 19-09-06 此处重新修改了，因为要根据两维进行遍历所以上面的方式不再适用
+            self.circulation(self.get_code)
 
-
-    @property
-    def get_y_trajectory(self):
+    def circulation(self, code: str):
         '''
-            获取 轨迹 维度 的长度
+            循环写入
         :return:
         '''
-        # 正常有100组
-        return self.dict_dimension['trajectory'].size
+        x_index = 0
+        y_index = 0
 
+        for x_time_temp in range(self.get_x_time - 1):
+            # 0-2xxx
+            for y_trajectory_temp in range(self.get_y_trajectory - 1):
+                # 0-73
+                wind_temp = model.WindModel(x=self.ds['x_wind'][y_trajectory_temp, x_time_temp],
+                                            y=self.ds['y_wind'][y_trajectory_temp, x_time_temp])
+                current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
+                                                  y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
+                # point = [all_data['lon'][i], all_data['lat'][i]]
+                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 6),
+                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 6)]
+                time_temp = self.get_time_data[x_time_temp]
+                status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
+                # 质量model
+                mass_temp = model.MassModel(oil=self.ds['mass_oil'][y_trajectory_temp, x_time_temp],
+                                            evaporated=self.ds['mass_evaporated'][y_trajectory_temp, x_time_temp],
+                                            dispersed=self.ds['mass_dispersed'][y_trajectory_temp, x_time_temp])
+                # 油的model
+                oil_temp = model.OilModel(density=self.ds['density'][y_trajectory_temp, x_time_temp],
+                                          film_thickness=self.ds['oil_film_thickness'][y_trajectory_temp, x_time_temp])
 
-    @property
-    def get_x_time(self):
-        '''
-            获取 time 维度 的长度
-        :return:
-        '''
-        # 正常有25个
-        return self.dict_dimension['time'].size
+                wt_temp = self.ds['sea_water_temperature'][y_trajectory_temp, x_time_temp]
+                water_fraction = self.ds['water_fraction'][y_trajectory_temp, x_time_temp]
+                oil_model = model.OilSpillingModel(time=time_temp, point=point_temp, current=current_temp,
+                                                      wind=wind_temp, status=status_temp, code=code,
+                                                      wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+                                                      oil=oil_temp)
+                oil_model.save()
+                y_index = y_index + 1
+            # 对当前的时间对应的所有点进行平均
+            # 0-24
+            wind_temp = model.WindModel(x=self.ds['x_wind'][:].data[:].T[x_time_temp].mean(),
+                                        y=self.ds['y_wind'][:].data[:].T[x_time_temp].mean())
+            current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][:].data[:].T[x_time_temp].mean(),
+                                              y=self.ds['x_sea_water_velocity'][:].data[:].T[x_time_temp].mean())
+            point_temp = [round(self.ds['lon'][:].data[:].T[x_time_temp].mean().item(), 4),
+                          round(self.ds['lat'][:].data[:].T[x_time_temp].mean().item(), 4)]
+            time_temp = self.get_time_data[x_time_temp]
+            status_temp = self.ds['status'][:].data[:].T[x_time_temp].mean()
+            # 质量model
+            mass_temp = model.MassModel(oil=self.ds['mass_oil'][:].T[x_time_temp].mean(),
+                                        evaporated=self.ds['mass_evaporated'][:].T[x_time_temp].mean(),
+                                        dispersed=self.ds['mass_dispersed'][:].T[x_time_temp].mean())
+            # 油的model
+            oil_temp = model.OilModel(density=self.ds['density'][:].T[x_time_temp].mean(),
+                                      film_thickness=self.ds['oil_film_thickness'][:].T[x_time_temp].mean())
 
-    @property
-    def get_code(self):
-        return os.path.splitext(self.file)[0]
+            wt_temp = self.ds['sea_water_temperature'][:].T[x_time_temp].mean()
+            water_fraction = self.ds['water_fraction'][:].T[x_time_temp].mean()
+            oil_avg_model = model.OilspillingAvgModel(time=time_temp, point=point_temp, current=current_temp,
+                                               wind=wind_temp, status=status_temp, code=code,
+                                               wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+                                               oil=oil_temp)
+
+            oil_avg_model.save()
+        x_index = x_index + 1
+        pass

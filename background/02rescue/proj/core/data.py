@@ -325,6 +325,9 @@ class SearchRescueData(BaseData, BaseCorrdinateAxis):
 
 
 class OilSpillingData(BaseData, BaseCorrdinateAxis):
+    # 1 先连接数据库
+    my_connet()
+
     def __init__(self, dir: str, file: str):
         BaseData.__init__(self, dir, file)
         BaseCorrdinateAxis.__init__(self, self.dict_dimension)
@@ -344,7 +347,7 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
             # 没有不匹配的变量
             # 写入数据库
             # 1 先连接数据库
-            my_connet()
+            # my_connet()
             #     # TODO:[-] 注意使用mongoengine中的预定义的point类型，只接受python原生的float类型，不支持float32类型
             # TODO:[*] 19-09-06 此处重新修改了，因为要根据两维进行遍历所以上面的方式不再适用
             self.circulation(self.get_code)
@@ -434,7 +437,7 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
         # TODO:[*] 19-09-19 此处改为使用多进程
         with concurrent.futures.ThreadPoolExecutor(max_workers=setting._MAX_WORKERS) as executor:
             to_do = []
-            for x_time_temp in range(self.get_x_time - 1 if setting._DEBUG else 0):
+            for x_time_temp in range(self.get_x_time - 1 if setting._DEBUG else 1):
                 future = executor.submit(self.circulation_trajectory, x_time_temp, code)
                 to_do.append(future)
             for future in concurrent.futures.as_completed(to_do):

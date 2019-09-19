@@ -14,7 +14,7 @@ _DEBUG = False
 # mac 13
 # DIR = r"/Users/drno/Documents/01Proj/SearchRescueSys/data/demo_data"
 # 7540
-DIR = r"D:\02proj\SearchRescue\SearchRescueSys\data\demo_data"
+DIR = r"D:\01proj\SearchRescue\SearchRescueSys\data\demo_data"
 # aw
 # DIR = r"D:\01proj\SearchRescue\SearchRescueSys\data\demo_data"
 

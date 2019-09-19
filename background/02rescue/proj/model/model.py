@@ -22,11 +22,11 @@ class MassModel(EmbeddedDocument):
        质量相关model
     '''
     # 溢油的质量
-    oil = FloatField()
+    oil = FloatField(default=None)
     # 蒸发的质量
-    evaporated = FloatField()
+    evaporated = FloatField(default=None)
     # 分散的质量
-    dispersed = FloatField()
+    dispersed = FloatField(default=None)
 
 
 class OilModel(EmbeddedDocument):

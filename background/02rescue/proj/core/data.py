@@ -8,6 +8,8 @@ import pandas as pd
 # 导入项目中的包
 from .operate import my_connet
 from model import model
+from conf import setting
+import concurrent.futures
 
 
 class BaseData:
@@ -347,6 +349,81 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
             # TODO:[*] 19-09-06 此处重新修改了，因为要根据两维进行遍历所以上面的方式不再适用
             self.circulation(self.get_code)
 
+    def circulation_trajectory(self, x_time_temp: int, code: str):
+        for y_trajectory_temp in range(self.get_y_trajectory - 1):
+            # 0-73
+            wind_temp = model.WindModel(x=self.ds['x_wind'][y_trajectory_temp, x_time_temp],
+                                        y=self.ds['y_wind'][y_trajectory_temp, x_time_temp])
+            current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
+                                              y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
+            # point = [all_data['lon'][i], all_data['lat'][i]]
+            point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 6),
+                          round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 6)]
+            time_temp = self.get_time_data[x_time_temp]
+            status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
+            # 质量model
+            mass_temp = model.MassModel(oil=self.ds['mass_oil'][y_trajectory_temp, x_time_temp],
+                                        evaporated=self.ds['mass_evaporated'][y_trajectory_temp, x_time_temp],
+                                        dispersed=self.ds['mass_dispersed'][y_trajectory_temp, x_time_temp])
+            # 油的model
+            # TODO:[*] 19-09-19 注意self.ds['density']对数组进行索引是一个masked_array
+            # 有可能是masked的，所以需要判断
+            oil_temp = model.OilModel(
+                density=self.ds['density'][y_trajectory_temp, x_time_temp] if self.ds['density'][
+                                                                                  y_trajectory_temp, x_time_temp].mask == True else None,
+                film_thickness=self.ds['oil_film_thickness'][y_trajectory_temp, x_time_temp] if
+                self.ds['oil_film_thickness'][
+                    y_trajectory_temp, x_time_temp].mask == True else None)
+
+            wt_temp = self.ds['sea_water_temperature'][y_trajectory_temp, x_time_temp] if \
+                self.ds['sea_water_temperature'][
+                    y_trajectory_temp, x_time_temp].mask == True else None
+            water_fraction = self.ds['water_fraction'][y_trajectory_temp, x_time_temp] if self.ds['water_fraction'][
+                                                                                              y_trajectory_temp, x_time_temp].mask == True else None
+            # TODO:[*] 19-09-19 此处的思路 若出现--的这种情况，直接跳过，不用save了
+            # 若为np.nan 的话直接跳过，不处理
+            if (wt_temp == np.nan) is False:
+                oil_model = model.OilSpillingModel(time=time_temp, point=point_temp, current=current_temp,
+                                                   wind=wind_temp, status=status_temp, code=code,
+                                                   wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+                                                   oil=oil_temp)
+                try:
+                    oil_model.save()
+                except Exception as err:
+                    print(f'保存 oil_model 出现异常，出现异常位置[x:{x_time_temp},y:{y_trajectory_temp}]')
+
+            # y_index = y_index + 1
+        # 对当前的时间对应的所有点进行平均
+        # 0-24
+        wind_temp = model.WindModel(x=self.ds['x_wind'][:].T[x_time_temp].mean(),
+                                    y=self.ds['y_wind'][:].T[x_time_temp].mean())
+        current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][:].T[x_time_temp].mean(),
+                                          y=self.ds['x_sea_water_velocity'][:].T[x_time_temp].mean())
+        point_temp = [round(self.ds['lon'][:].T[x_time_temp].mean().item(), 4),
+                      round(self.ds['lat'][:].T[x_time_temp].mean().item(), 4)]
+        time_temp = self.get_time_data[x_time_temp]
+        status_temp = self.ds['status'][:].T[x_time_temp].mean()
+        # 质量model
+        mass_temp = model.MassModel(oil=self.ds['mass_oil'][:].T[x_time_temp].mean(),
+                                    evaporated=self.ds['mass_evaporated'][:].T[x_time_temp].mean(),
+                                    dispersed=self.ds['mass_dispersed'][:].T[x_time_temp].mean())
+        # 油的model
+        oil_temp = model.OilModel(density=self.ds['density'][:].T[x_time_temp].mean(),
+                                  film_thickness=self.ds['oil_film_thickness'][:].T[x_time_temp].mean())
+
+        wt_temp = self.ds['sea_water_temperature'][:].T[x_time_temp].mean()
+        water_fraction = self.ds['water_fraction'][:].T[x_time_temp].mean()
+        oil_avg_model = model.OilspillingAvgModel(time=time_temp, point=point_temp, current=current_temp,
+                                                  wind=wind_temp, status=status_temp, code=code,
+                                                  wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+                                                  oil=oil_temp)
+        try:
+            oil_avg_model.save()
+        except Exception as err:
+            print(f'保存avg出现异常，出现异常位置[x:{x_time_temp},y:{y_trajectory_temp}]')
+
+        print(f'[-] 当前处理第:{x_time_temp},共:{self.get_x_time - 1}')
+
     def circulation(self, code: str):
         '''
             循环写入
@@ -354,64 +431,89 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
         '''
         x_index = 0
         y_index = 0
+        # TODO:[*] 19-09-19 此处改为使用多进程
+        with concurrent.futures.ThreadPoolExecutor(max_workers=setting._MAX_WORKERS) as executor:
+            to_do = []
+            for x_time_temp in range(self.get_x_time - 1 if setting._DEBUG else 0):
+                future = executor.submit(self.circulation_trajectory, x_time_temp, code)
+                to_do.append(future)
+            for future in concurrent.futures.as_completed(to_do):
+                future.result()
+        # for x_time_temp in range(self.get_x_time - 1):
+        # 0-2xxx
+        # 将下面代码封装至 def circulation_trajectory 中
+        # for y_trajectory_temp in range(self.get_y_trajectory - 1):
+        #     # 0-73
+        #     wind_temp = model.WindModel(x=self.ds['x_wind'][y_trajectory_temp, x_time_temp],
+        #                                 y=self.ds['y_wind'][y_trajectory_temp, x_time_temp])
+        #     current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
+        #                                       y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
+        #     # point = [all_data['lon'][i], all_data['lat'][i]]
+        #     point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 6),
+        #                   round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 6)]
+        #     time_temp = self.get_time_data[x_time_temp]
+        #     status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
+        #     # 质量model
+        #     mass_temp = model.MassModel(oil=self.ds['mass_oil'][y_trajectory_temp, x_time_temp],
+        #                                 evaporated=self.ds['mass_evaporated'][y_trajectory_temp, x_time_temp],
+        #                                 dispersed=self.ds['mass_dispersed'][y_trajectory_temp, x_time_temp])
+        #     # 油的model
+        #     # TODO:[*] 19-09-19 注意self.ds['density']对数组进行索引是一个masked_array
+        #     # 有可能是masked的，所以需要判断
+        #     oil_temp = model.OilModel(
+        #         density=self.ds['density'][y_trajectory_temp, x_time_temp] if self.ds['density'][
+        #                                                                           y_trajectory_temp, x_time_temp].mask == True else None,
+        #         film_thickness=self.ds['oil_film_thickness'][y_trajectory_temp, x_time_temp] if self.ds['oil_film_thickness'][
+        #                                                                           y_trajectory_temp, x_time_temp].mask == True else None)
+        #
+        #     wt_temp = self.ds['sea_water_temperature'][y_trajectory_temp, x_time_temp] if self.ds['sea_water_temperature'][
+        #                                                                           y_trajectory_temp, x_time_temp].mask == True else None
+        #     water_fraction = self.ds['water_fraction'][y_trajectory_temp, x_time_temp] if self.ds['water_fraction'][
+        #                                                                           y_trajectory_temp, x_time_temp].mask == True else None
+        #     # TODO:[*] 19-09-19 此处的思路 若出现--的这种情况，直接跳过，不用save了
+        #     # 若为np.nan 的话直接跳过，不处理
+        #     if (wt_temp==np.nan) is False:
+        #         oil_model = model.OilSpillingModel(time=time_temp, point=point_temp, current=current_temp,
+        #                                            wind=wind_temp, status=status_temp, code=code,
+        #                                            wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+        #                                            oil=oil_temp)
+        #         try:
+        #             oil_model.save()
+        #         except Exception as err:
+        #             print(f'保存 oil_model 出现异常，出现异常位置[x:{x_time_temp},y:{y_trajectory_temp}]')
+        #
+        #     y_index = y_index + 1
+        # # 对当前的时间对应的所有点进行平均
+        # # 0-24
+        # wind_temp = model.WindModel(x=self.ds['x_wind'][:].T[x_time_temp].mean(),
+        #                             y=self.ds['y_wind'][:].T[x_time_temp].mean())
+        # current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][:].T[x_time_temp].mean(),
+        #                                   y=self.ds['x_sea_water_velocity'][:].T[x_time_temp].mean())
+        # point_temp = [round(self.ds['lon'][:].T[x_time_temp].mean().item(), 4),
+        #               round(self.ds['lat'][:].T[x_time_temp].mean().item(), 4)]
+        # time_temp = self.get_time_data[x_time_temp]
+        # status_temp = self.ds['status'][:].T[x_time_temp].mean()
+        # # 质量model
+        # mass_temp = model.MassModel(oil=self.ds['mass_oil'][:].T[x_time_temp].mean(),
+        #                             evaporated=self.ds['mass_evaporated'][:].T[x_time_temp].mean(),
+        #                             dispersed=self.ds['mass_dispersed'][:].T[x_time_temp].mean())
+        # # 油的model
+        # oil_temp = model.OilModel(density=self.ds['density'][:].T[x_time_temp].mean(),
+        #                           film_thickness=self.ds['oil_film_thickness'][:].T[x_time_temp].mean())
+        #
+        # wt_temp = self.ds['sea_water_temperature'][:].T[x_time_temp].mean()
+        # water_fraction = self.ds['water_fraction'][:].T[x_time_temp].mean()
+        # oil_avg_model = model.OilspillingAvgModel(time=time_temp, point=point_temp, current=current_temp,
+        #                                           wind=wind_temp, status=status_temp, code=code,
+        #                                           wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
+        #                                           oil=oil_temp)
+        # try:
+        #     oil_avg_model.save()
+        # except Exception as err:
+        #     print(f'保存avg出现异常，出现异常位置[x:{x_time_temp},y:{y_trajectory_temp}]')
+        #
+        # print(f'[-] 当前处理第:{x_time_temp},共:{self.get_x_time - 1}')
 
-        for x_time_temp in range(self.get_x_time - 1):
-            # 0-2xxx
-            for y_trajectory_temp in range(self.get_y_trajectory - 1):
-                # 0-73
-                wind_temp = model.WindModel(x=self.ds['x_wind'][y_trajectory_temp, x_time_temp],
-                                            y=self.ds['y_wind'][y_trajectory_temp, x_time_temp])
-                current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
-                                                  y=self.ds['x_sea_water_velocity'][y_trajectory_temp, x_time_temp])
-                # point = [all_data['lon'][i], all_data['lat'][i]]
-                point_temp = [round(self.ds['lon'][y_trajectory_temp, x_time_temp].item(), 6),
-                              round(self.ds['lat'][y_trajectory_temp, x_time_temp].item(), 6)]
-                time_temp = self.get_time_data[x_time_temp]
-                status_temp = self.ds['status'][y_trajectory_temp, x_time_temp]
-                # 质量model
-                mass_temp = model.MassModel(oil=self.ds['mass_oil'][y_trajectory_temp, x_time_temp],
-                                            evaporated=self.ds['mass_evaporated'][y_trajectory_temp, x_time_temp],
-                                            dispersed=self.ds['mass_dispersed'][y_trajectory_temp, x_time_temp])
-                # 油的model
-                # TODO:[*] 19-09-19 注意self.ds['density']对数组进行索引是一个masked_array
-                # 有可能是masked的，所以需要判断
-                oil_temp = model.OilModel(density=self.ds['density'][y_trajectory_temp, x_time_temp] if self.ds['density'][y_trajectory_temp, x_time_temp].mask==True else None,
-                                          film_thickness=self.ds['oil_film_thickness'][y_trajectory_temp, x_time_temp])
-
-                wt_temp = self.ds['sea_water_temperature'][y_trajectory_temp, x_time_temp]
-                water_fraction = self.ds['water_fraction'][y_trajectory_temp, x_time_temp]
-                oil_model = model.OilSpillingModel(time=time_temp, point=point_temp, current=current_temp,
-                                                   wind=wind_temp, status=status_temp, code=code,
-                                                   wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
-                                                   oil=oil_temp)
-                oil_model.save()
-                y_index = y_index + 1
-            # 对当前的时间对应的所有点进行平均
-            # 0-24
-            wind_temp = model.WindModel(x=self.ds['x_wind'][:].data[:].T[x_time_temp].mean(),
-                                        y=self.ds['y_wind'][:].data[:].T[x_time_temp].mean())
-            current_temp = model.CurrentModel(x=self.ds['x_sea_water_velocity'][:].data[:].T[x_time_temp].mean(),
-                                              y=self.ds['x_sea_water_velocity'][:].data[:].T[x_time_temp].mean())
-            point_temp = [round(self.ds['lon'][:].data[:].T[x_time_temp].mean().item(), 4),
-                          round(self.ds['lat'][:].data[:].T[x_time_temp].mean().item(), 4)]
-            time_temp = self.get_time_data[x_time_temp]
-            status_temp = self.ds['status'][:].data[:].T[x_time_temp].mean()
-            # 质量model
-            mass_temp = model.MassModel(oil=self.ds['mass_oil'][:].T[x_time_temp].mean(),
-                                        evaporated=self.ds['mass_evaporated'][:].T[x_time_temp].mean(),
-                                        dispersed=self.ds['mass_dispersed'][:].T[x_time_temp].mean())
-            # 油的model
-            oil_temp = model.OilModel(density=self.ds['density'][:].T[x_time_temp].mean(),
-                                      film_thickness=self.ds['oil_film_thickness'][:].T[x_time_temp].mean())
-
-            wt_temp = self.ds['sea_water_temperature'][:].T[x_time_temp].mean()
-            water_fraction = self.ds['water_fraction'][:].T[x_time_temp].mean()
-            oil_avg_model = model.OilspillingAvgModel(time=time_temp, point=point_temp, current=current_temp,
-                                                      wind=wind_temp, status=status_temp, code=code,
-                                                      wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
-                                                      oil=oil_temp)
-
-            oil_avg_model.save()
         x_index = x_index + 1
         pass
 

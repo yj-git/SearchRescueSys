@@ -527,6 +527,7 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
 
         print(f'[-] 当前处理第:{x_time_temp},共:{self.get_x_time - 1}')
 
+    # @exe_run_time
     def circulation(self, code: str):
         '''
             循环写入

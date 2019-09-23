@@ -5,6 +5,6 @@ from .views import *
 app_name = '[oilspilling]'
 urlpatterns = [
     # 获取指定日期的预报数据data/stationtide
-    url(r'^track/$', OilSpillingTrackAvgView.as_view()),
-    url(r'^track/avg/$', OilSpillingTrackView.as_view()),
+    url(r'^track/$', OilSpillingTrackView.as_view()),
+    url(r'^track/avg/$', OilSpillingTrackAvgView.as_view()),
 ]

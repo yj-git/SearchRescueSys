@@ -4,6 +4,7 @@ import CaseListContent from './views/content/CaseListContent/CaseList.vue'
 import WindMap from './views/content/wind/windMap.vue'
 import CurrentMap from './views/content/current/currentMap.vue'
 import RescueMap from './views/content/rescue/rescueContent.vue'
+import OilMap from './views/content/oilspilling/oilSpillingMap.vue'
 // import Home from "./views/Home.vue";
 
 Vue.use(Router)
@@ -31,6 +32,11 @@ export default new Router({
       path: '/rescuemap',
       name: 'rescuemap',
       component: RescueMap
+    },
+    {
+      path: '/oilmap',
+      name: 'oilmap',
+      component: OilMap
     }
     // {
     //   path: "/about",

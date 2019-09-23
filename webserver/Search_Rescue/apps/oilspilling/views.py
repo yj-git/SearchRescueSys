@@ -33,4 +33,5 @@ class OilSpillingTrackView(APIView):
         :return:
         '''
         target_date_str = request.GET.get('date')
+        return Response()
         pass

@@ -32,7 +32,7 @@ class OilSpillingModelSerializer(serializers.Serializer):
     code = serializers.CharField()
     status = serializers.IntegerField()
     time = serializers.DateTimeField()
-    point = PointField()
+    point = serializers.DictField()
     current = CurrentModelSerializer()
     wind = WindModelSerializer()
     # 海温
@@ -51,7 +51,7 @@ class OilspillingAvgModelSerializer(serializers.Serializer):
     code = serializers.CharField()
     status = serializers.IntegerField()
     time = serializers.DateTimeField()
-    point = PointField()
+    point = serializers.DictField()
     current = CurrentModelSerializer()
     wind = WindModelSerializer()
     # 海温

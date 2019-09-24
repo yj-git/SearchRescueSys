@@ -41,5 +41,17 @@ class RescuePointRealDataMidModel {
     this.wind = wind
   }
 }
-
-export { VectorMidModel, RescuePointRealDataMidModel }
+/**
+ * 溢油散点 model
+ *
+ * @class OilPointRealDataMidModel
+ */
+class OilPointRealDataMidModel{
+  public latlon:number[]
+  public date:Date
+  constructor(latlon:number[],date:Date){
+    this.latlon=latlon;
+    this.date=date
+  }
+}
+export { VectorMidModel, RescuePointRealDataMidModel,OilPointRealDataMidModel }

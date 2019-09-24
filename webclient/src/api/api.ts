@@ -28,5 +28,19 @@ const loadTrackAvgList = (code: string) => {
     }
   })
 }
+/**
+ * 加载溢油平均轨迹（根据:code）
+ *
+ * @param {string} code
+ * @returns
+ */
+const loadOilSpillingAvgTrackList = (code: string) => {
+  let url = `${host}/oilspilling/track/avg/`
+  return axios.get(url, {
+    params: {
+      code: code
+    }
+  })
+}
 
-export { loadTrackList, loadTrackAvgList }
+export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList }

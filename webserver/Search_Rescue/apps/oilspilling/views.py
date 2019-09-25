@@ -3,10 +3,11 @@ from rest_framework.decorators import APIView
 from rest_framework import status
 from rest_framework.response import Response
 # Create your views here.
+import dateutil
 
 # 本项目的
 from .models import OilspillingAvgModel, OilSpillingModel
-from .serializers import OilspillingAvgModelSerializer, OilModelSerializer
+from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer
 
 
 class OilSpillingTrackAvgView(APIView):
@@ -33,5 +34,10 @@ class OilSpillingTrackView(APIView):
         :return:
         '''
         target_date_str = request.GET.get('date')
-        return Response()
-        pass
+        code = request.GET.get('code', None)
+        target_date_dt = dateutil.parser.parse(target_date_str)
+        oil_track_list = []
+        if code is not None:
+            oil_track_list = OilSpillingModel.objects(code=code, time=target_date_dt)
+        json_data = OilSpillingModelSerializer(oil_track_list, many=True).data
+        return Response(json_data)

@@ -2,10 +2,10 @@
   <div id="rescue_map">
     <l-map ref="basemap" :zoom="zoom" :center="center">
       <l-tile-layer :url="url"></l-tile-layer>
-      <!-- <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline> -->
+      <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
 
       <l-circle v-for="temp in oilAvgPointList" :key="temp.id" :lat-lng="temp.latlon" />
-      <!-- <l-circle v-for="temp in rescueScatterPlotList" :key="temp.id" :lat-lng="temp" />-->
+      <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
     </l-map>
     <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
   </div>
@@ -26,7 +26,10 @@ import {
 } from "vue2-leaflet";
 
 import TimeBar from "@/views/members/bar/TimeBar.vue";
-import { loadOilSpillingAvgTrackList } from "@/api/api";
+import {
+  loadOilSpillingAvgTrackList,
+  loadOilScatterTrackList
+} from "@/api/api";
 
 import { OilPointRealDataMidModel } from "@/middle_model/rescue";
 @Component({
@@ -51,9 +54,23 @@ export default class center_map extends Vue {
   targetDate: Date;
   // 溢油平均轨迹
   oilAvgPointList: Array<OilPointRealDataMidModel> = [];
+  // 指定时刻的全部轨迹散点数组
+  oilScatterPointList: Array<number[]> = [];
+  oilScatterCircleList: Array<any> = [];
+  polyline: any = {
+    latlngs: [],
+    color: "yellow"
+  };
+  // timebar的起始时间
+  startDate: Date = new Date(2018, 0, 14, 22, 20);
+  interval: number = 24;
+  // timebar共有多少天
+  days: number = 3;
+
   mounted() {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
     this.loadTrackAvgList();
+    this.startDate = new Date(2018, 0, 14, 22, 20);
   }
   // 加载指定code的平均轨迹
   loadTrackAvgList(): void {
@@ -67,9 +84,46 @@ export default class center_map extends Vue {
               new Date(temp.time)
             )
           );
+          this.polyline.latlngs.push([
+            temp.point.coordinates[1],
+            temp.point.coordinates[0]
+          ]);
         });
       }
-      console.log(res.data);
+      // console.log(res.data);
+    });
+  }
+  // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
+  loadTrackScatterPlots(): void {
+    this.clearScatterPoint();
+    let mymap: any = this.$refs.basemap["mapObject"];
+    loadOilScatterTrackList(this.code, this.targetDate).then(res => {
+      if (res.status === 200) {
+        // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
+        // 尝试使用直接添加的方式
+        res.data.forEach((temp: any) => {
+          this.oilScatterPointList.push([
+            temp.point.coordinates[1],
+            temp.point.coordinates[0]
+          ]);
+          let temp_circle = L.circle(
+            [temp.point.coordinates[1], temp.point.coordinates[0]],
+            {
+              radius: 30
+            }
+          ).addTo(mymap);
+          this.oilScatterCircleList.push(temp_circle);
+        });
+        // 获取到当前的map
+      }
+    });
+  }
+
+  clearScatterPoint(): void {
+    let mymap: any = this.$refs.basemap["mapObject"];
+    this.oilScatterPointList = [];
+    this.oilScatterCircleList.forEach(temp => {
+      mymap.removeLayer(temp);
     });
   }
   get computedTest() {
@@ -83,6 +137,8 @@ export default class center_map extends Vue {
   @Watch("current")
   onCurrent(val: string) {
     this.targetDate = new Date(val);
+    // console.log(val);
+    this.loadTrackScatterPlots();
     // this
   }
 }

@@ -43,4 +43,14 @@ const loadOilSpillingAvgTrackList = (code: string) => {
   })
 }
 
-export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList }
+const loadOilScatterTrackList = (code: string, targetDate: Date) => {
+  let trackAvglistUrl = `${host}/oilspilling/track/`
+  return axios.get(trackAvglistUrl, {
+    params: {
+      code: code,
+      date: targetDate
+    }
+  })
+}
+
+export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList, loadOilScatterTrackList }

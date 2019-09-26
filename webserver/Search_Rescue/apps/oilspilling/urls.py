@@ -7,4 +7,5 @@ urlpatterns = [
     # 获取指定日期的预报数据data/stationtide
     url(r'^track/$', OilSpillingTrackView.as_view()),
     url(r'^track/avg/$', OilSpillingTrackAvgView.as_view()),
+    url(r'^realdata/avg/$',OilRealDataAvgView.as_view())
 ]

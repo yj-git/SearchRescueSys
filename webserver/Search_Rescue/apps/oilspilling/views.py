@@ -41,3 +41,20 @@ class OilSpillingTrackView(APIView):
             oil_track_list = OilSpillingModel.objects(code=code, time=target_date_dt)
         json_data = OilSpillingModelSerializer(oil_track_list, many=True).data
         return Response(json_data)
+
+class OilRealDataAvgView(APIView):
+    def get(self,request):
+        '''
+            根据指定 code 以及date 获取对应的点的各平均观测值
+        :param request:
+        :return:
+        '''
+        target_date_str=request.GET.get('date')
+        code=request.GET.get('code',None)
+        target_date_dt= dateutil.parser.parse(target_date_str)
+        real_data=None
+        if code is not None:
+            real_data=OilspillingAvgModel.objects(code=code,time=target_date_dt)
+        json_data=OilspillingAvgModelSerializer(real_data[0],many=False).data
+        return Response(json_data)
+        # pass

@@ -7,5 +7,5 @@ urlpatterns = [
     # 获取指定日期的预报数据data/stationtide
     url(r'^track/$', RescueTrackView.as_view()),
     url(r'^factorlist/$', FactorListView.as_view()),
-    url(r'^track/avg/$', RescueTrackAvgView.as_view()),
+    url(r'^track/avg/$', RescueTrackAvgView.as_view())
 ]

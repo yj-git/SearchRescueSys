@@ -42,7 +42,13 @@ const loadOilSpillingAvgTrackList = (code: string) => {
     }
   })
 }
-
+/**
+ * 加载指定 code 及 对应时间 的散点
+ *
+ * @param {string} code
+ * @param {Date} targetDate
+ * @returns
+ */
 const loadOilScatterTrackList = (code: string, targetDate: Date) => {
   let trackAvglistUrl = `${host}/oilspilling/track/`
   return axios.get(trackAvglistUrl, {
@@ -52,5 +58,21 @@ const loadOilScatterTrackList = (code: string, targetDate: Date) => {
     }
   })
 }
+/**
+ * 加载指定 code 以及 时间 对应的平均值
+ *
+ * @param {string} code
+ * @param {Date} targetDate
+ * @returns
+ */
+const loadOilRealData = (code: string, targetDate: Date) => {
+  let oilRealDataUrl = `${host}/oilspilling/realdata/avg/`
+  return axios.get(oilRealDataUrl, {
+    params: {
+      code: code,
+      date: targetDate
+    }
+  })
+}
 
-export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList, loadOilScatterTrackList }
+export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList, loadOilScatterTrackList,loadOilRealData }

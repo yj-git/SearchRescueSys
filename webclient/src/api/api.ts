@@ -75,4 +75,7 @@ const loadOilRealData = (code: string, targetDate: Date) => {
   })
 }
 
+// const loadOilAvgTargetDateRealData=(code:string,targe)
+
+
 export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList, loadOilScatterTrackList,loadOilRealData }

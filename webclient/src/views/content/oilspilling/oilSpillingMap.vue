@@ -4,7 +4,12 @@
       <l-tile-layer :url="url"></l-tile-layer>
       <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
 
-      <l-circle v-for="temp in oilAvgPointList" :key="temp.id" :lat-lng="temp.latlon" />
+      <l-circle
+        v-for="temp in oilAvgPointList"
+        :key="temp.id"
+        :lat-lng="temp.latlon"
+        @mouseover="testOnOver(temp)"
+      />
       <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
     </l-map>
     <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
@@ -28,10 +33,12 @@ import {
 import TimeBar from "@/views/members/bar/TimeBar.vue";
 import {
   loadOilSpillingAvgTrackList,
-  loadOilScatterTrackList
+  loadOilScatterTrackList,
+  loadOilRealData
 } from "@/api/api";
 
 import { OilPointRealDataMidModel } from "@/middle_model/rescue";
+import { OilMidModel } from "@/middle_model/oil";
 @Component({
   components: {
     "l-marker": LMarker,
@@ -125,6 +132,32 @@ export default class center_map extends Vue {
     this.oilScatterCircleList.forEach(temp => {
       mymap.removeLayer(temp);
     });
+  }
+
+  testOnOver(temp: OilPointRealDataMidModel): void {
+    console.log("鼠标移入点");
+    console.log(temp);
+    loadOilRealData(this.code, temp.date).then(res => {
+      console.log(res);
+    });
+    // 鼠标移入散点之后加载详细数据的div
+    // 需要向后台发送请求，parms有 date，code
+  }
+  // 向地图中添加溢油详细数据的div
+  addOilDiv2Map(tempOil: OilMidModel): void {
+    let myself = this;
+    let oilDivHtml = tempOil.toDivHtml();
+    let oilDivIcon = L.divIcon({
+      className: "oil_icon_default",
+      html: oilDivHtml,
+      // 坐标，[相对于原点的水平位置（左加右减），相对原点的垂直位置（上加下减）]
+      iconAnchor: [-20, 30]
+    });
+
+    var oilDivIconTemp = L.marker([tempOil.latlon[0], tempOil.latlon[1]], {
+      icon: oilDivIcon
+    }).addTo(myself.mymap);
+    // myself.tempOil = tempOil;
   }
   get computedTest() {
     return null;

@@ -34,9 +34,9 @@ class OilMidModel {
                         <div class="row">
                             <div class="col-md-4">时间</div>
                             <div class="col-md-8">${fecha.format(
-                  new Date(myself.time),
-                  'YYYY-MM-DD HH:mm'
-                )}</div>
+            new Date(myself.time),
+            'YYYY-MM-DD HH:mm'
+        )}</div>
                         </div>
                         <div class="row">
                             <div class="col-md-4">中心位置</div>
@@ -45,12 +45,12 @@ class OilMidModel {
                         <div class="row row_footer">
                             <div class="typhoon_footer">
                                 <div class="columnar">
-                                    <div class="subitem_top">${this.wsm}</div>
-                                    <div class="subitem_foot">最大风速</div>
+                                    <div class="subitem_top">${this.wind}</div>
+                                    <div class="subitem_foot">风速</div>
                                 </div>
                                 <div class="columnar">
-                                    <div class="subitem_top">${this.bp}</div>
-                                    <div class="subitem_foot">气压</div>
+                                    <div class="subitem_top">${this.current}</div>
+                                    <div class="subitem_foot">流速</div>
                                 </div>
                             </div>
                         </div>

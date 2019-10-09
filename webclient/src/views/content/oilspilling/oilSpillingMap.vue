@@ -8,7 +8,7 @@
         v-for="temp in oilAvgPointList"
         :key="temp.id"
         :lat-lng="temp.latlon"
-        @mouseover="testOnOver(temp)"
+        @click="testOnOver(temp)"
       />
       <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
     </l-map>
@@ -73,7 +73,7 @@ export default class center_map extends Vue {
   interval: number = 24;
   // timebar共有多少天
   days: number = 3;
-
+  tempOilDivIcon: any = null;
   mounted() {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
     this.loadTrackAvgList();
@@ -136,9 +136,24 @@ export default class center_map extends Vue {
 
   testOnOver(temp: OilPointRealDataMidModel): void {
     console.log("鼠标移入点");
-    console.log(temp);
+    if (this.tempOilDivIcon != null) {
+      this.clearOilDivFromMap();
+    }
+    // console.log(temp);
     loadOilRealData(this.code, temp.date).then(res => {
-      console.log(res);
+      if (res.status === 200) {
+        console.log(res);
+        let tempData = res.data;
+        let oilTemp = new OilMidModel(
+          tempData["time"],
+          tempData["status"],
+          tempData["code"],
+          tempData["point"]["coordinates"],
+          tempData["current"],
+          tempData["wind"]
+        );
+        this.addOilDiv2Map(oilTemp);
+      }
     });
     // 鼠标移入散点之后加载详细数据的div
     // 需要向后台发送请求，parms有 date，code
@@ -146,6 +161,8 @@ export default class center_map extends Vue {
   // 向地图中添加溢油详细数据的div
   addOilDiv2Map(tempOil: OilMidModel): void {
     let myself = this;
+    let baseMap: any = this.$refs.basemap;
+    let myMap: any = baseMap["mapObject"];
     let oilDivHtml = tempOil.toDivHtml();
     let oilDivIcon = L.divIcon({
       className: "oil_icon_default",
@@ -154,10 +171,20 @@ export default class center_map extends Vue {
       iconAnchor: [-20, 30]
     });
 
-    var oilDivIconTemp = L.marker([tempOil.latlon[0], tempOil.latlon[1]], {
+    let oilDivIconTemp = L.marker([tempOil.latlon[1], tempOil.latlon[0]], {
       icon: oilDivIcon
-    }).addTo(myself.mymap);
-    // myself.tempOil = tempOil;
+    }).addTo(myMap);
+    console.log("将divIcon插入map中");
+    myself.tempOilDivIcon = oilDivIconTemp;
+  }
+
+  // 将当前的溢油数据的div从map中移出
+  clearOilDivFromMap(): void {
+    console.log("鼠标移出");
+    let myself = this;
+    let mymap: any = this.$refs.basemap["mapObject"];
+    mymap.removeLayer(myself.tempOilDivIcon);
+    myself.tempOilDivIcon = null;
   }
   get computedTest() {
     return null;
@@ -176,7 +203,7 @@ export default class center_map extends Vue {
   }
 }
 </script>
-<style scoped>
+<style>
 #rescue_map {
   /* height: 100%; */
   /* display: flex;
@@ -184,5 +211,25 @@ export default class center_map extends Vue {
   width: 1500px;
   height: 700px;
   background: #ff0808;
+}
+
+.oil_icon_default {
+  width: 750px !important;
+  z-index: 1700 !important;
+}
+.typhoon_data_div .row {
+  color: white;
+}
+
+.typhoon_data_div .card-body {
+  color: white;
+}
+
+.typhoon_data_div {
+  z-index: 10000;
+  color: white;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  background: linear-gradient(to right, #1a6865 30%, rgba(4, 107, 114, 0.103));
 }
 </style>    

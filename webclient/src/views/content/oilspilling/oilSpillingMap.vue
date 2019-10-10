@@ -13,6 +13,8 @@
       <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
     </l-map>
     <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
+    <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
+    <RightDetailBar :oil="tempOil"></RightDetailBar>
   </div>
 </template>
 <script lang='ts'>
@@ -31,6 +33,7 @@ import {
 } from "vue2-leaflet";
 
 import TimeBar from "@/views/members/bar/TimeBar.vue";
+import RightDetailBar from "@/views/members/bar/rightBarDetail.vue";
 import {
   loadOilSpillingAvgTrackList,
   loadOilScatterTrackList,
@@ -47,7 +50,8 @@ import { OilMidModel } from "@/middle_model/oil";
     "l-polyline": LPolyline,
     "l-circle": LCircle,
     "l-icon": LIcon,
-    TimeBar
+    TimeBar,
+    RightDetailBar
   }
 })
 export default class center_map extends Vue {
@@ -74,6 +78,7 @@ export default class center_map extends Vue {
   // timebar共有多少天
   days: number = 3;
   tempOilDivIcon: any = null;
+  tempOil: any = null;
   mounted() {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
     this.loadTrackAvgList();
@@ -152,7 +157,8 @@ export default class center_map extends Vue {
           tempData["current"],
           tempData["wind"]
         );
-        this.addOilDiv2Map(oilTemp);
+        this.tempOil = oilTemp;
+        // this.addOilDiv2Map(oilTemp);
       }
     });
     // 鼠标移入散点之后加载详细数据的div
@@ -194,6 +200,11 @@ export default class center_map extends Vue {
     return this.$store.state.current;
   }
 
+  @Watch("tempOil")
+  onOil(oil: OilMidModel) {
+    console.log(`监听oil发生变化，现值为${this.tempOil}`);
+  }
+
   @Watch("current")
   onCurrent(val: string) {
     this.targetDate = new Date(val);
@@ -231,5 +242,85 @@ export default class center_map extends Vue {
   padding-left: 0px !important;
   padding-right: 0px !important;
   background: linear-gradient(to right, #1a6865 30%, rgba(4, 107, 114, 0.103));
+}
+
+#oil_div {
+  z-index: 2000;
+}
+
+.card-header {
+  text-align: center;
+  text-shadow: 2px 2px 10px grey;
+}
+.row {
+  text-align: center;
+  text-shadow: 2px 2px 10px grey;
+  margin-bottom: 10px;
+}
+/* 注意card有一个左右15px的padding */
+.card {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.row_footer {
+  margin-left: -21px;
+  margin-right: -21px;
+  margin-bottom: -21px;
+}
+
+/* 底部div */
+.typhoon_footer {
+  display: flex;
+  flex-direction: row;
+  background: #0044cc;
+  width: 100%;
+  color: white;
+  border: 1px;
+  text-align: center;
+  /* 设置圆角 */
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  /* margin-left: -21px;
+				margin-right: -21px; */
+}
+
+.my_primary {
+  color: white;
+  background-color: #007bff;
+}
+.my_success {
+  color: white;
+  background-color: #28a745;
+}
+.my_info {
+  color: white;
+  background-color: #17a2b8;
+}
+.my_danger {
+  color: white;
+  background-color: #dc3545;
+}
+
+.typhoon_footer .columnar {
+  display: flex;
+  width: 50%;
+  flex-direction: column;
+  border-right: 1px solid #0000ff;
+}
+
+.typhoon_footer .columnar .main_val {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+
+.typhoon_footer .columnar .vice_vak {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.625rem;
 }
 </style>    

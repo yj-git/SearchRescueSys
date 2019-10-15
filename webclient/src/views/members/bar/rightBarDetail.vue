@@ -51,6 +51,10 @@ export default class RightBarDetail extends Vue {
   onOil(val: OilMidModel) {
     console.log(`监听到父组件传入的oil${val}`);
   }
+
+  get windVal(): number {
+    return 0;
+  }
 }
 </script>
 <style scoped>
@@ -67,6 +71,9 @@ export default class RightBarDetail extends Vue {
 .card {
   padding-left: 0px;
   padding-right: 0px;
+  /* 需要去掉bt自带的1px的边框 */
+  border: 0px;
+  background: #ffffff07;
 }
 .row_footer {
   margin-left: -21px;
@@ -74,12 +81,26 @@ export default class RightBarDetail extends Vue {
   margin-bottom: -21px;
 }
 
-#oil_detail{
+#oil_detail {
   z-index: 1500;
-  position:absolute;
+  position: absolute;
   top: 100px;
   right: 50px;
   width: 300px;
+}
+
+#oil_detail .card-header {
+  /* background: #17a3b8bd; */
+  /* background: linear-gradient(rgb(150, 210, 225), rgb(93, 134, 181)); */
+  background: rgba(49, 159, 178, 0.575);
+  color: rgb(161, 251, 246);
+  text-shadow: 2px 2px 2px 10px rgb(161, 251, 246);
+  font-weight: 400;
+}
+#oil_detail .card-body {
+  /* background: #2367e4bd; */
+  background: rgba(45, 93, 133, 0.733);
+  color: rgb(161, 251, 246);
 }
 
 /* 底部div */
@@ -119,7 +140,8 @@ export default class RightBarDetail extends Vue {
   display: flex;
   width: 50%;
   flex-direction: column;
-  border-right: 1px solid #0000ff;
+  /* 去掉底部footer右侧的边框 */
+  /* border-right: 1px solid #0000ff; */
 }
 
 .typhoon_footer .columnar .main_val {

@@ -288,9 +288,6 @@ export default class CurrentMap extends Vue {
   color: black;
   background: #eeff00;
 }
-
-#flux_data_div {
-}
 #main {
   height: 600px;
   width: 800px;

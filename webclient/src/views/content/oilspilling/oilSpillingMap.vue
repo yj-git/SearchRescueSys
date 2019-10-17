@@ -107,6 +107,8 @@ export default class center_map extends Vue {
   days: number = 3;
   tempOilDivIcon: any = null;
   tempOil: any = null;
+
+  tempOilHeatLayer: any;
   mounted() {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
     this.loadTrackAvgList();
@@ -133,35 +135,14 @@ export default class center_map extends Vue {
       // console.log(res.data);
     });
   }
+
   // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
   loadTrackScatterPlots(): void {
+    let myself = this;
     this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
     this.oilHeatmapList = [];
     // TODO:[*] 19-10-16 尝试加入热力图的效果
-    // let cfg = {
-    //   // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-    //   radius: 2,
-    //   maxOpacity: 0.8,
-    //   // scales the radius based on map zoom
-    //   scaleRadius: true,
-    //   // if set to false the heatmap uses the global maximum for colorization
-    //   // if activated: uses the data maximum within the current map boundaries
-    //   //   (there will always be a red spot with useLocalExtremas true)
-    //   useLocalExtrema: true,
-    //   // which field name in your data represents the latitude - default "lat"
-    //   latField: "lat",
-    //   // which field name in your data represents the longitude - default "lng"
-    //   lngField: "lng",
-    //   // which field name in your data represents the data value - default "value"
-    //   valueField: "count"
-    // };
-
-    // let heatmapLayer = new HeatmapOverlay(cfg);
-    // let testData = {
-    //   max: 8,
-    //   data: []
-    // };
     loadOilScatterTrackList(this.code, this.targetDate).then(res => {
       if (res.status === 200) {
         // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
@@ -175,7 +156,8 @@ export default class center_map extends Vue {
           this.oilHeatmapList.push({
             lat: temp.point.coordinates[1],
             lng: temp.point.coordinates[0],
-            count: 2
+            // 权重暂时使用溢油质量
+            count: temp.mass.oil
           });
 
           // todo:[*] 19-10-16 暂时去掉散点，只保留热图
@@ -193,13 +175,17 @@ export default class center_map extends Vue {
         // 对应的是Leaflet.heat库
         // 但是会提示：Property 'heatLayer' does not exist on type 'typeof import("D:/02proj/SearchRescue/SearchRescueSys/webclient/node_modules/@types/leaflet/index")'.
         let list = this.oilHeatmapList;
-
+        // 找到最大值
+        let listDesc = list.sort(myself.compare("count"));
+        let countMax = listDesc.pop()["count"];
+        let countMin = listDesc[0]["count"];
+        countMax = countMax == null ? 2 : countMax;
         var testData = {
-          max: 2,
+          max: countMax,
           data: list
         };
         var cfg = {
-          radius: 0.01,
+          radius: (countMax - countMin) / 150000,
           maxOpacity: 0.8,
           scaleRadius: true,
           useLocalExtrema: true,
@@ -207,7 +193,13 @@ export default class center_map extends Vue {
           lngField: "lng",
           valueField: "count"
         };
-        var heatLayer = new HeatmapOverlay(cfg);
+        let heatLayer = new HeatmapOverlay(cfg);
+        if (myself.tempOilHeatLayer != null) {
+          // 若当前的 tempOilHeatLayer不为null，则需要从map中移除当前layer
+          mymap.removeLayer(myself.tempOilHeatLayer);
+        }
+
+        myself.tempOilHeatLayer = heatLayer;
         heatLayer.setData(testData);
         heatLayer.addTo(mymap);
       }
@@ -220,6 +212,14 @@ export default class center_map extends Vue {
     this.oilScatterCircleList.forEach(temp => {
       mymap.removeLayer(temp);
     });
+  }
+
+  compare(temp) {
+    return (a, b) => {
+      let val1 = a[temp];
+      let val2 = b[temp];
+      return val1 - val2;
+    };
   }
 
   testOnOver(temp: OilPointRealDataMidModel): void {

@@ -20,8 +20,10 @@
     "echarts-gl": "^1.1.1",
     "element-ui": "^2.11.1",
     "fecha": "^3.0.3",
+    "heatmap.js": "^2.0.5",
     "jquery": "^3.4.1",
     "leaflet": "^1.5.1",
+    "leaflet.heat": "^0.2.0",
     "moment": "^2.24.0",
     "node-pre-gyp": "^0.13.0",
     "vue": "^2.6.10",
@@ -30,6 +32,7 @@
     "vue-property-decorator": "^8.1.0",
     "vue-router": "^3.0.3",
     "vue2-leaflet": "^2.2.1",
+    "vue2-leaflet-heatmap": "^1.0.5",
     "vuex": "^3.0.1",
     "vuex-class": "^0.3.2"
   },

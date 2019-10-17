@@ -13,19 +13,19 @@
       <div class="row row_footer">
         <div class="typhoon_footer">
           <div class="columnar my_primary">
-            <div class="main_val">5.6</div>
+            <div class="main_val">{{oil.windVal}}</div>
             <div class="vice_vak">风速</div>
           </div>
           <div class="columnar my_success">
-            <div class="main_val">115</div>
+            <div class="main_val">{{oil.windDir|dirConvert}}</div>
             <div class="vice_vak">风向</div>
           </div>
           <div class="columnar my_info">
-            <div class="main_val">5.23</div>
+            <div class="main_val">{{oil.currentVal}}</div>
             <div class="vice_vak">流速</div>
           </div>
           <div class="columnar my_danger">
-            <div class="main_val">65</div>
+            <div class="main_val">{{oil.currentDir|dirConvert}}</div>
             <div class="vice_vak">流向</div>
           </div>
         </div>
@@ -36,7 +36,19 @@
 <script lang='ts'>
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { OilMidModel } from "@/middle_model/oil";
-@Component({})
+// import { dirConvertDec } from "@/decorator/mymath";
+@Component({
+  filters: {
+    // 方向转换，将可能出现的负角度（第三四象限）的角度，改为正的（大于180）
+    dirConvert(val: number): number {
+      let res = val;
+      if (val < 0) {
+        res = 360 + val;
+      }
+      return res;
+    }
+  }
+})
 export default class RightBarDetail extends Vue {
   mydata: any = null;
   @Prop(OilMidModel) oil: OilMidModel;

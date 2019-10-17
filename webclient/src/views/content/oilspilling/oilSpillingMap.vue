@@ -10,6 +10,19 @@
         :lat-lng="temp.latlon"
         @click="testOnOver(temp)"
       />
+      <!-- <LeafletHeatmap :lat-lng="oilHeatmapList" :radius="15"></LeafletHeatmap> -->
+      <!-- TODO:[*] 19-10-16 注意若动态的添加latlng的话会报错 -->
+      <!-- 参考的错误如下：
+      https://github.com/jurb/vue2-leaflet-heatmap/issues/2-->
+      <!-- 使用的插件：
+      https://github.com/jurb/vue2-leaflet-heatmap-->
+      <!-- <LeafletHeatmap
+        :lat-lng="oilHeatmapList"
+        :radius="60"
+        :min-opacity=".75"
+        :max-zoom="10"
+        :blur="60"
+      ></LeafletHeatmap>-->
       <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
     </l-map>
     <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
@@ -20,6 +33,9 @@
 <script lang='ts'>
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import * as L from "leaflet";
+// TODO:[*] 19-10-16 加入vue2 leaflet heatmap不使用以下的方式
+// import { HeatmapOverlay } from "heatmap.js";
+
 import { Getter, Mutation, State } from "vuex-class";
 import {
   LMap,
@@ -30,8 +46,18 @@ import {
   LCircle,
   LIcon,
   LWMSTileLayer
+  // LeafletHeatmap
 } from "vue2-leaflet";
+// import LeafletHeatmap from "vue2-leaflet-heatmap";
 
+// github:https://github.com/Leaflet/Leaflet.heat
+// npm:https://www.npmjs.com/package/leaflet.heat
+// import {}  "leaflet.heat";
+// 注意此处的引用方式，极其蛋疼
+import HeatmapOverlay from "heatmap.js/plugins/leaflet-heatmap";
+
+// 此种方式较为繁琐：https://www.patrick-wied.at/static/heatmapjs/example-heatmap-leaflet.html
+import "heatmap.js";
 import TimeBar from "@/views/members/bar/TimeBar.vue";
 import RightDetailBar from "@/views/members/bar/rightBarDetail.vue";
 import {
@@ -52,6 +78,7 @@ import { OilMidModel } from "@/middle_model/oil";
     "l-icon": LIcon,
     TimeBar,
     RightDetailBar
+    // LeafletHeatmap
   }
 })
 export default class center_map extends Vue {
@@ -68,6 +95,7 @@ export default class center_map extends Vue {
   // 指定时刻的全部轨迹散点数组
   oilScatterPointList: Array<number[]> = [];
   oilScatterCircleList: Array<any> = [];
+  oilHeatmapList: Array<any> = [];
   polyline: any = {
     latlngs: [],
     color: "yellow"
@@ -109,6 +137,31 @@ export default class center_map extends Vue {
   loadTrackScatterPlots(): void {
     this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
+    this.oilHeatmapList = [];
+    // TODO:[*] 19-10-16 尝试加入热力图的效果
+    // let cfg = {
+    //   // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+    //   radius: 2,
+    //   maxOpacity: 0.8,
+    //   // scales the radius based on map zoom
+    //   scaleRadius: true,
+    //   // if set to false the heatmap uses the global maximum for colorization
+    //   // if activated: uses the data maximum within the current map boundaries
+    //   //   (there will always be a red spot with useLocalExtremas true)
+    //   useLocalExtrema: true,
+    //   // which field name in your data represents the latitude - default "lat"
+    //   latField: "lat",
+    //   // which field name in your data represents the longitude - default "lng"
+    //   lngField: "lng",
+    //   // which field name in your data represents the data value - default "value"
+    //   valueField: "count"
+    // };
+
+    // let heatmapLayer = new HeatmapOverlay(cfg);
+    // let testData = {
+    //   max: 8,
+    //   data: []
+    // };
     loadOilScatterTrackList(this.code, this.targetDate).then(res => {
       if (res.status === 200) {
         // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
@@ -118,15 +171,45 @@ export default class center_map extends Vue {
             temp.point.coordinates[1],
             temp.point.coordinates[0]
           ]);
-          let temp_circle = L.circle(
-            [temp.point.coordinates[1], temp.point.coordinates[0]],
-            {
-              radius: 30
-            }
-          ).addTo(mymap);
-          this.oilScatterCircleList.push(temp_circle);
+
+          this.oilHeatmapList.push({
+            lat: temp.point.coordinates[1],
+            lng: temp.point.coordinates[0],
+            count: 2
+          });
+
+          // todo:[*] 19-10-16 暂时去掉散点，只保留热图
+          // let temp_circle = L.circle(
+          //   [temp.point.coordinates[1], temp.point.coordinates[0]],
+          //   {
+          //     radius: 30
+          //   }
+          // ).addTo(mymap);
+
+          // this.oilScatterCircleList.push(temp_circle);
         });
         // 获取到当前的map
+
+        // 对应的是Leaflet.heat库
+        // 但是会提示：Property 'heatLayer' does not exist on type 'typeof import("D:/02proj/SearchRescue/SearchRescueSys/webclient/node_modules/@types/leaflet/index")'.
+        let list = this.oilHeatmapList;
+
+        var testData = {
+          max: 2,
+          data: list
+        };
+        var cfg = {
+          radius: 0.01,
+          maxOpacity: 0.8,
+          scaleRadius: true,
+          useLocalExtrema: true,
+          latField: "lat",
+          lngField: "lng",
+          valueField: "count"
+        };
+        var heatLayer = new HeatmapOverlay(cfg);
+        heatLayer.setData(testData);
+        heatLayer.addTo(mymap);
       }
     });
   }
@@ -219,11 +302,18 @@ export default class center_map extends Vue {
   /* height: 100%; */
   /* display: flex;
   flex-direction: column; */
-  width: 1500px;
-  height: 700px;
+  display: flex;
+  flex-direction: column;
+  flex: 22;
+  /* width: 1500px;
+  height: 700px; */
   background: #ff0808;
 }
-
+#rescue_map .vue2leaflet-map {
+  display: flex;
+  flex-direction: column;
+  flex: 24;
+}
 .oil_icon_default {
   width: 750px !important;
   z-index: 1700 !important;

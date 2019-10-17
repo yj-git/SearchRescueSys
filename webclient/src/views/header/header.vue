@@ -16,7 +16,7 @@ export default class header extends Vue {
 #header {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  /* flex: 1; */
   background: #2c3e50;
 }
 </style>

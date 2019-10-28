@@ -1,33 +1,40 @@
 <template>
   <div id="rescue_map">
-    <l-map ref="basemap" :zoom="zoom" :center="center">
-      <l-tile-layer :url="url"></l-tile-layer>
-      <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
+    <div id="map_content">
+      <l-map ref="basemap" :zoom="zoom" :center="center">
+        <l-tile-layer :url="url"></l-tile-layer>
+        <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
 
-      <l-circle
-        v-for="temp in oilAvgPointList"
-        :key="temp.id"
-        :lat-lng="temp.latlon"
-        @click="testOnOver(temp)"
-      />
-      <!-- <LeafletHeatmap :lat-lng="oilHeatmapList" :radius="15"></LeafletHeatmap> -->
-      <!-- TODO:[*] 19-10-16 注意若动态的添加latlng的话会报错 -->
-      <!-- 参考的错误如下：
-      https://github.com/jurb/vue2-leaflet-heatmap/issues/2-->
-      <!-- 使用的插件：
-      https://github.com/jurb/vue2-leaflet-heatmap-->
-      <!-- <LeafletHeatmap
+        <l-circle
+          v-for="temp in oilAvgPointList"
+          :key="temp.id"
+          :lat-lng="temp.latlon"
+          @click="testOnOver(temp)"
+        />
+        <!-- <LeafletHeatmap :lat-lng="oilHeatmapList" :radius="15"></LeafletHeatmap> -->
+        <!-- TODO:[*] 19-10-16 注意若动态的添加latlng的话会报错 -->
+        <!-- 参考的错误如下：
+        https://github.com/jurb/vue2-leaflet-heatmap/issues/2-->
+        <!-- 使用的插件：
+        https://github.com/jurb/vue2-leaflet-heatmap-->
+        <!-- <LeafletHeatmap
         :lat-lng="oilHeatmapList"
         :radius="60"
         :min-opacity=".75"
         :max-zoom="10"
         :blur="60"
-      ></LeafletHeatmap>-->
-      <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
-    </l-map>
-    <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
+        ></LeafletHeatmap>-->
+        <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
+      </l-map>
+      <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
+    </div>
+    <div id="right_bar">
+      <!-- TODO:[*] 19-10-28 加入右侧信息栏_v1版本 -->
+      <!-- <RightOilBar></RightOilBar> -->
+      <OilRightBar></OilRightBar>
+    </div>
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
-    <RightDetailBar :oil="tempOil"></RightDetailBar>
+    <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
   </div>
 </template>
 <script lang='ts'>
@@ -60,6 +67,8 @@ import HeatmapOverlay from "heatmap.js/plugins/leaflet-heatmap";
 import "heatmap.js";
 import TimeBar from "@/views/members/bar/TimeBar.vue";
 import RightDetailBar from "@/views/members/bar/rightBarDetail.vue";
+import RightOilBar from "@/views/members/bar/rightOilBar.vue";
+import OilRightBar from "@/views/bar/oilRightBar.vue";
 import {
   loadOilSpillingAvgTrackList,
   loadOilScatterTrackList,
@@ -77,7 +86,9 @@ import { OilMidModel } from "@/middle_model/oil";
     "l-circle": LCircle,
     "l-icon": LIcon,
     TimeBar,
-    RightDetailBar
+    RightDetailBar,
+    RightOilBar,
+    OilRightBar
     // LeafletHeatmap
   }
 })
@@ -303,17 +314,32 @@ export default class center_map extends Vue {
   /* display: flex;
   flex-direction: column; */
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   flex: 22;
   /* width: 1500px;
   height: 700px; */
-  background: #ff0808;
+  /* background: #2a79d4; */
+  background: linear-gradient(rgb(50, 157, 150), rgb(49, 59, 89));
+}
+#map_content {
+  padding: 10px;
+  flex: 5;
+}
+#right_bar {
+  flex: 1;
+  /* background: rgba(188, 143, 143, 0.507); */
 }
 #rescue_map .vue2leaflet-map {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  flex: 24;
+  flex: 24; */
+  display: flex;
+  flex: 1;
+  /* 底部圆角 */
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
+
 .oil_icon_default {
   width: 750px !important;
   z-index: 1700 !important;

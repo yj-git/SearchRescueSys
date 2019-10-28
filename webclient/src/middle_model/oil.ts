@@ -4,6 +4,7 @@ import {
 } from "./coordinate"
 import fecha from 'fecha';
 import { ElDropdownMenu } from 'element-ui/types/dropdown-menu';
+import { OilEquation } from '../enum/Equation';
 /**
  * 溢油 mid model
  *
@@ -153,7 +154,77 @@ class OilMidModel {
         return htmlStr
     }
 }
-
+/**
+ * 溢油模型参数的 mid model
+ *
+ * @class OilModelDetailMidModel
+ */
+// tslint:disable-next-line: max-classes-per-file
+class OilModelDetailMidModel {
+    public time: Date;
+    public point: any;
+    /**
+     * 风偏系数
+     *
+     * @type {number}
+     * @memberof OilModelDetailMidModel
+     */
+    public windFactor: number;
+  
+    public windDir: number;
+    /**
+     * 模拟步长
+     *
+     * @type {number}
+     * @memberof OilModelDetailMidModel
+     */
+    public simulateStep: number;
+    public consoleStep: number;
+    /**
+     * 流场不确定性
+     *
+     * @type {number}
+     * @memberof OilModelDetailMidModel
+     */
+    public currentIndeterminacy: number;
+    /**
+     * 风场不确定性
+     *
+     * @type {number}
+     * @memberof OilModelDetailMidModel
+     */
+    public windIndeterminacy: number;
+  
+    /**
+     * 求解方法
+     *
+     * @type {OilEquation}
+     * @memberof OilModelDetailMidModel
+     */
+    public equation: OilEquation;
+  
+    constructor(
+      time: Date,
+      point: any,
+      windFactor: number,
+      windDir: number,
+      simulateStep: number,
+      consoleStep: number,
+      currentIndeterminacy: number,
+      windIndeterminacy: number,
+      equation: OilEquation,
+    ) {
+      this.time = time;
+      this.point = point;
+      this.windFactor = windFactor;
+      this.windDir = windDir;
+      this.simulateStep = simulateStep;
+      this.consoleStep = consoleStep;
+      this.currentIndeterminacy = currentIndeterminacy;
+      this.windIndeterminacy = windIndeterminacy;
+      this.equation = equation;
+    }
+  }
 export {
-    OilMidModel
+    OilMidModel,OilModelDetailMidModel
 }

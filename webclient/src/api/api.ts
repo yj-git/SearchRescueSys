@@ -28,6 +28,24 @@ const loadTrackAvgList = (code: string) => {
     }
   })
 }
+
+/**
+ * 加载指定 code 与 date 的溢油 avg realdata
+ *
+ * @param {string} code
+ * @param {Date} targetDate
+ * @returns
+ */
+const loadOilSpillingAvgRealData = (code: string, targetDate: Date) => {
+  let url = `${host}/oilspilling/realdata/target/`
+  return axios.get(url, {
+    params: {
+      code: code,
+      date: targetDate
+    }
+  })
+}
+
 /**
  * 加载溢油平均轨迹（根据:code）
  *
@@ -78,4 +96,4 @@ const loadOilRealData = (code: string, targetDate: Date) => {
 // const loadOilAvgTargetDateRealData=(code:string,targe)
 
 
-export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList, loadOilScatterTrackList,loadOilRealData }
+export { loadTrackList, loadTrackAvgList, loadOilSpillingAvgTrackList, loadOilScatterTrackList, loadOilRealData, loadOilSpillingAvgRealData }

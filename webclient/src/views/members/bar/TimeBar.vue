@@ -36,7 +36,7 @@ import { DateModel } from "@/model/bar/timebar";
 import moment from "moment";
 import dateformat from "dateformat";
 @Component({})
-export default class time_bar extends Vue {
+export default class TimeBar extends Vue {
   mydata: any = null;
   datelist: Array<DateModel> = [];
   // 每个格子对应的datelist

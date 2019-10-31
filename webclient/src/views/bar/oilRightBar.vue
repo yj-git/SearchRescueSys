@@ -22,14 +22,14 @@ export default class RightInfoBar extends Vue {
   public index: number = 3;
   public startDate: Date = new Date();
   public count: number = 12;
-  public oilRealData: OilMidModel = new OilMidModel(
-    new Date(),
-    1,
-    "",
-    [120, 95],
-    new XYMidMode(1, 2),
-    new XYMidMode(2, 3)
-  );
+  // public oilRealData: OilMidModel = new OilMidModel(
+  //   new Date(),
+  //   1,
+  //   "",
+  //   [120, 95],
+  //   new XYMidMode(1, 2),
+  //   new XYMidMode(2, 3)
+  // );
   public oilModelDetailData: OilModelDetailMidModel = new OilModelDetailMidModel(
     new Date(),
     [120, 95],
@@ -41,6 +41,9 @@ export default class RightInfoBar extends Vue {
     81,
     OilEquation.RungeKutta
   );
+  @Prop(Object)
+  oilRealData!: OilMidModel;
+
   public mounted() {}
   get computedTest() {
     return null;

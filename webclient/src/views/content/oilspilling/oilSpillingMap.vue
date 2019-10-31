@@ -31,7 +31,7 @@
     <div id="right_bar">
       <!-- TODO:[*] 19-10-28 加入右侧信息栏_v1版本 -->
       <!-- <RightOilBar></RightOilBar> -->
-      <OilRightBar></OilRightBar>
+      <OilRightBar :oilRealData="oilAvgRealData"></OilRightBar>
     </div>
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
@@ -72,7 +72,8 @@ import OilRightBar from "@/views/bar/oilRightBar.vue";
 import {
   loadOilSpillingAvgTrackList,
   loadOilScatterTrackList,
-  loadOilRealData
+  loadOilRealData,
+  loadOilSpillingAvgRealData
 } from "@/api/api";
 
 import { OilPointRealDataMidModel } from "@/middle_model/rescue";
@@ -92,7 +93,7 @@ import { OilMidModel } from "@/middle_model/oil";
     // LeafletHeatmap
   }
 })
-export default class center_map extends Vue {
+export default class OilSpillingMap extends Vue {
   mydata: any = null;
   code: string = "sanjioil";
   zoom: number = 5;
@@ -103,6 +104,8 @@ export default class center_map extends Vue {
   targetDate: Date;
   // 溢油平均轨迹
   oilAvgPointList: Array<OilPointRealDataMidModel> = [];
+  // TODO:[*] 19-10-31 由于设置类型为any，且赋值为null，引发的子组件在为null的情况下未渲染
+  oilAvgRealData: any = null;
   // 指定时刻的全部轨迹散点数组
   oilScatterPointList: Array<number[]> = [];
   oilScatterCircleList: Array<any> = [];
@@ -150,29 +153,6 @@ export default class center_map extends Vue {
     let mymap: any = this.$refs.basemap["mapObject"];
     this.oilHeatmapList = [];
     // TODO:[*] 19-10-16 尝试加入热力图的效果
-    // let cfg = {
-    //   // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-    //   radius: 2,
-    //   maxOpacity: 0.8,
-    //   // scales the radius based on map zoom
-    //   scaleRadius: true,
-    //   // if set to false the heatmap uses the global maximum for colorization
-    //   // if activated: uses the data maximum within the current map boundaries
-    //   //   (there will always be a red spot with useLocalExtremas true)
-    //   useLocalExtrema: true,
-    //   // which field name in your data represents the latitude - default "lat"
-    //   latField: "lat",
-    //   // which field name in your data represents the longitude - default "lng"
-    //   lngField: "lng",
-    //   // which field name in your data represents the data value - default "value"
-    //   valueField: "count"
-    // };
-
-    // let heatmapLayer = new HeatmapOverlay(cfg);
-    // let testData = {
-    //   max: 8,
-    //   data: []
-    // };
     loadOilScatterTrackList(this.code, this.targetDate).then(res => {
       if (res.status === 200) {
         // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
@@ -278,6 +258,24 @@ export default class center_map extends Vue {
     myself.tempOilDivIcon = oilDivIconTemp;
   }
 
+  loadTargetRealData(code: string, date: Date) {
+    let myself = this;
+    loadOilSpillingAvgRealData(code, date).then(res => {
+      if (res.status === 200) {
+        console.log(res.data);
+        let data = res.data;
+        myself.oilAvgRealData = new OilMidModel(
+          data["time"],
+          data["status"],
+          data["code"],
+          data["coordinates"],
+          data["current"],
+          data["wind"]
+        );
+      }
+    });
+  }
+
   // 将当前的溢油数据的div从map中移出
   clearOilDivFromMap(): void {
     console.log("鼠标移出");
@@ -301,9 +299,15 @@ export default class center_map extends Vue {
 
   @Watch("current")
   onCurrent(val: string) {
+    let myself = this;
     this.targetDate = new Date(val);
+
     // console.log(val);
+    // 先加载oil 的realdata，再加载热力图
+    this.loadTargetRealData(myself.code, myself.targetDate);
+    // TODO:[*] 19-10-31 此处需要加入一个切换的功能
     this.loadTrackScatterPlots();
+
     // this
   }
 }

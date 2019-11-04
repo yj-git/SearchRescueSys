@@ -105,7 +105,7 @@ export default class OilSpillingMap extends Vue {
   // 溢油平均轨迹
   oilAvgPointList: Array<OilPointRealDataMidModel> = [];
   // TODO:[*] 19-10-31 由于设置类型为any，且赋值为null，引发的子组件在为null的情况下未渲染
-  oilAvgRealData: any = null;
+  oilAvgRealData: OilMidModel = new OilMidModel();
   // 指定时刻的全部轨迹散点数组
   oilScatterPointList: Array<number[]> = [];
   oilScatterCircleList: Array<any> = [];
@@ -114,6 +114,9 @@ export default class OilSpillingMap extends Vue {
     latlngs: [],
     color: "yellow"
   };
+
+  // TODO:[*] 19-11-04 heatLayer 当前的热图layer
+  tempHeatLayer: any = null;
   // timebar的起始时间
   startDate: Date = new Date(2018, 0, 14, 22, 20);
   interval: number = 24;
@@ -149,9 +152,12 @@ export default class OilSpillingMap extends Vue {
   }
   // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
   loadTrackScatterPlots(): void {
+    let myself = this;
     this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
     this.oilHeatmapList = [];
+    //TODO:[*] 19-11-04 清除layerHeat
+    this.clearHeatLayer();
     // TODO:[*] 19-10-16 尝试加入热力图的效果
     loadOilScatterTrackList(this.code, this.targetDate).then(res => {
       if (res.status === 200) {
@@ -199,7 +205,10 @@ export default class OilSpillingMap extends Vue {
           valueField: "count"
         };
         var heatLayer = new HeatmapOverlay(cfg);
+
         heatLayer.setData(testData);
+        // TODO:[*] 19-11-04 添加完heatlayer后，再次更新时记得需要remove
+        myself.tempHeatLayer = heatLayer;
         heatLayer.addTo(mymap);
       }
     });
@@ -211,6 +220,14 @@ export default class OilSpillingMap extends Vue {
     this.oilScatterCircleList.forEach(temp => {
       mymap.removeLayer(temp);
     });
+  }
+
+  clearHeatLayer(): void {
+    let mymap: any = this.$refs.basemap["mapObject"];
+    //去除掉heatlayer
+    if (this.tempHeatLayer != null) {
+      mymap.removeLayer(this.tempHeatLayer);
+    }
   }
 
   testOnOver(temp: OilPointRealDataMidModel): void {

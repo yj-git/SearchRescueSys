@@ -18,10 +18,10 @@ import { XYMidMode, PointMidModel } from "@/middle_model/coordinate";
 @Component({ components: { oilModelDetial, oilData, timeBar } })
 export default class RightInfoBar extends Vue {
   public mydata: any = null;
-  public step: number = 3;
+  public step: number = 1;
   public index: number = 3;
   public startDate: Date = new Date();
-  public count: number = 12;
+  public count: number = 72;
   // public oilRealData: OilMidModel = new OilMidModel(
   //   new Date(),
   //   1,

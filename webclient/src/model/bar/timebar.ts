@@ -29,6 +29,21 @@ class DateModel {
         return dtStr
     }
 }
+/**
+ * 右侧信息栏中的日期 DayComps使用
+ *
+ * @class DayCompModel
+ */
+class DayCompModel{
+    public startDate:Date
+    public count:number
+    public step:number
+    public constructor(startDate=new Date(),count=24,step=1){
+        this.startDate=startDate
+        this.count=count
+        this.step=step
+    }
+}
 
 export {
     DateModel

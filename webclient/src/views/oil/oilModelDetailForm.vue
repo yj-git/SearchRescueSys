@@ -96,6 +96,8 @@ export default class OilModelDetailForm extends Vue {
   border-radius: 10px;
 }
 #oil_detail {
+  font-size:0.7em;
+  margin-bottom:7px!important;
 }
 #oil_detail .card-header {
   background: #125a8abd;
@@ -104,6 +106,8 @@ export default class OilModelDetailForm extends Vue {
   color: rgb(161, 251, 246);
   text-shadow: 2px 2px 1px 5px rgb(161, 251, 246);
   font-weight: 400;
+  padding-top: 7px;
+  padding-bottom:7px!important;
 }
 
 #oil_detail .card-body {
@@ -116,6 +120,8 @@ export default class OilModelDetailForm extends Vue {
   /* 底部圆角 */
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
 }
 
 #myform .table {
@@ -143,7 +149,7 @@ export default class OilModelDetailForm extends Vue {
 .row {
   text-align: center;
   text-shadow: 2px 2px 8px rgb(210, 214, 155);
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 /* 注意card有一个左右15px的padding */

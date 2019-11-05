@@ -68,6 +68,8 @@ export default class OilDataForm extends Vue {
 }
 #oil_detail {
   /* width: 200px; */
+  font-size: 0.7em;
+  margin-bottom:7px!important;
 }
 #oil_detail .card-header {
   background: #125a8abd;
@@ -77,6 +79,8 @@ export default class OilDataForm extends Vue {
   color: rgb(161, 251, 246);
   text-shadow: 2px 2px 2px 10px rgb(161, 251, 246);
   font-weight: 400;
+  padding-top: 7px;
+  padding-bottom:7px!important;
 }
 
 #oil_detail .card-body {
@@ -87,6 +91,7 @@ export default class OilDataForm extends Vue {
   /* 底部圆角 */
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  padding-top: 5px;
 }
 
 #myform .table {

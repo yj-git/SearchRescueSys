@@ -41,6 +41,7 @@ export default class DaysComp extends Vue {
     this.renderDays(this.step, this.index, this.count, this.startDate);
   }
 
+  // 步长——小时（每个值的间隔）
   @Watch('step')
   public onStep(temp: number) {
     this.renderDays(this.step, this.index, this.count, this.startDate);

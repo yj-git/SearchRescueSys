@@ -7,7 +7,8 @@ import dateutil
 
 # 本项目的
 from .models import OilspillingAvgModel, OilSpillingModel
-from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer
+from .middle_model import StartEndDateMidModel
+from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer, StartEndDateMidModelSerializer
 
 
 class OilSpillingTrackAvgView(APIView):
@@ -82,3 +83,29 @@ class OilRealDataAvgView(APIView):
         json_data = OilspillingAvgModelSerializer(real_data[0], many=False).data
         return Response(json_data)
         # pass
+
+
+class OilSpillingTrackAvgDateRangeView(APIView):
+    def get(self, request):
+        '''
+            根据指定 code 获取对应code对应的平均观测值的日期数组
+        :param request:
+        :return:
+        '''
+        code = request.GET.get('code', None)
+        list_avg = []
+        if code is not None:
+            # 根据time去重
+            list_avg = OilspillingAvgModel.objects(code=code).distinct(field='time')
+            if len(list_avg)>0:
+                list_avg = list(set(list_avg))
+                # 排序
+                list_avg.sort()
+                # for temp in list_avg:
+                #     print(temp)
+                # 获取起始时间及终止时间以及日期列表
+                temp = StartEndDateMidModel(list_avg[0], list_avg[-1])
+
+                return Response(StartEndDateMidModelSerializer(temp).data)
+            return Response()
+        Response('未提供code')

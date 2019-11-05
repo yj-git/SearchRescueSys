@@ -4,7 +4,6 @@
       <l-map ref="basemap" :zoom="zoom" :center="center">
         <l-tile-layer :url="url"></l-tile-layer>
         <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
-
         <l-circle
           v-for="temp in oilAvgPointList"
           :key="temp.id"
@@ -73,11 +72,14 @@ import {
   loadOilSpillingAvgTrackList,
   loadOilScatterTrackList,
   loadOilRealData,
-  loadOilSpillingAvgRealData
+  loadOilSpillingAvgRealData,
+  getTargetCodeDateRange
 } from "@/api/api";
 
 import { OilPointRealDataMidModel } from "@/middle_model/rescue";
 import { OilMidModel } from "@/middle_model/oil";
+
+import { getDaysNum } from "@/common/date";
 @Component({
   components: {
     "l-marker": LMarker,
@@ -128,6 +130,8 @@ export default class OilSpillingMap extends Vue {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
     this.loadTrackAvgList();
     this.startDate = new Date(2018, 0, 14, 22, 20);
+    // TODO:[*] 19-11-05:页面加载时需要获取当前code对应的旗帜时间
+    this.loadDateRange();
   }
   // 加载指定code的平均轨迹
   loadTrackAvgList(): void {
@@ -293,6 +297,26 @@ export default class OilSpillingMap extends Vue {
     });
   }
 
+  // TODO:[*] 19-11-05 根据当前的 code 获取oil avg的起止时间
+  loadDateRange(): void {
+    getTargetCodeDateRange(this.code).then(res => {
+      if (res.status === 200) {
+        // 获取起止时间
+        let start = new Date(res.data["start"]);
+        let end = new Date(res.data["end"]);
+        /*
+          下面需要获取：
+                [ ] -1 有多少天
+                [ ] -2 起始时间
+                [ ] -3 每天的格子数量
+
+        */
+        console.log(res);
+        getDaysNum(start, end);
+      }
+    });
+  }
+
   // 将当前的溢油数据的div从map中移出
   clearOilDivFromMap(): void {
     console.log("鼠标移出");
@@ -348,6 +372,7 @@ export default class OilSpillingMap extends Vue {
 }
 #right_bar {
   flex: 1;
+  margin-right: 10px;
   /* background: rgba(188, 143, 143, 0.507); */
 }
 #rescue_map .vue2leaflet-map {

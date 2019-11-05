@@ -51,8 +51,10 @@
   border-width: 1px;
   border-color: gray;
   box-shadow: 1px 1px 1px black;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   transition: 0.3s;
+  /* TODO:[*] 19-11-05 字体太大了，缩小一点 */
+  font-size: 0.6em;
 }
 .day:hover {
   box-shadow: 2px 2px 3px black;

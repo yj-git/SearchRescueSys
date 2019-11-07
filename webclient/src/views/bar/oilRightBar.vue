@@ -14,14 +14,16 @@ import timeBar from "@/views/members/timebar/DaysComp.vue";
 import { OilMidModel, OilModelDetailMidModel } from "@/middle_model/oil";
 import { OilEquation } from "@/enum/Equation";
 import { XYMidMode, PointMidModel } from "@/middle_model/coordinate";
+import moment from "moment";
 // 组件引入
 @Component({ components: { oilModelDetial, oilData, timeBar } })
 export default class RightInfoBar extends Vue {
   public mydata: any = null;
+  // 时间 bar 的间隔
   public step: number = 1;
-  public index: number = 3;
-  public startDate: Date = new Date();
-  public count: number = 72;
+  // public index: number = 3;
+  // public startDate: Date = new Date();
+  // public count: number = 72;
   // public oilRealData: OilMidModel = new OilMidModel(
   //   new Date(),
   //   1,
@@ -44,9 +46,49 @@ export default class RightInfoBar extends Vue {
   @Prop(Object)
   oilRealData!: OilMidModel;
 
+  @Prop(Number)
+  days: number = 3;
+
+  @Prop(Date)
+  startDate: Date;
+
+  // start: Date = this.startDate;
+
+  @Prop(Number)
+  interval: number = 24;
+
+  // 当前时间
+  @Prop(Date)
+  targetDate: Date;
+  // current: Date = this.targetDate;
   public mounted() {}
   get computedTest() {
     return null;
+  }
+
+  // 获取当前的date(targetDate) 是在timebar中的第几个位置
+  get index() {
+    /*
+        targetDate-startDate=时间差（hours)
+        +
+        startDate.hour
+      */
+    let index: number =
+      (this.targetDate.getTime() - this.startDate.getTime()) /
+        (1000 * 60 * 60) /
+        this.timeInterval +
+      this.startDate.getHours() * this.timeInterval;
+    index = Math.floor(index);
+    return index;
+  }
+
+  get timeInterval() {
+    return 24 / this.interval;
+  }
+
+  //
+  get count() {
+    return this.days * this.interval;
   }
 }
 </script>

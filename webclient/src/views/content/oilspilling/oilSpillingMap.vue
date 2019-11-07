@@ -38,6 +38,9 @@
         :targetDate="current"
       ></OilRightBar>
     </div>
+    <div class="left_select">
+      <OilFactorSelect></OilFactorSelect>
+    </div>
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
   </div>
@@ -74,6 +77,7 @@ import TimeBar from "@/views/members/bar/TimeBar.vue";
 import RightDetailBar from "@/views/members/bar/rightBarDetail.vue";
 import RightOilBar from "@/views/members/bar/rightOilBar.vue";
 import OilRightBar from "@/views/bar/oilRightBar.vue";
+import OilFactorSelect from "@/views/members/select/OilFactorSelect.vue";
 import {
   loadOilSpillingAvgTrackList,
   loadOilScatterTrackList,
@@ -97,7 +101,8 @@ import { getDaysNum } from "@/common/date";
     TimeBar,
     RightDetailBar,
     RightOilBar,
-    OilRightBar
+    OilRightBar,
+    OilFactorSelect
     // LeafletHeatmap
   }
 })
@@ -384,7 +389,7 @@ export default class OilSpillingMap extends Vue {
   }
 }
 </script>
-<style>
+<style lang="less">
 #rescue_map {
   /* height: 100%; */
   /* display: flex;
@@ -396,6 +401,13 @@ export default class OilSpillingMap extends Vue {
   height: 700px; */
   /* background: #2a79d4; */
   background: linear-gradient(rgb(50, 157, 150), rgb(49, 59, 89));
+  // 左侧的切换按钮
+  .left_select {
+    position: absolute;
+    top: 150px;
+    left: 50px;
+    z-index: 1500;
+  }
 }
 #map_content {
   padding: 10px;

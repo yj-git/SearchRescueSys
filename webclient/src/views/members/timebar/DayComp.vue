@@ -69,7 +69,7 @@
   border-width: 0px;
   text-align: center;
   line-height: 2em;
-  padding: 5px;
+  padding: 2px;
   background: linear-gradient(
     165deg,
     rgba(255, 255, 255, 0.1),
@@ -89,9 +89,10 @@
   height: 100%;
   width: 100%;
   border-width: 1px;
-  border-style: solid;
+  /* 选中不再加外边框 */
+  /* border-style: solid; */
 
-  border-radius: 0.5em;
+  border-radius: 0.2em;
   transition: 0.3s;
 }
 .chosen:hover {

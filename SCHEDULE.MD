@@ -41,3 +41,8 @@
 - [x] 组件设计如下
    ![alt 组件1](./document/99img/TIM截图20191031213012.png)
    ![alt 组件2](./document/99img/TIM截图20191031213043.png)
+
+
+---
+19-11-07 
+- [x] 前端完成`src\views\content\oilspilling\oilSpillingMap.vue`与`src\views\bar\oilRightBar.vue`组件的联动，修改了之前存在的部分bug

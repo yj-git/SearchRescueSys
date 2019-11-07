@@ -30,7 +30,13 @@
     <div id="right_bar">
       <!-- TODO:[*] 19-10-28 加入右侧信息栏_v1版本 -->
       <!-- <RightOilBar></RightOilBar> -->
-      <OilRightBar :oilRealData="oilAvgRealData"></OilRightBar>
+      <OilRightBar
+        :oilRealData="oilAvgRealData"
+        :days="days"
+        :startDate="startDate"
+        :interval="interval"
+        :targetDate="current"
+      ></OilRightBar>
     </div>
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
@@ -103,7 +109,7 @@ export default class OilSpillingMap extends Vue {
   url: string =
     "//map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}";
   // 指定时间
-  targetDate: Date;
+  // targetDate: Date = new Date();
   // 溢油平均轨迹
   oilAvgPointList: Array<OilPointRealDataMidModel> = [];
   // TODO:[*] 19-10-31 由于设置类型为any，且赋值为null，引发的子组件在为null的情况下未渲染
@@ -120,18 +126,31 @@ export default class OilSpillingMap extends Vue {
   // TODO:[*] 19-11-04 heatLayer 当前的热图layer
   tempHeatLayer: any = null;
   // timebar的起始时间
-  startDate: Date = new Date(2018, 0, 14, 22, 20);
+  // TODO:[*] 19-11-07 去掉默认的起始时间
+  startDate: Date = new Date();
+  targetDate: Date = new Date();
   interval: number = 24;
   // timebar共有多少天
   days: number = 3;
+
   tempOilDivIcon: any = null;
   tempOil: any = null;
+
+  created() {
+    this.startDate = new Date();
+    this.targetDate = new Date();
+
+    // TODO:[*] 19-11-05:页面加载时需要获取当前code对应的旗帜时间
+    this.loadDateRange();
+  }
+
   mounted() {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
     this.loadTrackAvgList();
-    this.startDate = new Date(2018, 0, 14, 22, 20);
-    // TODO:[*] 19-11-05:页面加载时需要获取当前code对应的旗帜时间
-    this.loadDateRange();
+    // TODO:[*] 19-11-07 将loadDate的操作放在created中
+    // this.startDate = new Date(2018, 0, 14, 22, 20);
+    // // TODO:[*] 19-11-05:页面加载时需要获取当前code对应的旗帜时间
+    // this.loadDateRange();
   }
   // 加载指定code的平均轨迹
   loadTrackAvgList(): void {
@@ -299,6 +318,7 @@ export default class OilSpillingMap extends Vue {
 
   // TODO:[*] 19-11-05 根据当前的 code 获取oil avg的起止时间
   loadDateRange(): void {
+    let myself = this;
     getTargetCodeDateRange(this.code).then(res => {
       if (res.status === 200) {
         // 获取起止时间
@@ -312,7 +332,11 @@ export default class OilSpillingMap extends Vue {
 
         */
         console.log(res);
-        getDaysNum(start, end);
+        let daysCount = getDaysNum(start, end);
+        myself.days = daysCount;
+        myself.startDate = start;
+        // TODO:[*] 19-11-07 此处每次获取完start之后，先赋值给current，之后再由timebar选择之后再更新
+        myself.targetDate = start;
       }
     });
   }
@@ -329,8 +353,15 @@ export default class OilSpillingMap extends Vue {
     return null;
   }
 
-  get current(): string {
-    return this.$store.state.current;
+  get current(): Date {
+    // TODO:[*] 19-11-07 注意此处的current为string类型（含时区），需要再转换为date
+    // return ;
+    let currentStr: string = this.$store.state.current;
+    let currentDt: Date = new Date();
+    if (currentStr != "") {
+      currentDt = new Date(currentStr);
+    }
+    return currentDt;
   }
 
   @Watch("tempOil")

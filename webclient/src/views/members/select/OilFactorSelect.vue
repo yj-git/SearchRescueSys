@@ -4,23 +4,23 @@
     <div class="show">
       <div class="row">
         <span>显示模式</span>
-        <el-select v-model="valueShowTypes" placeholder="请选择">
+        <el-select v-model="valueShowTypes" placeholder="请选择" @change="setFactor">
           <el-option
             v-for="item in optionsShowTypes"
-            :key="item.value"
+            :key="item.key"
             :label="item.label"
-            :value="item.value"
+            :value="item.key"
           ></el-option>
         </el-select>
       </div>
       <div class="row">
         <span>权重</span>
-        <el-select v-model="valueFactors" placeholder="请选择">
+        <el-select v-model="valueFactors" placeholder="请选择" @change="setType">
           <el-option
             v-for="item in optionsFactors"
-            :key="item.value"
+            :key="item.key"
             :label="item.label"
-            :value="item.value"
+            :value="item.key"
           ></el-option>
         </el-select>
       </div>
@@ -29,36 +29,67 @@
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { mapMutations } from "vuex";
+import { Mutation, namespace } from "vuex-class";
+
+// const oilModule = namespace("oilStore");
 @Component({})
 export default class OilFactorSelect extends Vue {
-  mydata: any = null;
-  optionsFactors: Array<any> = [];
+  optionsFactors: { value: string; label: string; key: number }[] = [];
   valueFactors = "";
-  optionsShowTypes: Array<any> = [];
+  optionsShowTypes: { value: string; label: string; key: number }[] = [];
   valueShowTypes = "";
+
+  // TODO:[*] 19-11-08
+  /* error：
+  [vuex] unknown mutation type: setShowFactor
+  */
+  // @oilModule.Mutation("setShowFactor") mutationShowFactor;
+  @Mutation("setShowFactor", { namespace: "oil" }) setShowFactor;
+  // @Mutation setShowFactor: any;
+
+  @Mutation("setShowType", { namespace: "oil" }) setShowType;
+
   mounted() {
+    let myself = this;
     console.log("select 加载成功");
     this.optionsFactors = [
       {
         value: "thickness",
-        label: "油膜厚度"
+        label: "油膜厚度",
+        key: 0
       },
       {
         value: "mass",
-        label: "油膜质量"
+        label: "油膜质量",
+        key: 1
       }
     ];
+    // this.mutationShowFactor({ data: myself.optionsFactors });
     this.optionsShowTypes = [
       {
         value: "scatter",
-        label: "散点"
+        label: "散点",
+        key: 0
       },
       {
         value: "heatmap",
-        label: "热图"
+        label: "热图",
+        key: 1
       }
     ];
   }
+
+  setFactor(val: number): void {
+    console.log(`选中显示模式${val}`);
+    this.setShowFactor({ data: val });
+  }
+
+  setType(val: number): void {
+    console.log(`选中权重${val}`);
+    this.setShowType({ data: val });
+  }
+  // ...mapMutations(['getShowFactor','getShowType'])
   get computedTest() {
     return null;
   }

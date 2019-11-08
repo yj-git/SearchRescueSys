@@ -51,7 +51,7 @@ import * as L from "leaflet";
 // TODO:[*] 19-10-16 加入vue2 leaflet heatmap不使用以下的方式
 // import { HeatmapOverlay } from "heatmap.js";
 
-import { Getter, Mutation, State } from "vuex-class";
+import { Getter, Mutation, State, namespace } from "vuex-class";
 import {
   LMap,
   LTileLayer,
@@ -368,6 +368,20 @@ export default class OilSpillingMap extends Vue {
     }
     return currentDt;
   }
+
+  // TODO:[*] 19-11-08 使用vuex-clas的方式监听oil 的两个select
+  @Getter("getShowFactor", { namespace: "oil" }) showFactor;
+  @Watch("showFactor")
+  OnShowFactor(val: number) {
+    console.log(`监听到vuex中namespace:oil factor发生变化:${val}`);
+  }
+
+  @Getter("getShowType", { namespace: "oil" }) showType;
+  @Watch("showType")
+  onShowType(val: number) {
+    console.log(`监听到vuex中namespace:oil type发生变化:${val}`);
+  }
+  
 
   @Watch("tempOil")
   onOil(oil: OilMidModel) {

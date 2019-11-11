@@ -90,6 +90,10 @@ import { OilPointRealDataMidModel } from "@/middle_model/rescue";
 import { OilMidModel } from "@/middle_model/oil";
 
 import { getDaysNum } from "@/common/date";
+
+// 引入常量
+import { optionsFactors, optionsShowTypes } from "@/const/Oil";
+import { OilFactor, ShowType } from "@/enum/OilSelect";
 @Component({
   components: {
     "l-marker": LMarker,
@@ -179,7 +183,7 @@ export default class OilSpillingMap extends Vue {
     });
   }
   // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
-  loadTrackScatterPlots(): void {
+  loadTrackHeatmap(): void {
     let myself = this;
     this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
@@ -238,6 +242,35 @@ export default class OilSpillingMap extends Vue {
         // TODO:[*] 19-11-04 添加完heatlayer后，再次更新时记得需要remove
         myself.tempHeatLayer = heatLayer;
         heatLayer.addTo(mymap);
+      }
+    });
+  }
+
+  // 加载散点图
+  loadTrackScatterPoint(): void {
+    let myself = this;
+    this.clearScatterPoint();
+    let mymap: any = this.$refs.basemap["mapObject"];
+    loadOilScatterTrackList(this.code, this.targetDate).then(res => {
+      if (res.status === 200) {
+        // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
+        // 尝试使用直接添加的方式
+        res.data.forEach((temp: any) => {
+          this.oilScatterPointList.push([
+            temp.point.coordinates[1],
+            temp.point.coordinates[0]
+          ]);
+
+          // todo:[*] 19-10-16 暂时去掉散点，只保留热图
+          let temp_circle = L.circle(
+            [temp.point.coordinates[1], temp.point.coordinates[0]],
+            {
+              radius: 30
+            }
+          ).addTo(mymap);
+
+          this.oilScatterCircleList.push(temp_circle);
+        });
       }
     });
   }
@@ -374,6 +407,18 @@ export default class OilSpillingMap extends Vue {
   @Watch("showFactor")
   OnShowFactor(val: number) {
     console.log(`监听到vuex中namespace:oil factor发生变化:${val}`);
+    let num = val;
+    switch (val) {
+      // 散点
+      case (val = ShowType.SCATTER):
+        // 切换为散点视图
+        this.loadTrackScatterPoint();
+        break;
+      case (val = ShowType.HEATMAP):
+        // 切换为热图视图
+        this.loadTrackHeatmap();
+        break;
+    }
   }
 
   @Getter("getShowType", { namespace: "oil" }) showType;
@@ -381,7 +426,6 @@ export default class OilSpillingMap extends Vue {
   onShowType(val: number) {
     console.log(`监听到vuex中namespace:oil type发生变化:${val}`);
   }
-  
 
   @Watch("tempOil")
   onOil(oil: OilMidModel) {
@@ -397,7 +441,7 @@ export default class OilSpillingMap extends Vue {
     // 先加载oil 的realdata，再加载热力图
     this.loadTargetRealData(myself.code, myself.targetDate);
     // TODO:[*] 19-10-31 此处需要加入一个切换的功能
-    this.loadTrackScatterPlots();
+    this.loadTrackHeatmap();
 
     // this
   }

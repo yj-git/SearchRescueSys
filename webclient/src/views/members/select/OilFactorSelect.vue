@@ -4,7 +4,7 @@
     <div class="show">
       <div class="row">
         <span>显示模式</span>
-        <el-select v-model="valueShowTypes" placeholder="请选择" @change="setFactor">
+        <el-select v-model="valueShowTypes" placeholder="请选择" @change="setType">
           <el-option
             v-for="item in optionsShowTypes"
             :key="item.key"
@@ -15,7 +15,7 @@
       </div>
       <div class="row">
         <span>权重</span>
-        <el-select v-model="valueFactors" placeholder="请选择" @change="setType">
+        <el-select v-model="valueFactors" placeholder="请选择" @change="setFactor">
           <el-option
             v-for="item in optionsFactors"
             :key="item.key"
@@ -33,6 +33,10 @@ import { mapMutations } from "vuex";
 import { Mutation, namespace } from "vuex-class";
 
 // const oilModule = namespace("oilStore");
+
+// 引入常量
+import { optionsFactors, optionsShowTypes } from "@/const/Oil";
+
 @Component({})
 export default class OilFactorSelect extends Vue {
   optionsFactors: { value: string; label: string; key: number }[] = [];
@@ -53,39 +57,17 @@ export default class OilFactorSelect extends Vue {
   mounted() {
     let myself = this;
     console.log("select 加载成功");
-    this.optionsFactors = [
-      {
-        value: "thickness",
-        label: "油膜厚度",
-        key: 0
-      },
-      {
-        value: "mass",
-        label: "油膜质量",
-        key: 1
-      }
-    ];
+    this.optionsFactors = optionsFactors;
     // this.mutationShowFactor({ data: myself.optionsFactors });
-    this.optionsShowTypes = [
-      {
-        value: "scatter",
-        label: "散点",
-        key: 0
-      },
-      {
-        value: "heatmap",
-        label: "热图",
-        key: 1
-      }
-    ];
+    this.optionsShowTypes = optionsShowTypes;
   }
 
-  setFactor(val: number): void {
+  setType(val: number): void {
     console.log(`选中显示模式${val}`);
     this.setShowFactor({ data: val });
   }
 
-  setType(val: number): void {
+  setFactor(val: number): void {
     console.log(`选中权重${val}`);
     this.setShowType({ data: val });
   }

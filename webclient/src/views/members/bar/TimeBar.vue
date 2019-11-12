@@ -1,6 +1,10 @@
 <template>
   <div class="dateBar">
-    <div class="progress-line" @mouseover="overProgressLine" @click="setTimeBar">
+    <div
+      class="progress-line"
+      @mouseover="overProgressLine"
+      @click="setTimeBar"
+    >
       <div id="played" class="played" style="width: 10px;"></div>
       <div class="avbl"></div>
       <i style="left: 85.6454px;"></i>
@@ -9,7 +13,11 @@
     <div id="calendar">
       <!-- <div class v-for="item in datelist" :key="item.id">{{item.dateStr()}}</div> -->
       <div class="calendar_interval">
-        <div v-for="item in cellArr" :key="item.id" :style="'width:'+ (lenUnit) +'px;'"></div>
+        <div
+          v-for="item in cellArr"
+          :key="item.id"
+          :style="'width:' + lenUnit + 'px;'"
+        ></div>
       </div>
 
       <!-- <div
@@ -20,18 +28,23 @@
       ></div>-->
       <div class="calendar_cutting_line">
         <div
-          v-for="(item,index) in cuttingLinesWidth"
+          v-for="(item, index) in cuttingLinesWidth"
           :key="item.id"
-          :style="'width:'+ (lenUnit)*item +'px;'"
-        >{{cuttingLinesIndex[index]}}小时</div>
+          :style="'width:' + lenUnit * item + 'px;'"
+        >
+          {{ cuttingLinesIndex[index] }}小时
+        </div>
       </div>
     </div>
-    <div id="msg">{{slideDateLabelr}}</div>
-    <div id="staticmsg">{{staticDateLabel}}</div>
+    <div id="msg">{{ slideDateLabelr }}</div>
+    <div id="staticmsg">{{ staticDateLabel }}</div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+
+import { Mutation, State, namespace } from "vuex-class";
+
 import { DateModel } from "@/model/bar/timebar";
 import moment from "moment";
 import dateformat from "dateformat";
@@ -349,6 +362,9 @@ export default class TimeBar extends Vue {
   get computedTest() {
     return null;
   }
+
+  @Mutation("setcurrent") setCurrent;
+
   @Watch("selectedCurrentDt")
   onSelectedCurrentDt(dt: Date) {
     // 当修改 当前选中的dt 修改vuex中的对应的值
@@ -361,7 +377,10 @@ export default class TimeBar extends Vue {
       dt.toISOString():
         "1990-02-01T04:00:00.000Z"
     */
-    this.$store.commit("current", dt.toISOString());
+    
+    //TODO:[*] 19-11-12 以vuex-class的方式调用mutation
+    // this.$store.commit("current", dt.toISOString());
+    this.setCurrent(dt.toISOString());
   }
   @Watch("datelist")
   onDateList(): void {

@@ -3,7 +3,11 @@
     <div id="map_content">
       <l-map ref="basemap" :zoom="zoom" :center="center">
         <l-tile-layer :url="url"></l-tile-layer>
-        <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
+        <l-polyline
+          :lat-lngs="polyline.latlngs"
+          :fill="false"
+          :color="polyline.color"
+        ></l-polyline>
         <l-circle
           v-for="temp in oilAvgPointList"
           :key="temp.id"
@@ -25,7 +29,11 @@
         ></LeafletHeatmap>-->
         <!-- <l-circle v-for="temp in oilScatterPointList" :key="temp.id" :lat-lng="temp" /> -->
       </l-map>
-      <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
+      <TimeBar
+        :targetDate="startDate"
+        :days="days"
+        :interval="interval"
+      ></TimeBar>
     </div>
     <div id="right_bar">
       <!-- TODO:[*] 19-10-28 加入右侧信息栏_v1版本 -->
@@ -45,7 +53,7 @@
     <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import * as L from "leaflet";
 // TODO:[*] 19-10-16 加入vue2 leaflet heatmap不使用以下的方式
@@ -391,10 +399,14 @@ export default class OilSpillingMap extends Vue {
     return null;
   }
 
+  // TODO:[*] 19-11-12 不再使用此种方式，暂时注释掉
   get current(): Date {
     // TODO:[*] 19-11-07 注意此处的current为string类型（含时区），需要再转换为date
     // return ;
-    let currentStr: string = this.$store.state.current;
+
+    // let currentStr: string = this.$store.state.current;
+    let currentStr: string = this.getcurrent;
+
     let currentDt: Date = new Date();
     if (currentStr != "") {
       currentDt = new Date(currentStr);
@@ -432,10 +444,15 @@ export default class OilSpillingMap extends Vue {
     console.log(`监听oil发生变化，现值为${this.tempOil}`);
   }
 
-  @Watch("current")
+  @Getter("getCurrent", { namespace: "map" }) getcurrent;
+  @Watch("getCurrent")
   onCurrent(val: string) {
     let myself = this;
     this.targetDate = new Date(val);
+    // let currentDt: Date = new Date();
+    // if (val != "") {
+    //   currentDt = new Date(val);
+    // }
 
     // console.log(val);
     // 先加载oil 的realdata，再加载热力图
@@ -586,4 +603,4 @@ export default class OilSpillingMap extends Vue {
   text-align: center;
   font-size: 0.625rem;
 }
-</style>    
+</style>

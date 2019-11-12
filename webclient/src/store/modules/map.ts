@@ -16,14 +16,16 @@ const state: State = {
 
 // 用来改变应用状态的函数
 const mutations = {
-  current(state: State, current: string) {
+  setcurrent(state: State, current: string) {
     state.current = current
   }
 }
 
 // tslint:disable-next-line:typedef
 const getters = {
-
+  getCurrent(state){
+    return state.current;
+  }
 }
 
 // 异步调用api的函数（暂时不用）

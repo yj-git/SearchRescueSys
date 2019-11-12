@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 // 导入store/modules中的所有.ts，作为一个module引入
 import oilStore from "@/store/modules/oil";
-// import map from './modules/map'
+import map from "./modules/map";
 
 Vue.use(Vuex);
 
@@ -16,7 +16,8 @@ export default new Vuex.Store({
     // oil:{
     //   namespaced:true
     // }
-    oil: oilStore
+    oil: oilStore,
+    map: map
     // oilStore
   },
   // TODO:[*] 19-11-08 此部分先注释掉

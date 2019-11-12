@@ -152,7 +152,9 @@ export default class OilSpillingMap extends Vue {
 
   tempOilDivIcon: any = null;
   tempOil: any = null;
-
+  // TODO:[*] 19-11-12 加入show type与show factor
+  showType: number;
+  showFactor: number;
   created() {
     this.startDate = new Date();
     this.targetDate = new Date();
@@ -415,28 +417,35 @@ export default class OilSpillingMap extends Vue {
   }
 
   // TODO:[*] 19-11-08 使用vuex-clas的方式监听oil 的两个select
-  @Getter("getShowFactor", { namespace: "oil" }) showFactor;
-  @Watch("showFactor")
+  @Getter("getShowFactor", { namespace: "oil" }) getShowFactor;
+  @Watch("getShowFactor")
   OnShowFactor(val: number) {
     console.log(`监听到vuex中namespace:oil factor发生变化:${val}`);
-    let num = val;
+    this.showFactor = val;
+    this.loadTrackFactory();
+  }
+
+  // TODO:[*] 19-11-12 根据 current showType showFactor决定的加载的layer
+  loadTrackFactory(): void {
+    let val: number = this.showType;
     switch (val) {
       // 散点
-      case (val = ShowType.SCATTER):
+      case ShowType.SCATTER:
         // 切换为散点视图
         this.loadTrackScatterPoint();
         break;
-      case (val = ShowType.HEATMAP):
+      case ShowType.HEATMAP:
         // 切换为热图视图
         this.loadTrackHeatmap();
         break;
     }
   }
 
-  @Getter("getShowType", { namespace: "oil" }) showType;
-  @Watch("showType")
+  @Getter("getShowType", { namespace: "oil" }) getShowType: number;
+  @Watch("getShowType")
   onShowType(val: number) {
     console.log(`监听到vuex中namespace:oil type发生变化:${val}`);
+    this.showType = val;
   }
 
   @Watch("tempOil")
@@ -445,8 +454,8 @@ export default class OilSpillingMap extends Vue {
   }
 
   @Getter("getCurrent", { namespace: "map" }) getcurrent;
-  @Watch("getCurrent")
-  onCurrent(val: string) {
+  @Watch("current")
+  onCurrent(val: Date) {
     let myself = this;
     this.targetDate = new Date(val);
     // let currentDt: Date = new Date();
@@ -458,9 +467,10 @@ export default class OilSpillingMap extends Vue {
     // 先加载oil 的realdata，再加载热力图
     this.loadTargetRealData(myself.code, myself.targetDate);
     // TODO:[*] 19-10-31 此处需要加入一个切换的功能
-    this.loadTrackHeatmap();
-
-    // this
+    // this.loadTrackFactory()
+    // this.loadTrackHeatmap();
+    // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
+    this.loadTrackFactory();
   }
 }
 </script>

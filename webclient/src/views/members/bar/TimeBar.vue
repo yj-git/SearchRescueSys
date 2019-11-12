@@ -363,7 +363,7 @@ export default class TimeBar extends Vue {
     return null;
   }
 
-  @Mutation("setcurrent") setCurrent;
+  @Mutation("setcurrent",{namespace:"map"}) setCurrent;
 
   @Watch("selectedCurrentDt")
   onSelectedCurrentDt(dt: Date) {

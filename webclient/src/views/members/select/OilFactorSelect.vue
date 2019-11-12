@@ -4,7 +4,11 @@
     <div class="show">
       <div class="row">
         <span>显示模式</span>
-        <el-select v-model="valueShowTypes" placeholder="请选择" @change="setType">
+        <el-select
+          v-model="valueShowTypes"
+          placeholder="请选择"
+          @change="setType"
+        >
           <el-option
             v-for="item in optionsShowTypes"
             :key="item.key"
@@ -15,7 +19,11 @@
       </div>
       <div class="row">
         <span>权重</span>
-        <el-select v-model="valueFactors" placeholder="请选择" @change="setFactor">
+        <el-select
+          v-model="valueFactors"
+          placeholder="请选择"
+          @change="setFactor"
+        >
           <el-option
             v-for="item in optionsFactors"
             :key="item.key"
@@ -27,7 +35,7 @@
     </div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { mapMutations } from "vuex";
 import { Mutation, namespace } from "vuex-class";
@@ -64,12 +72,12 @@ export default class OilFactorSelect extends Vue {
 
   setType(val: number): void {
     console.log(`选中显示模式${val}`);
-    this.setShowFactor({ data: val });
+    this.setShowType({ data: val });
   }
 
   setFactor(val: number): void {
     console.log(`选中权重${val}`);
-    this.setShowType({ data: val });
+    this.setShowFactor({ data: val });
   }
   // ...mapMutations(['getShowFactor','getShowType'])
   get computedTest() {

@@ -23,7 +23,7 @@ const mutations = {
 
 // tslint:disable-next-line:typedef
 const getters = {
-  getCurrent(state){
+  getCurrent(state) {
     return state.current;
   }
 }
@@ -33,7 +33,7 @@ const actions = {}
 
 export default {
   // TODO [*] 19-03-21 暂时取消namespaced，先实现功能
-  // namespaced: true,
+  namespaced: true,
   state,
   mutations,
   actions,

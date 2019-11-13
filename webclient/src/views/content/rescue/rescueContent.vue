@@ -2,15 +2,31 @@
   <div id="rescue_map">
     <l-map ref="basemap" :zoom="zoom" :center="center">
       <l-tile-layer :url="url"></l-tile-layer>
-      <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
+      <l-polyline
+        :lat-lngs="polyline.latlngs"
+        :fill="false"
+        :color="polyline.color"
+      ></l-polyline>
 
-      <l-circle v-for="temp in rescuePointList" :key="temp.id" :lat-lng="temp.latlon" />
-      <l-circle v-for="temp in rescueScatterPlotList" :key="temp.id" :lat-lng="temp" />
+      <l-circle
+        v-for="temp in rescuePointList"
+        :key="temp.id"
+        :lat-lng="temp.latlon"
+      />
+      <l-circle
+        v-for="temp in rescueScatterPlotList"
+        :key="temp.id"
+        :lat-lng="temp"
+      />
     </l-map>
-    <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
+    <TimeBar
+      :targetDate="startDate"
+      :days="days"
+      :interval="interval"
+    ></TimeBar>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import * as L from "leaflet";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { Getter, Mutation, State } from "vuex-class";
@@ -155,7 +171,7 @@ export default class RescueMap extends Vue {
   mounted() {
     this.loadTrackAvgList();
     // 先给一个当前时间
-    this.targetDate = new Date(2016, 6, 21,16, 0);
+    this.targetDate = new Date(2016, 6, 21, 16, 0);
     this.startDate = new Date(2016, 6, 21, 16, 0);
     this.loadTrackScatterPlots();
   }
@@ -178,13 +194,15 @@ export default class RescueMap extends Vue {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
+@import "../../../styles/base";
 #rescue_map {
   /* height: 100%; */
-  /* display: flex;
-  flex-direction: column; */
-  width: 1500px;
-  height: 700px;
+  // display: flex;
+  @center();
+  flex-direction: column;
+  /* width: 1500px;
+  height: 700px; */
   background: #ff0808;
 }
 </style>

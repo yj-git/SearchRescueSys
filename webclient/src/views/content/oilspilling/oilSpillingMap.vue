@@ -483,14 +483,18 @@ export default class OilSpillingMap extends Vue {
   }
 }
 </script>
-<style lang="less">
+<style scoped lang="less">
+// TODO:[*] 19-11-13 注意引入less时不需要加.less后缀
+@import "../../../styles/base";
 #rescue_map {
   /* height: 100%; */
   /* display: flex;
   flex-direction: column; */
-  display: flex;
-  /* flex-direction: column; */
-  flex: 22;
+  @center();
+  // @test();
+  // display: flex;
+  // flex: 22;
+  // height: 86vh;
   /* width: 1500px;
   height: 700px; */
   /* background: #2a79d4; */

@@ -56,23 +56,14 @@ export default class OilDataForm extends Vue {
 </script>
 <style scoped lang="less">
 @import "../../styles/base";
-#myform {
-  /* border: 2px solid white; */
-  display: inline-block;
-  background: rgba(0, 0, 255, 0.829);
-  text-align: center;
-  color: aliceblue;
-  box-shadow: 10px 10px 5px #888888;
-  box-shadow: 0 0 10px whitesmoke;
-  /* 边角圆滑处理 */
-  border-radius: 10px;
-}
 #oil_detail {
   /* width: 200px; */
   font-size: 0.7em;
   margin-bottom: 7px !important;
 
   @formbox();
+  // @center();
+  // @test();
 }
 #oil_detail .card-header {
   background: #125a8abd;

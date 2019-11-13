@@ -48,9 +48,10 @@ import { optionsFactors, optionsShowTypes } from "@/const/Oil";
 @Component({})
 export default class OilFactorSelect extends Vue {
   optionsFactors: { value: string; label: string; key: number }[] = [];
-  valueFactors = "";
+  // 默认值
+  valueFactors = 0;
   optionsShowTypes: { value: string; label: string; key: number }[] = [];
-  valueShowTypes = "";
+  valueShowTypes = 0;
 
   // TODO:[*] 19-11-08
   /* error：
@@ -68,6 +69,8 @@ export default class OilFactorSelect extends Vue {
     this.optionsFactors = optionsFactors;
     // this.mutationShowFactor({ data: myself.optionsFactors });
     this.optionsShowTypes = optionsShowTypes;
+    this.setType(this.valueShowTypes);
+    this.setFactor(this.valueFactors);
   }
 
   setType(val: number): void {

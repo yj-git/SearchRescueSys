@@ -4,28 +4,28 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-4">时间</div>
-        <div class="col-md-8">{{oilRealData.time|fortmatDate}}</div>
+        <div class="col-md-8">{{ oilRealData.time | fortmatDate }}</div>
       </div>
       <div class="row">
         <div class="col-md-4">中心位置</div>
-        <div class="col-md-8">{{oilRealData.point}}</div>
+        <div class="col-md-8">{{ oilRealData.point }}</div>
       </div>
       <div class="row row_footer">
         <div class="typhoon_footer">
           <div class="columnar my_primary">
-            <div class="main_val">{{oilRealData.windVal}}</div>
+            <div class="main_val">{{ oilRealData.windVal }}</div>
             <div class="vice_vak">风速</div>
           </div>
           <div class="columnar my_success">
-            <div class="main_val">{{oilRealData.windDir}}</div>
+            <div class="main_val">{{ oilRealData.windDir }}</div>
             <div class="vice_vak">风向</div>
           </div>
           <div class="columnar my_info">
-            <div class="main_val">{{oilRealData.currentVal}}</div>
+            <div class="main_val">{{ oilRealData.currentVal }}</div>
             <div class="vice_vak">流速</div>
           </div>
           <div class="columnar my_danger">
-            <div class="main_val">{{oilRealData.currentDir}}</div>
+            <div class="main_val">{{ oilRealData.currentDir }}</div>
             <div class="vice_vak">流向</div>
           </div>
         </div>
@@ -33,7 +33,7 @@
     </div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { OilMidModel } from "@/middle_model/oil";
 import moment from "moment";
@@ -54,7 +54,8 @@ export default class OilDataForm extends Vue {
   public mounted() {}
 }
 </script>
-<style scoped>
+<style scoped lang="less">
+@import "../../styles/base";
 #myform {
   /* border: 2px solid white; */
   display: inline-block;
@@ -69,7 +70,9 @@ export default class OilDataForm extends Vue {
 #oil_detail {
   /* width: 200px; */
   font-size: 0.7em;
-  margin-bottom:7px!important;
+  margin-bottom: 7px !important;
+
+  @formbox();
 }
 #oil_detail .card-header {
   background: #125a8abd;
@@ -80,7 +83,7 @@ export default class OilDataForm extends Vue {
   text-shadow: 2px 2px 2px 10px rgb(161, 251, 246);
   font-weight: 400;
   padding-top: 7px;
-  padding-bottom:7px!important;
+  padding-bottom: 7px !important;
 }
 
 #oil_detail .card-body {
@@ -89,8 +92,7 @@ export default class OilDataForm extends Vue {
   background: linear-gradient(rgb(50, 157, 150), rgb(49, 59, 89));
   color: rgb(161, 251, 246);
   /* 底部圆角 */
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  @bottomradius();
   padding-top: 5px;
 }
 

@@ -195,7 +195,8 @@ export default class OilSpillingMap extends Vue {
   // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
   loadTrackHeatmap(): void {
     let myself = this;
-    this.clearScatterPoint();
+    //TODO:[*] 19-11-13 清除统一放在clearAllLayer中，此处暂时注释掉
+    // this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
     this.oilHeatmapList = [];
     //TODO:[*] 19-11-04 清除layerHeat
@@ -259,7 +260,8 @@ export default class OilSpillingMap extends Vue {
   // 加载散点图
   loadTrackScatterPoint(): void {
     let myself = this;
-    this.clearScatterPoint();
+    //TODO:[*] 19-11-13 清除统一放在clearAllLayer中，此处暂时注释掉
+    // this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
     loadOilScatterTrackList(this.code, this.targetDate).then(res => {
       if (res.status === 200) {
@@ -283,6 +285,11 @@ export default class OilSpillingMap extends Vue {
         });
       }
     });
+  }
+
+  clearAllLayer(): void {
+    this.clearScatterPoint();
+    this.clearHeatLayer();
   }
 
   clearScatterPoint(): void {
@@ -428,6 +435,8 @@ export default class OilSpillingMap extends Vue {
   // TODO:[*] 19-11-12 根据 current showType showFactor决定的加载的layer
   loadTrackFactory(): void {
     let val: number = this.showType;
+    // TODO:[*] 19-11-13 加入了clear方法，清除散点以及热图（或放在各个load方法中）
+    this.clearAllLayer();
     switch (val) {
       // 散点
       case ShowType.SCATTER:
@@ -501,6 +510,7 @@ export default class OilSpillingMap extends Vue {
 #right_bar {
   flex: 1;
   margin-right: 10px;
+  padding: 10px;
   /* background: rgba(188, 143, 143, 0.507); */
 }
 #rescue_map .vue2leaflet-map {

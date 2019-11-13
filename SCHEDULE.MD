@@ -46,3 +46,8 @@
 ---
 19-11-07 
 - [x] 前端完成`src\views\content\oilspilling\oilSpillingMap.vue`与`src\views\bar\oilRightBar.vue`组件的联动，修改了之前存在的部分bug
+
+---
+19-11-13
+- [x] 溢油完成了load时清除 heat与散点图
+- [x] 样式统一修改 

@@ -21,5 +21,6 @@ export default class RightOilBar extends Vue {
   right: 50px;
   height: 500px;
   width: 200px;
+  padding: 10px;
 }
 </style>

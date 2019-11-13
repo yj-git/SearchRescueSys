@@ -4,11 +4,11 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">时间</div>
-        <div class="col-md-6">{{oilModelDetailData.time|fortmatDate}}</div>
+        <div class="col-md-6">{{ oilModelDetailData.time | fortmatDate }}</div>
       </div>
       <div class="row">
         <div class="col-md-6">中心位置</div>
-        <div class="col-md-6">{{oilModelDetailData.point}}</div>
+        <div class="col-md-6">{{ oilModelDetailData.point }}</div>
       </div>
       <div class="row">
         <div class="col-md-6">风偏系数</div>
@@ -22,15 +22,15 @@
       </div>
       <div class="row">
         <div class="col-md-6">风偏角度</div>
-        <div class="col-md-6">{{oilModelDetailData.windDir}}</div>
+        <div class="col-md-6">{{ oilModelDetailData.windDir }}</div>
       </div>
       <div class="row">
         <div class="col-md-6">模拟步长</div>
-        <div class="col-md-6">{{oilModelDetailData.simulateStep}}</div>
+        <div class="col-md-6">{{ oilModelDetailData.simulateStep }}</div>
       </div>
       <div class="row">
         <div class="col-md-6">输出步长</div>
-        <div class="col-md-6">{{oilModelDetailData.consoleStep}}</div>
+        <div class="col-md-6">{{ oilModelDetailData.consoleStep }}</div>
       </div>
       <div class="row">
         <div class="col-md-6">流场不确定性</div>
@@ -54,12 +54,12 @@
       </div>
       <div class="row">
         <div class="col-md-6">求解方法</div>
-        <div class="col-md-6">{{oilModelDetailData.equation}}</div>
+        <div class="col-md-6">{{ oilModelDetailData.equation }}</div>
       </div>
     </div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { OilModelDetailMidModel } from "@/middle_model/oil";
 import moment from "moment";
@@ -83,7 +83,9 @@ export default class OilModelDetailForm extends Vue {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
+@import "../../styles/base";
+
 #myform {
   /* border: 2px solid white; */
   display: inline-block;
@@ -96,8 +98,9 @@ export default class OilModelDetailForm extends Vue {
   border-radius: 10px;
 }
 #oil_detail {
-  font-size:0.7em;
-  margin-bottom:7px!important;
+  font-size: 0.7em;
+  margin-bottom: 7px !important;
+  @formbox();
 }
 #oil_detail .card-header {
   background: #125a8abd;
@@ -107,7 +110,7 @@ export default class OilModelDetailForm extends Vue {
   text-shadow: 2px 2px 1px 5px rgb(161, 251, 246);
   font-weight: 400;
   padding-top: 7px;
-  padding-bottom:7px!important;
+  padding-bottom: 7px !important;
 }
 
 #oil_detail .card-body {
@@ -117,11 +120,10 @@ export default class OilModelDetailForm extends Vue {
 
   color: rgb(240, 237, 56);
   font-weight: 500;
-  /* 底部圆角 */
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+
   padding-bottom: 5px;
   padding-top: 5px;
+  @bottomradius();
 }
 
 #myform .table {

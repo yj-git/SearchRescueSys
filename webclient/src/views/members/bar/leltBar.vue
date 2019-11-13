@@ -62,6 +62,9 @@
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
+      background-color="#115368ef"
+      text-color="#fff"
+      active-text-color="#ffd04b"
     >
       <!-- 作业列表 -->
       <el-submenu index="1">
@@ -109,16 +112,14 @@ export default class center_map extends Vue {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
 #left_bar {
   display: flex;
   flex-direction: column;
-  /* flex: 2; */
-  /* flex: 3; */
-  /* width: 200px; */
-  /* height: 100%; */
-  /* background: #4dac8c34; */
-  background: #4dac8cd3;
-  /* color: rgba(5, 71, 116, 0.829) */
+  .el-menu--horizontal{
+    // background: #115368ef;
+    // 去掉element ui 导航栏的底部的bottom的dash边框
+    border-bottom:0px;
+  }
 }
 </style>

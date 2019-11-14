@@ -31,7 +31,7 @@
 <script lang="ts">
 import * as L from "leaflet";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Getter, Mutation, State } from "vuex-class";
+import { Getter, Mutation, State, namespace } from "vuex-class";
 import {
   LMap,
   LTileLayer,
@@ -89,26 +89,6 @@ export default class RescueMap extends Vue {
     // this.code = "";
     this.clearAll();
     loadTrackAvgList(this.code).then(res => {
-      // console.log(res.data);
-      //code: "qz_ty1_100p"
-      // current:
-      // x: 0.1850069761276245
-      // y: 0.1850069761276245
-      // __proto__: Object
-      // point:
-      // coordinates: Array(2)
-      // 0: 118.9177
-      // 1: 24.7353
-      // length: 2
-      // __proto__: Array(0)
-      // type: "Point"
-      // __proto__: Object
-      // status: 0
-      // time: "2016-07-21T21:00:00Z"
-      // wind:
-      // x: 4.994279861450195
-      // y: 2.817444086074829
-
       // This condition will always return 'false' since the types 'number' and 'string' have no overlap.
       if (res.status === 200) {
         // res.data.map(vaemp:any=>{
@@ -181,8 +161,10 @@ export default class RescueMap extends Vue {
     return null;
   }
 
+  @Getter("getCurrent", { namespace: "map" }) getcurrent;
+
   get current(): string {
-    return this.$store.state.current;
+    return this.getcurrent;
   }
 
   // 监听store中的current

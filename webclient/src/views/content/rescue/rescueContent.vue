@@ -1,29 +1,31 @@
 <template>
   <div id="rescue_map">
-    <l-map ref="basemap" :zoom="zoom" :center="center">
-      <l-tile-layer :url="url"></l-tile-layer>
-      <l-polyline
-        :lat-lngs="polyline.latlngs"
-        :fill="false"
-        :color="polyline.color"
-      ></l-polyline>
+    <div id="map_content">
+      <l-map ref="basemap" :zoom="zoom" :center="center">
+        <l-tile-layer :url="url"></l-tile-layer>
+        <l-polyline
+          :lat-lngs="polyline.latlngs"
+          :fill="false"
+          :color="polyline.color"
+        ></l-polyline>
 
-      <l-circle
-        v-for="temp in rescuePointList"
-        :key="temp.id"
-        :lat-lng="temp.latlon"
-      />
-      <l-circle
-        v-for="temp in rescueScatterPlotList"
-        :key="temp.id"
-        :lat-lng="temp"
-      />
-    </l-map>
-    <TimeBar
-      :targetDate="startDate"
-      :days="days"
-      :interval="interval"
-    ></TimeBar>
+        <l-circle
+          v-for="temp in rescuePointList"
+          :key="temp.id"
+          :lat-lng="temp.latlon"
+        />
+        <l-circle
+          v-for="temp in rescueScatterPlotList"
+          :key="temp.id"
+          :lat-lng="temp"
+        />
+      </l-map>
+      <TimeBar
+        :targetDate="startDate"
+        :days="days"
+        :interval="interval"
+      ></TimeBar>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -203,6 +205,10 @@ export default class RescueMap extends Vue {
   flex-direction: column;
   /* width: 1500px;
   height: 700px; */
-  background: #ff0808;
+  // background: #ff0808;
+}
+#map_content {
+  flex: 1;
+  @centermap();
 }
 </style>

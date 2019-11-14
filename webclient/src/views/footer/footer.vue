@@ -16,7 +16,7 @@ export default class footer extends Vue {
 #footer {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 0.5;
   background: #2f8da5;
 }
 </style>

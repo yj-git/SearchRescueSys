@@ -34,6 +34,7 @@ export default class App extends Vue {}
   color: #dbe347;
   background: #87a2bd;
   display: flex;
+  height: 100vh;
   min-height: 100vh;
   flex-direction: column;
 }

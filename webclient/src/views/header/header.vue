@@ -24,7 +24,7 @@ export default class header extends Vue {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  flex: 2;
+  flex: 0.5;
   background: #31859be8;
   .logo {
     position: absolute;

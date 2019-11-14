@@ -37,7 +37,6 @@
     </div>
     <div id="right_bar">
       <!-- TODO:[*] 19-10-28 加入右侧信息栏_v1版本 -->
-      <!-- <RightOilBar></RightOilBar> -->
       <OilRightBar
         :oilRealData="oilAvgRealData"
         :days="days"
@@ -49,8 +48,6 @@
     <div class="left_select">
       <OilFactorSelect></OilFactorSelect>
     </div>
-    <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
-    <!-- <RightDetailBar :oil="tempOil"></RightDetailBar> -->
   </div>
 </template>
 <script lang="ts">
@@ -498,7 +495,7 @@ export default class OilSpillingMap extends Vue {
   /* width: 1500px;
   height: 700px; */
   /* background: #2a79d4; */
-  background: linear-gradient(rgb(50, 157, 150), rgb(49, 59, 89));
+
   // 左侧的切换按钮
   .left_select {
     position: absolute;
@@ -508,12 +505,15 @@ export default class OilSpillingMap extends Vue {
   }
 }
 #map_content {
-  padding: 10px;
+  // 此处放在base.less中的@centermap中
+  // padding: 10px;
   flex: 5;
+  @centermap();
 }
 #right_bar {
   flex: 1;
   margin-right: 10px;
+
   padding: 10px;
   /* background: rgba(188, 143, 143, 0.507); */
 }

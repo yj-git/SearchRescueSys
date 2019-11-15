@@ -1,3 +1,6 @@
+// 圆角的单位
+@radius: 0.5rem;
+
 @formbox: {
   // 加入一个阴影效果
   box-shadow: 2px 2px 3px black;
@@ -5,8 +8,14 @@
 
 @bottomradius: {
   /* 底部圆角 */
-  border-bottom-left-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: @radius;
+  border-bottom-right-radius: @radius;
+};
+
+@allradius: {
+  @bottomradius();
+  border-top-left-radius: @radius;
+  border-top-right-radius: @radius;
 };
 
 @center: {

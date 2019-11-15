@@ -1,6 +1,56 @@
 <template>
   <div id="case_list_content">
-    <div class="job-statistics"></div>
+    <div class="user-statistics">
+      <OutLiner :count="35" :msg="'created'"></OutLiner>
+      <OutLiner :count="2" :msg="'running'"></OutLiner>
+      <OutLiner :count="15" :msg="'completed'"></OutLiner>
+      <OutLiner :count="18" :msg="'waiting'"></OutLiner>
+    </div>
+    <div class="case-statistics">
+      <div class="case-listinfo">
+        <!-- 左侧的作业列表简况 -->
+        <div class="case-list">
+          <span>当前作业列表</span>
+          <JobProgressbar
+            :percent="90"
+            :username="'user_1'"
+            :casename="'case_xxx_1'"
+            :cmt="new Date()"
+          ></JobProgressbar>
+          <JobProgressbar
+            :percent="67"
+            :username="'user_1'"
+            :casename="'case_xxx_2'"
+            :cmt="new Date()"
+          ></JobProgressbar>
+          <JobProgressbar
+            :percent="23"
+            :username="'user_1'"
+            :casename="'case_xxx_3'"
+            :cmt="new Date()"
+          ></JobProgressbar>
+          <JobProgressbar
+            :percent="71"
+            :username="'user_1'"
+            :casename="'case_xxx_4'"
+            :cmt="new Date()"
+          ></JobProgressbar>
+        </div>
+
+        <!-- 用户提交的case的情况
+           主要显示最后的case的状态（或所在位置）
+       -->
+        <div class="user-caseinfo"></div>
+      </div>
+      <div class="case-create">
+        <div>
+          <img src="../../../assets/create_btn.png" />
+          <span>创建搜救或溢油case</span>
+          <button>创建作业</button>
+        </div>
+      </div>
+    </div>
+
     <div class="user-content">
       <!-- 按钮区域 -->
       <div class="buttons">
@@ -78,7 +128,15 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-@Component({})
+// 引入outliner
+import OutLiner from "@/views/members/form/Outliner.vue";
+import JobProgressbar from "@/views/members/progress/JobProgressbar.vue";
+@Component({
+  components: {
+    OutLiner,
+    JobProgressbar
+  }
+})
 export default class center_map extends Vue {
   mydata: any = null;
   tableData: any = [
@@ -123,12 +181,93 @@ export default class center_map extends Vue {
 </script>
 <style scoped lang="less">
 @import "../../../styles/base.less";
-
+@margin: {
+  margin: 0.5em;
+};
 #case_list_content {
   width: 100%;
   display: flex;
   padding: 0.5em;
-  // 用户功能区
+  // margin: 0.5em;
+  flex-direction: column;
+  // 用户的统计信息
+  .user-statistics {
+    display: flex;
+    flex-direction: row;
+  }
+  // 作业的统计信息
+  .case-statistics {
+    // height: 500px;
+    background: rgb(189, 123, 123);
+    display: flex;
+    @margin();
+    // flex-direction: row;
+    .case-listinfo {
+      display: flex;
+      flex: 3;
+      // height: 400px;
+      background: red;
+      // flex-direction:
+      .case-list {
+        background: yellow;
+        display: flex;
+        flex: 2;
+        flex-direction: column;
+        margin: 1em;
+        @allradius();
+        div {
+          margin: 1em;
+        }
+        span {
+          display: flex;
+          justify-content: flex-start;
+          align-items: flex-start;
+          margin: 1em;
+          color: black;
+          font-size: 100%;
+        }
+        // flex
+      }
+      .user-caseinfo {
+        display: flex;
+        background: rgb(146, 146, 69);
+        flex: 1;
+      }
+    }
+    // 创建的按钮
+    .case-create {
+      display: flex;
+      flex: 1;
+      height: 400px;
+      background: green;
+      // align-items: center;
+      justify-content: center;
+      div {
+        height: 15em;
+        background: blue;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        @allradius();
+        img {
+          height: 8em;
+          @margin();
+        }
+        span {
+          @margin();
+        }
+        button {
+          height: 4em;
+          width: 4em;
+          @allradius();
+          @margin();
+        }
+      }
+    }
+  }
+  //
+  // 提交的作业列表
   .user-content {
     display: flex;
 

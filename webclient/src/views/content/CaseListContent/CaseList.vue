@@ -11,7 +11,8 @@
         <!-- 左侧的作业列表简况 -->
         <div class="case-list">
           <span>当前作业列表</span>
-          <JobProgressbar
+          <JobCurrent></JobCurrent>
+          <!-- <JobProgressbar
             :percent="90"
             :username="'user_1'"
             :casename="'case_xxx_1'"
@@ -34,20 +35,26 @@
             :username="'user_1'"
             :casename="'case_xxx_4'"
             :cmt="new Date()"
-          ></JobProgressbar>
+          ></JobProgressbar> -->
         </div>
 
         <!-- 用户提交的case的情况
            主要显示最后的case的状态（或所在位置）
        -->
-        <div class="user-caseinfo"></div>
+        <div class="user-caseinfo">
+          <QueuePercent></QueuePercent>
+        </div>
       </div>
       <div class="case-create">
-        <div class="create-header">创建case</div>
+        <div class="create-header">
+          <h2>创建case</h2>
+          <span>搜集|溢油</span>
+        </div>
         <div class="create-body">
           <img src="../../../assets/create_btn.png" />
-          <span>创建搜救或溢油case</span>
-          <button>创建作业</button>
+          <!-- <span>创建搜救或溢油case</span> -->
+          <!-- <button>创建作业</button> -->
+          <a>创建作业</a>
         </div>
       </div>
     </div>
@@ -132,10 +139,14 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 // 引入outliner
 import OutLiner from "@/views/members/form/Outliner.vue";
 import JobProgressbar from "@/views/members/progress/JobProgressbar.vue";
+import JobCurrent from "@/views/members/table/JobCurrent.vue";
+import QueuePercent from "@/views/members/percentage/QuenePercent.vue";
 @Component({
   components: {
     OutLiner,
-    JobProgressbar
+    JobProgressbar,
+    JobCurrent,
+    QueuePercent
   }
 })
 export default class center_map extends Vue {
@@ -199,13 +210,13 @@ export default class center_map extends Vue {
   // 作业的统计信息
   .case-statistics {
     // height: 500px;
-    background: rgb(189, 123, 123);
+    // background: rgb(189, 123, 123);
     display: flex;
     @margin();
     // flex-direction: row;
     .case-listinfo {
       display: flex;
-      flex: 3;
+      flex: 4;
       // height: 400px;
       background: red;
       // flex-direction:
@@ -241,20 +252,27 @@ export default class center_map extends Vue {
       flex-direction: column;
       flex: 1;
       height: 400px;
-      background: green;
+      // background: green;
       // align-items: center;
       justify-content: center;
-      .create-header{
-        background-color: #2bbbad !important;
+      .create-header {
+        // background-color: #2bbbad !important;
+        background: linear-gradient(40deg, #45cafc, #303f9f) !important;
+        // @allradius();
+        padding: 1.5em;
+        box-shadow: 5px 5px 15px #333333;
       }
       .create-body {
         height: 15em;
-        background: blue;
+        // background: blue;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        @allradius();
+        margin-right: 4%;
+        margin-left: 4%;
+        box-shadow: 5px 5px 15px #333333;
+        // @allradius();
         img {
           height: 8em;
           @margin();
@@ -267,6 +285,18 @@ export default class center_map extends Vue {
           width: 4em;
           @allradius();
           @margin();
+        }
+        // 不再使用bt的btn，改为自己实现的a标签
+        a {
+          display: inline-block;
+          background-color: #880e4f !important;
+          padding: 1em;
+          border-radius: 0.125rem;
+          box-shadow: 5px 5px 15px #333333;
+        }
+        a:hover {
+          box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18),
+            0 4px 15px 0 rgba(0, 0, 0, 0.15);
         }
       }
     }

@@ -46,6 +46,7 @@ export default class center_map extends Vue {
   background: rgba(172, 168, 168, 0.924);
   margin: 0.5em;
   padding: 0.75em;
+  @formmoreshadow();
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   .primary {
     color: rgb(58, 180, 119);
@@ -74,7 +75,7 @@ export default class center_map extends Vue {
     }
     a {
       color: rgb(123, 125, 129);
-      font-siez:90%;
+      font-siez: 90%;
     }
   }
 }

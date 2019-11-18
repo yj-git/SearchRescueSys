@@ -43,7 +43,8 @@
         <div class="user-caseinfo"></div>
       </div>
       <div class="case-create">
-        <div>
+        <div class="create-header">创建case</div>
+        <div class="create-body">
           <img src="../../../assets/create_btn.png" />
           <span>创建搜救或溢油case</span>
           <button>创建作业</button>
@@ -237,12 +238,16 @@ export default class center_map extends Vue {
     // 创建的按钮
     .case-create {
       display: flex;
+      flex-direction: column;
       flex: 1;
       height: 400px;
       background: green;
       // align-items: center;
       justify-content: center;
-      div {
+      .create-header{
+        background-color: #2bbbad !important;
+      }
+      .create-body {
         height: 15em;
         background: blue;
         display: flex;

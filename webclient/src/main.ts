@@ -23,6 +23,20 @@ import "echarts";
 // import moment from "vue-moment";
 import moment from "moment";
 
+// TODO:[-] 19-11-19 引入font awesome
+// import fontawesome from "@fortawesome/fontawesome";
+// import FontAwesomeIcon from "@fortawesome/vue-fontawesome";
+// import solid from "@fortawesome/fontawesome-free-solid";
+// import regular from "@fortawesome/fontawesome-free-regular";
+// import brands from "@fortawesome/fontawesome-free-brands";
+
+import "font-awesome/css/font-awesome.css";
+
+// fontawesome.library.add(solid);
+// fontawesome.library.add(regular);
+// fontawesome.library.add(brands);
+// Vue.component("font-awesome-icon", FontAwesomeIcon);
+
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 // Vue.use(moment);

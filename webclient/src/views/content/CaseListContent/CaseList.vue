@@ -1,62 +1,72 @@
 <template>
   <div id="case_list_content">
     <div class="user-statistics">
-      <OutLiner :count="35" :msg="'created'"></OutLiner>
+      <!-- <OutLiner :count="35" :msg="'created'"></OutLiner>
       <OutLiner :count="2" :msg="'running'"></OutLiner>
       <OutLiner :count="15" :msg="'completed'"></OutLiner>
-      <OutLiner :count="18" :msg="'waiting'"></OutLiner>
+      <OutLiner :count="18" :msg="'waiting'"></OutLiner> -->
+      <InfoBox
+        :count="35"
+        :msg="'created'"
+        :iconstyle="'fa-edit'"
+        :levelstyle="'my-default'"
+      ></InfoBox>
+      <InfoBox
+        :count="2"
+        :msg="'running'"
+        :iconstyle="'fa-refresh fa-spin'"
+        :levelstyle="'my-info'"
+      ></InfoBox>
+      <InfoBox
+        :count="15"
+        :msg="'completed'"
+        :iconstyle="'fa-stop-circle'"
+        :levelstyle="'my-succes'"
+      ></InfoBox>
+      <InfoBox
+        :count="18"
+        :msg="'waiting'"
+        :iconstyle="'fa-pause-circle'"
+        :levelstyle="'my-warning'"
+      ></InfoBox>
     </div>
     <div class="case-statistics">
-      <div class="case-listinfo">
-        <!-- 左侧的作业列表简况 -->
+      <!-- 历史case的曲线图 -->
+      <div class="case-history-charts">
+        <CaseHistoryChart></CaseHistoryChart>
+      </div>
+      <!-- 历史提交的case的摘要信息 -->
+      <div class="case-history-form">
+        <CaseHistoryForm></CaseHistoryForm>
+      </div>
+      <!-- TODO:[-] 19-11-19 以下为v1版的样式，已不使用，注释掉，暂时备份 -->
+      <!-- <div class="case-listinfo">
         <div class="case-list">
           <span>当前作业列表</span>
           <JobCurrent></JobCurrent>
-          <!-- <JobProgressbar
+          <JobProgressbar
             :percent="90"
             :username="'user_1'"
             :casename="'case_xxx_1'"
             :cmt="new Date()"
           ></JobProgressbar>
-          <JobProgressbar
-            :percent="67"
-            :username="'user_1'"
-            :casename="'case_xxx_2'"
-            :cmt="new Date()"
-          ></JobProgressbar>
-          <JobProgressbar
-            :percent="23"
-            :username="'user_1'"
-            :casename="'case_xxx_3'"
-            :cmt="new Date()"
-          ></JobProgressbar>
-          <JobProgressbar
-            :percent="71"
-            :username="'user_1'"
-            :casename="'case_xxx_4'"
-            :cmt="new Date()"
-          ></JobProgressbar> -->
         </div>
 
-        <!-- 用户提交的case的情况
-           主要显示最后的case的状态（或所在位置）
-       -->
+       
         <div class="user-caseinfo">
           <QueuePercent></QueuePercent>
         </div>
-      </div>
-      <div class="case-create">
+      </div> -->
+      <!-- <div class="case-create">
         <div class="create-header">
           <h2>创建case</h2>
           <span>搜集|溢油</span>
         </div>
         <div class="create-body">
           <img src="../../../assets/create_btn.png" />
-          <!-- <span>创建搜救或溢油case</span> -->
-          <!-- <button>创建作业</button> -->
           <a>创建作业</a>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div class="user-content">
@@ -141,12 +151,18 @@ import OutLiner from "@/views/members/form/Outliner.vue";
 import JobProgressbar from "@/views/members/progress/JobProgressbar.vue";
 import JobCurrent from "@/views/members/table/JobCurrent.vue";
 import QueuePercent from "@/views/members/percentage/QuenePercent.vue";
+import InfoBox from "@/views/members/form/InfoBox.vue";
+import CaseHistoryChart from "@/views/members/charts/CaseHistoryCharts.vue";
+import CaseHistoryForm from "@/views/members/form/CaseHistoryForm.vue";
 @Component({
   components: {
+    InfoBox,
     OutLiner,
     JobProgressbar,
     JobCurrent,
-    QueuePercent
+    QueuePercent,
+    CaseHistoryChart,
+    CaseHistoryForm
   }
 })
 export default class center_map extends Vue {
@@ -214,6 +230,10 @@ export default class center_map extends Vue {
     display: flex;
     @margin();
     // flex-direction: row;
+    .case-history-charts {
+      height: 500px;
+    }
+    // 以下两个样式暂时不再使用
     .case-listinfo {
       display: flex;
       flex: 4;

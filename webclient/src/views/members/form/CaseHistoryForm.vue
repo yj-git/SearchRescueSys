@@ -1,6 +1,6 @@
 <template>
   <div id="my-history-form">
-    <div class="title">历史作业列表</div>
+    <div class="title">历史作业统计</div>
     <ul>
       <li>
         <span>2019-11-02</span>
@@ -63,6 +63,7 @@ export default class CaseHistoryForm extends Vue {
     font-weight: 400;
   }
   ul {
+    padding: 0;
     li {
       display: flex;
       flex-direction: column;

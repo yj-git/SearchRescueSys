@@ -39,6 +39,8 @@
       <div class="case-history-form">
         <CaseHistoryForm></CaseHistoryForm>
       </div>
+      <!-- last10提交的case的详细信息 -->
+      <div></div>
       <!-- TODO:[-] 19-11-19 以下为v1版的样式，已不使用，注释掉，暂时备份 -->
       <!-- <div class="case-listinfo">
         <div class="case-list">
@@ -71,7 +73,7 @@
 
     <div class="user-content">
       <!-- 按钮区域 -->
-      <div class="buttons">
+      <!-- <div class="buttons">
         <el-row>
           <el-button type="primary" icon="el-icon-edit" circle></el-button>
         </el-row>
@@ -88,7 +90,6 @@
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
                 <p>作业名: {{ scope.row.name }}</p>
-                <!-- <p>住址: {{ scope.row.address }}</p> -->
                 <div slot="reference" class="name-wrapper">
                   <el-tag size="medium">{{ scope.row.name }}</el-tag>
                 </div>
@@ -99,10 +100,7 @@
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
                 <p>状态: {{ scope.row.state }}</p>
-                <!-- <p>住址: {{ scope.row.address }}</p> -->
-                <div slot="reference" class="name-wrapper">
-                  <!-- 通过设置type，设置'primary'为蓝色，'success'为绿色，也可以设置为其他颜色，待试验 -->
-                  <el-tag
+                <div slot="reference" class="name-wrapper"><el-tag
                     size="medium"
                     :type="scope.row.tag === 'finish' ? 'primary' : 'success'"
                     >{{ scope.row.state }}</el-tag
@@ -115,7 +113,6 @@
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
                 <p>区域: {{ scope.row.area }}</p>
-                <!-- <p>住址: {{ scope.row.address }}</p> -->
                 <div slot="reference" class="name-wrapper">
                   <el-tag size="medium">{{ scope.row.area }}</el-tag>
                 </div>
@@ -139,8 +136,8 @@
             </template>
           </el-table-column>
         </el-table>
-      </div>
-      <!-- 加载当前的作业 -->
+      </div> -->
+      <JobListUser></JobListUser>
     </div>
   </div>
 </template>
@@ -154,6 +151,7 @@ import QueuePercent from "@/views/members/percentage/QuenePercent.vue";
 import InfoBox from "@/views/members/form/InfoBox.vue";
 import CaseHistoryChart from "@/views/members/charts/CaseHistoryCharts.vue";
 import CaseHistoryForm from "@/views/members/form/CaseHistoryForm.vue";
+import JobListUser from "@/views/members/table/JobListByUser.vue";
 @Component({
   components: {
     InfoBox,
@@ -162,7 +160,8 @@ import CaseHistoryForm from "@/views/members/form/CaseHistoryForm.vue";
     JobCurrent,
     QueuePercent,
     CaseHistoryChart,
-    CaseHistoryForm
+    CaseHistoryForm,
+    JobListUser
   }
 })
 export default class center_map extends Vue {
@@ -322,33 +321,6 @@ export default class center_map extends Vue {
     }
   }
   //
-  // 提交的作业列表
-  .user-content {
-    display: flex;
-
-    flex: 1;
-    flex-direction: column;
-    // border-bottom-right-radius: 0.5em;
-    // border-bottom-left-radius: 0.5em;
-    padding-bottom: 1em;
-    background: orange;
-    @bottomradius();
-    // 按钮区
-    .buttons {
-      display: flex;
-      flex: 2;
-      background: rgba(119, 119, 219, 0.801);
-
-      .el-row {
-        @button();
-      }
-    }
-    // 用户的table
-    .my-table {
-      display: flex;
-      flex: 10;
-      background: rgba(107, 197, 197, 0.801);
-    }
-  }
+  
 }
 </style>

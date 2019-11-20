@@ -5,11 +5,13 @@
       <OutLiner :count="2" :msg="'running'"></OutLiner>
       <OutLiner :count="15" :msg="'completed'"></OutLiner>
       <OutLiner :count="18" :msg="'waiting'"></OutLiner> -->
+      <!-- TODO:[-] 19-11-19 注意此处对组件直接通过@click绑定是无效的，需要通过@click.native进行绑定click事件 -->
       <InfoBox
         :count="35"
         :msg="'created'"
         :iconstyle="'fa-edit'"
         :levelstyle="'my-default'"
+        @click.native="showDialog"
       ></InfoBox>
       <InfoBox
         :count="2"
@@ -139,6 +141,20 @@
       </div> -->
       <JobListUser></JobListUser>
     </div>
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <CreatedCaseForm></CreatedCaseForm>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -152,6 +168,7 @@ import InfoBox from "@/views/members/form/InfoBox.vue";
 import CaseHistoryChart from "@/views/members/charts/CaseHistoryCharts.vue";
 import CaseHistoryForm from "@/views/members/form/CaseHistoryForm.vue";
 import JobListUser from "@/views/members/table/JobListByUser.vue";
+import CreatedCaseForm from "@/views/members/form/CreateCaseForm.vue";
 @Component({
   components: {
     InfoBox,
@@ -161,10 +178,11 @@ import JobListUser from "@/views/members/table/JobListByUser.vue";
     QueuePercent,
     CaseHistoryChart,
     CaseHistoryForm,
-    JobListUser
+    JobListUser,
+    CreatedCaseForm
   }
 })
-export default class center_map extends Vue {
+export default class CaseListView extends Vue {
   mydata: any = null;
   tableData: any = [
     {
@@ -200,6 +218,11 @@ export default class center_map extends Vue {
       area: "ecs"
     }
   ];
+  dialogVisible: boolean = false;
+  showDialog() {
+    console.log("在组件外部触发点击事件");
+    this.dialogVisible = true;
+  }
   mounted() {}
   get computedTest() {
     return null;
@@ -321,6 +344,5 @@ export default class center_map extends Vue {
     }
   }
   //
-  
 }
 </style>

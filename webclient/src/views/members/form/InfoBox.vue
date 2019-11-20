@@ -1,7 +1,9 @@
 <template>
   <div class="info-box col-md-2" :class="levelstyle">
     <!-- 左侧的icon -->
-    <div class="icon"><i class="fa fa-2x" :class="iconstyle"></i></div>
+    <div class="icon" @click="show()">
+      <i class="fa fa-2x" :class="iconstyle"></i>
+    </div>
     <!-- 右侧的描述内容 -->
     <div class="content">
       <div class="title">{{ msg }}</div>
@@ -12,7 +14,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 @Component({})
-export default class center_map extends Vue {
+export default class IconInfoBox extends Vue {
   mydata: any = null;
   @Prop(Number)
   count: number;
@@ -24,6 +26,9 @@ export default class center_map extends Vue {
   levelstyle: string;
 
   mounted() {}
+  show() {
+    console.log("触发了子组件的点击事件");
+  }
   get computedTest() {
     return null;
   }

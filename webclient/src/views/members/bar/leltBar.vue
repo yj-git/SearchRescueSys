@@ -93,8 +93,11 @@
       <!-- 溢油模型 -->
       <el-submenu index="4">
         <template slot="title">溢油</template>
-        <el-menu-item index="2-1">
-          <router-link to="/oilmap">历史案例</router-link>
+        <el-menu-item index="4-1">
+          <router-link to="/oilmap">展示方式1</router-link>
+        </el-menu-item>
+        <el-menu-item index="4-2">
+          <router-link to="/newoilmap">展示方式2</router-link>
         </el-menu-item>
       </el-submenu>
     </el-menu>

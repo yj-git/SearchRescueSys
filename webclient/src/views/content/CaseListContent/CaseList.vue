@@ -142,9 +142,9 @@
       <JobListUser></JobListUser>
     </div>
     <el-dialog
-      title="提示"
+      title="创建作业"
       :visible.sync="dialogVisible"
-      width="30%"
+      width="45%"
       :before-close="handleClose"
     >
       <CreatedCaseForm></CreatedCaseForm>
@@ -222,6 +222,10 @@ export default class CaseListView extends Vue {
   showDialog() {
     console.log("在组件外部触发点击事件");
     this.dialogVisible = true;
+  }
+  // 关闭窗口时触发
+  handleClose(){
+
   }
   mounted() {}
   get computedTest() {

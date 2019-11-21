@@ -20,11 +20,15 @@ function getDaysNum(start: Date, end: Date): number {
     if (days.indexOf(tempDate.date()) === -1) {
       days.push(tempDate.date());
     }
-    tempDate=tempDate.add(1, "h");
+    tempDate = tempDate.add(1, "h");
     //    start.getUTCDate()
   }
   return days.length;
   //    for()
 }
 
-export { getDaysNum };
+function formatDate(now: Date) {
+  return moment(now).format("YYYY-MM-DD HH");
+}
+
+export { getDaysNum, formatDate };

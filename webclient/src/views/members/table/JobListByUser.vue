@@ -1,11 +1,11 @@
 <template>
-  <div id="job-list" >
+  <div id="job-list">
     <!-- 按钮区域 -->
     <!-- <div class="buttons">
       <el-row>
         <el-button type="primary" icon="el-icon-edit" circle></el-button>
       </el-row>
-    </div> -->
+    </div>-->
     <div class="my-table">
       <el-table :data="tableData" border style="width: 100%">
         <el-table-column label="日期" width="180">
@@ -35,8 +35,7 @@
                 <el-tag
                   size="medium"
                   :type="scope.row.tag === 'finish' ? 'primary' : 'success'"
-                  >{{ scope.row.state }}</el-tag
-                >
+                >{{ scope.row.state }}</el-tag>
               </div>
             </el-popover>
           </template>
@@ -54,18 +53,8 @@
         </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="success"
-              @click="handleEdit(scope.$index, scope.row)"
-              >加载</el-button
-            >
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-              >删除</el-button
-            >
+            <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">加载</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="180">
@@ -152,15 +141,16 @@ export default class JobListUser extends Vue {
 // 提交的作业列表
 #job-list {
   display: flex;
-  @formmoreshadow();
+  // @formmoreshadow();
   flex: 1;
   flex-direction: column;
+  align-items: center;
   // border-bottom-right-radius: 0.5em;
   // border-bottom-left-radius: 0.5em;
   //   padding-bottom: 1em;
-  background: orange;
-  width: 70%;
-//   margin: 1em;
+  // background: orange;
+  // width: 70%;
+  //   margin: 1em;
   @bottomradius();
   // 按钮区
   .buttons {
@@ -177,6 +167,8 @@ export default class JobListUser extends Vue {
     display: flex;
     flex: 10;
     background: rgba(107, 197, 197, 0.801);
+    width: 70%;
+    @formmoreshadow();
   }
 }
 </style>

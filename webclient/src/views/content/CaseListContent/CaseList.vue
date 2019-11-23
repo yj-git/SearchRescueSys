@@ -4,7 +4,7 @@
       <!-- <OutLiner :count="35" :msg="'created'"></OutLiner>
       <OutLiner :count="2" :msg="'running'"></OutLiner>
       <OutLiner :count="15" :msg="'completed'"></OutLiner>
-      <OutLiner :count="18" :msg="'waiting'"></OutLiner> -->
+      <OutLiner :count="18" :msg="'waiting'"></OutLiner>-->
       <!-- TODO:[-] 19-11-19 注意此处对组件直接通过@click绑定是无效的，需要通过@click.native进行绑定click事件 -->
       <InfoBox
         :count="35"
@@ -60,7 +60,7 @@
         <div class="user-caseinfo">
           <QueuePercent></QueuePercent>
         </div>
-      </div> -->
+      </div>-->
       <!-- <div class="case-create">
         <div class="create-header">
           <h2>创建case</h2>
@@ -70,7 +70,7 @@
           <img src="../../../assets/create_btn.png" />
           <a>创建作业</a>
         </div>
-      </div> -->
+      </div>-->
     </div>
 
     <div class="user-content">
@@ -138,21 +138,14 @@
             </template>
           </el-table-column>
         </el-table>
-      </div> -->
+      </div>-->
       <JobListUser></JobListUser>
     </div>
-    <el-dialog
-      title="创建作业"
-      :visible.sync="dialogVisible"
-      width="45%"
-      :before-close="handleClose"
-    >
+    <el-dialog title="创建作业" :visible.sync="dialogVisible" width="45%" :before-close="handleClose">
       <CreatedCaseForm></CreatedCaseForm>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -224,9 +217,7 @@ export default class CaseListView extends Vue {
     this.dialogVisible = true;
   }
   // 关闭窗口时触发
-  handleClose(){
-
-  }
+  handleClose() {}
   mounted() {}
   get computedTest() {
     return null;
@@ -244,10 +235,13 @@ export default class CaseListView extends Vue {
   padding: 0.5em;
   // margin: 0.5em;
   flex-direction: column;
+  @centerbackground();
   // 用户的统计信息
   .user-statistics {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
   }
   // 作业的统计信息
   .case-statistics {
@@ -255,9 +249,12 @@ export default class CaseListView extends Vue {
     // background: rgb(189, 123, 123);
     display: flex;
     @margin();
+    justify-content: center;
     // flex-direction: row;
     .case-history-charts {
       height: 500px;
+
+      @formbox();
     }
     // 以下两个样式暂时不再使用
     .case-listinfo {
@@ -346,6 +343,12 @@ export default class CaseListView extends Vue {
         }
       }
     }
+  }
+  .user-content {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    // width: 70%;
   }
   //
 }

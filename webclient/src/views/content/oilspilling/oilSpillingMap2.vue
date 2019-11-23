@@ -11,6 +11,10 @@
     <div id="center-content">
       <div class="left-models">
         <OilLeftModels :oilRealData="oilAvgRealData" :title="oilAvgRealData.code"></OilLeftModels>
+        <!-- TODO:[*] 19-11-23 此处加入 factor 与 showtype 的选项 -->
+        <div class="left-select">
+          <OilFactorSelect></OilFactorSelect>
+        </div>
       </div>
       <div id="map-content">
         <l-map ref="basemap" :zoom="zoom" :center="center">
@@ -212,7 +216,7 @@ export default class OilSpillingMap extends Vue {
           this.oilHeatmapList.push({
             lat: temp.point.coordinates[1],
             lng: temp.point.coordinates[0],
-            count: 2
+            count: temp.mass.oil
           });
 
           // todo:[*] 19-10-16 暂时去掉散点，只保留热图
@@ -230,13 +234,20 @@ export default class OilSpillingMap extends Vue {
         // 对应的是Leaflet.heat库
         // 但是会提示：Property 'heatLayer' does not exist on type 'typeof import("D:/02proj/SearchRescue/SearchRescueSys/webclient/node_modules/@types/leaflet/index")'.
         let list = this.oilHeatmapList;
-
+        // 动态生成数组中的最大值与最小值
+        // 先排序
+        list.sort((a, b) => {
+          return a.count - b.count;
+        });
+        // 找出最大值和最小值
+        let mim_val = list[0]["count"];
+        let max_val = list[list.length - 1]["count"];
         var testData = {
-          max: 2,
+          max: max_val,
           data: list
         };
         var cfg = {
-          radius: 0.01,
+          radius: 0.008,
           maxOpacity: 0.8,
           scaleRadius: true,
           useLocalExtrema: true,
@@ -487,12 +498,6 @@ export default class OilSpillingMap extends Vue {
   @center();
   flex-direction: column;
   // 左侧的切换按钮
-  .left_select {
-    position: absolute;
-    top: 150px;
-    left: 50px;
-    z-index: 1500;
-  }
   // 顶部的多个model框
   #top-models {
     display: flex;
@@ -514,7 +519,13 @@ export default class OilSpillingMap extends Vue {
     // background: #17a2b8;
     .left-models {
       flex: 2;
+
       // background: #55d1c7;
+      // TODO:[*] 19-11-23 左侧的控制 showtype 与factor 的选择框
+      .left-select {
+        // 注意此处需要加入base.less中的margin
+        @formmargin();
+      }
     }
     #map-content {
       flex: 5;

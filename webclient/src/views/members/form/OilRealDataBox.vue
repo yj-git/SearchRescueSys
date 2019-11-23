@@ -2,8 +2,14 @@
   <div class="oil-realdata-box">
     <div class="title">{{realdata.title}}</div>
     <div class="body">
-      <div class="main-content">{{realdata.main}}</div>
-      <div class="minor-content">{{realdata.minor}}</div>
+      <div class="main-content">
+        <span>{{realdata.main}}</span>
+        <span>m/s</span>
+      </div>
+      <div class="minor-content">
+        <span>{{realdata.minor}}</span>
+        <span>°</span>
+      </div>
     </div>
   </div>
 </template>
@@ -51,9 +57,17 @@ export default class OilRealDataBox extends Vue {
     .main-content {
       font-size: 1.8rem;
       font-weight: 600;
+      span:last-of-type {
+        font-size: 1.3rem;
+        margin-left: 1em;
+      }
     }
     .minor-content {
       font-size: 1.4rem;
+      span:last-of-type {
+        font-size: 1.3rem;
+        margin-left: 1em;
+      }
       // font-weight: 500;
     }
   }

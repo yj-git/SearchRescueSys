@@ -4,11 +4,7 @@
     <div class="show">
       <div class="row">
         <span>显示模式</span>
-        <el-select
-          v-model="valueShowTypes"
-          placeholder="请选择"
-          @change="setType"
-        >
+        <el-select v-model="valueShowTypes" placeholder="请选择" @change="setType">
           <el-option
             v-for="item in optionsShowTypes"
             :key="item.key"
@@ -19,11 +15,7 @@
       </div>
       <div class="row">
         <span>权重</span>
-        <el-select
-          v-model="valueFactors"
-          placeholder="请选择"
-          @change="setFactor"
-        >
+        <el-select v-model="valueFactors" placeholder="请选择" @change="setFactor">
           <el-option
             v-for="item in optionsFactors"
             :key="item.key"
@@ -89,6 +81,7 @@ export default class OilFactorSelect extends Vue {
 }
 </script>
 <style lang="less" scoped>
+@import "../../../styles/base";
 #oil_factor_select {
   display: flex;
   flex-direction: column;
@@ -110,7 +103,9 @@ export default class OilFactorSelect extends Vue {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 30px;
+  // padding-left: 30px;
+  // margin: 0px;
+  @formmargin();
 }
 .el-select {
   width: 60%;

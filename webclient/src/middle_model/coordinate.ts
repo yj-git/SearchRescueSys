@@ -9,8 +9,8 @@ class XYMidMode {
     public x: number
     public y: number
     constructor(
-        x: number,
-        y: number
+        x: number=0,
+        y: number=0
     ) {
         this.x = x;
         this.y = y;
@@ -24,7 +24,7 @@ class XYMidMode {
 class PointMidModel {
     public lat: number
     public lon: number
-    constructor(lat: number, lon: number) {
+    constructor(lat: number=0, lon: number=0) {
         this.lat = lat;
         this.lon = lon;
     }

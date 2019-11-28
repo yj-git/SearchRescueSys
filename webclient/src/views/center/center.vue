@@ -21,6 +21,7 @@ export default class center_map extends Vue {
 <style scoped>
 #center {
   display: flex;
+  flex-direction: column;
   flex: 8;
   background: #80c3c5;
 }

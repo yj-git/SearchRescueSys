@@ -61,3 +61,11 @@ class OilspillingAvgModelSerializer(serializers.Serializer):
     water_fraction = serializers.FloatField()
 
     oil = OilModelSerializer()
+
+
+class StartEndDateMidModelSerializer(serializers.Serializer):
+    '''
+        对应 apps/oilspilling/middle_model.py 中的 StartEndDateMidModel
+    '''
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()

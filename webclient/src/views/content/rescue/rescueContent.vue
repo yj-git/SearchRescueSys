@@ -1,19 +1,37 @@
 <template>
   <div id="rescue_map">
-    <l-map ref="basemap" :zoom="zoom" :center="center">
-      <l-tile-layer :url="url"></l-tile-layer>
-      <l-polyline :lat-lngs="polyline.latlngs" :fill="false" :color="polyline.color"></l-polyline>
+    <div id="map_content">
+      <l-map ref="basemap" :zoom="zoom" :center="center">
+        <l-tile-layer :url="url"></l-tile-layer>
+        <l-polyline
+          :lat-lngs="polyline.latlngs"
+          :fill="false"
+          :color="polyline.color"
+        ></l-polyline>
 
-      <l-circle v-for="temp in rescuePointList" :key="temp.id" :lat-lng="temp.latlon" />
-      <l-circle v-for="temp in rescueScatterPlotList" :key="temp.id" :lat-lng="temp" />
-    </l-map>
-    <TimeBar :targetDate="startDate" :days="days" :interval="interval"></TimeBar>
+        <l-circle
+          v-for="temp in rescuePointList"
+          :key="temp.id"
+          :lat-lng="temp.latlon"
+        />
+        <l-circle
+          v-for="temp in rescueScatterPlotList"
+          :key="temp.id"
+          :lat-lng="temp"
+        />
+      </l-map>
+      <TimeBar
+        :targetDate="startDate"
+        :days="days"
+        :interval="interval"
+      ></TimeBar>
+    </div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import * as L from "leaflet";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { Getter, Mutation, State } from "vuex-class";
+import { Getter, Mutation, State, namespace } from "vuex-class";
 import {
   LMap,
   LTileLayer,
@@ -71,26 +89,6 @@ export default class RescueMap extends Vue {
     // this.code = "";
     this.clearAll();
     loadTrackAvgList(this.code).then(res => {
-      // console.log(res.data);
-      //code: "qz_ty1_100p"
-      // current:
-      // x: 0.1850069761276245
-      // y: 0.1850069761276245
-      // __proto__: Object
-      // point:
-      // coordinates: Array(2)
-      // 0: 118.9177
-      // 1: 24.7353
-      // length: 2
-      // __proto__: Array(0)
-      // type: "Point"
-      // __proto__: Object
-      // status: 0
-      // time: "2016-07-21T21:00:00Z"
-      // wind:
-      // x: 4.994279861450195
-      // y: 2.817444086074829
-
       // This condition will always return 'false' since the types 'number' and 'string' have no overlap.
       if (res.status === 200) {
         // res.data.map(vaemp:any=>{
@@ -155,7 +153,7 @@ export default class RescueMap extends Vue {
   mounted() {
     this.loadTrackAvgList();
     // 先给一个当前时间
-    this.targetDate = new Date(2016, 6, 21,16, 0);
+    this.targetDate = new Date(2016, 6, 21, 16, 0);
     this.startDate = new Date(2016, 6, 21, 16, 0);
     this.loadTrackScatterPlots();
   }
@@ -163,8 +161,10 @@ export default class RescueMap extends Vue {
     return null;
   }
 
+  @Getter("getCurrent", { namespace: "map" }) getcurrent;
+
   get current(): string {
-    return this.$store.state.current;
+    return this.getcurrent;
   }
 
   // 监听store中的current
@@ -178,13 +178,19 @@ export default class RescueMap extends Vue {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
+@import "../../../styles/base";
 #rescue_map {
   /* height: 100%; */
-  /* display: flex;
-  flex-direction: column; */
-  width: 1500px;
-  height: 700px;
-  background: #ff0808;
+  // display: flex;
+  @center();
+  flex-direction: column;
+  /* width: 1500px;
+  height: 700px; */
+  // background: #ff0808;
+}
+#map_content {
+  flex: 1;
+  @centermap();
 }
 </style>

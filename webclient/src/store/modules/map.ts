@@ -16,14 +16,16 @@ const state: State = {
 
 // 用来改变应用状态的函数
 const mutations = {
-  current(state: State, current: string) {
+  setcurrent(state: State, current: string) {
     state.current = current
   }
 }
 
 // tslint:disable-next-line:typedef
 const getters = {
-
+  getCurrent(state) {
+    return state.current;
+  }
 }
 
 // 异步调用api的函数（暂时不用）
@@ -31,7 +33,7 @@ const actions = {}
 
 export default {
   // TODO [*] 19-03-21 暂时取消namespaced，先实现功能
-  // namespaced: true,
+  namespaced: true,
   state,
   mutations,
   actions,

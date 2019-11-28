@@ -1,10 +1,7 @@
 <template>
-  <div>
-    <div id="footer">footer</div>
-  </div>
+  <div id="footer">footer</div>
 </template>
-<script lang="ts"
->
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 @Component({})
 export default class footer extends Vue {
@@ -19,7 +16,7 @@ export default class footer extends Vue {
 #footer {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 0.5;
   background: #2f8da5;
 }
 </style>

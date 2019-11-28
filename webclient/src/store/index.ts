@@ -1,23 +1,32 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 
 // 导入store/modules中的所有.ts，作为一个module引入
-import modules from '@/store/modules'
-// import map from './modules/map'
+import oilStore from "@/store/modules/oil";
+import mapStore from "./modules/map";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 // export default new Vuex.Store({
 //   modules
 // })
 
 export default new Vuex.Store({
-  state: {
-    current: ''
+  modules: {
+    // oil:{
+    //   namespaced:true
+    // }
+    oil: oilStore,
+    map: mapStore
+    // oilStore
   },
-  mutations: {
-    current(state: any, current: string) {
-      state.current = current
-    }
+  // TODO:[*] 19-11-08 此部分先注释掉
+  state: {
+    current: ""
   }
-})
+  // mutations: {
+  //   current(state: any, current: string) {
+  //     state.current = current;
+  //   }
+  // }
+});

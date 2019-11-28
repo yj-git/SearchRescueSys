@@ -70,3 +70,9 @@
 - [x] 重构了溢油子页面
   ![alt 实现效果](./document/99img/微信图片_20191121224611.png)
 - [ ] 缺少部分效果
+
+---
+19-11-28  
+- [x] 重新加入了job的相关proj
+![alt job思维导图](./document/99img/background/job.png)
+![alt 泳道](./document/99img/background/TIM截图20191128221450.png)

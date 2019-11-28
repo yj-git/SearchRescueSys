@@ -25,7 +25,8 @@ export default class header extends Vue {
   justify-content: space-around;
   align-items: center;
   flex: 0.5;
-  background: #31859be8;
+  // background: #31859be8;
+  background: linear-gradient(#465581, #313b59);
   .logo {
     position: absolute;
     left: 50px;

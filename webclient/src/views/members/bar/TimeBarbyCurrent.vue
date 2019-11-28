@@ -10,8 +10,9 @@
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Mutation, State, namespace } from "vuex-class";
 @Component({})
-export default class TimeBar extends Vue {
+export default class TimeBarbyCurrent extends Vue {
   mydata: any = null;
   current: String = "1990-01-01T6:00:00.0Z";
   // 修改当前的current的值
@@ -19,8 +20,11 @@ export default class TimeBar extends Vue {
     // console.log(val);
     // console.log(this.current);
     var tempCurrent = this.current;
-    this.$store.commit("current", tempCurrent);
+    // this.$store.commit("current", tempCurrent);
+    this.setCurrent(tempCurrent);
   }
+
+  @Mutation("setcurrent", { namespace: "map" }) setCurrent;
   mounted() {}
   get computedTest() {
     return null;

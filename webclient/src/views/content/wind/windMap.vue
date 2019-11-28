@@ -9,7 +9,7 @@
         :styles="wmsStyles"
         :format="wmsFormat"
         :transparent="true"
-      ></l-wms-tile-layer> -->
+      ></l-wms-tile-layer>-->
       <!-- <l-wms-tile-layer
         v-for="layer in layers"
         :key="layer.name"
@@ -51,7 +51,7 @@ import { WindModel } from "@/model/map/wind";
 // } from "vue2-leaflet"
 import { DivIcon, DivIconOptions } from "leaflet";
 import { ArrayPropsDefinition } from "vue/types/options";
-import TimeBar from "@/views/members/bar/TimeBar.vue";
+import TimeBar from "@/views/members/bar/TimeBarbyCurrent.vue";
 @Component({
   components: {
     "l-marker": LMarker,

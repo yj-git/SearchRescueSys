@@ -62,7 +62,7 @@
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
-      background-color="#115368ef"
+      background-color="#283958"
       text-color="#fff"
       active-text-color="#ffd04b"
     >

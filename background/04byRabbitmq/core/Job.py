@@ -51,29 +51,42 @@ def change_rate(rate):
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         # 获取request 参数
-        request: MsgRequest = args[1]
+        request: MsgRequest = args[0]
         request.set_content_type_params('rate', rate)
         # args[1] = request
         return wrapped(*args, **kwargs)
 
     return wrapper
 
+# TODO:[-] 19-12-01 改为使用@wrapt.decorator的方式实现，简化部分操作，以下部分注释掉
+# def store_job_rate():
+#     '''
+#        存储当前作业以及当前作业的进度
+#     '''
+#
+#     def decorate(func):
+#         @wraps(func)
+#         def wrapper(self, *args, **kwargs):
+#             # 获取当前作业的信息
+#             # 将作业信息以及当前的rate更新至数据库
+#             return func(self, *args, **kwargs)
+#
+#         return wrapper
+#
+#     return decorate
 
+# TODO:[*] 19-12-01 改为使用@wrapt.decorator的方式实现，简化部分操作
 def store_job_rate():
     '''
        存储当前作业以及当前作业的进度
     '''
-
-    def decorate(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            # 获取当前作业的信息
-            # 将作业信息以及当前的rate更新至数据库
-            return func(self, *args, **kwargs)
-
-        return wrapper
-
-    return decorate
+    @wrapt.decorator
+    def wrapper(wrapped,instance,args,kwargs):
+        # 获取当前作业的信息
+        # 从instance中 获取 job 中的基本信息，以及当前的rate，写入/更新数据库中的记录
+        # 将作业信息以及当前的rate更新至数据库
+        return wrapped(*args, **kwargs)
+    return wrapper
 
 
 # def write_rate(rate):

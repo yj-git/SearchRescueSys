@@ -58,6 +58,7 @@ def change_rate(rate):
 
     return wrapper
 
+
 # TODO:[-] 19-12-01 改为使用@wrapt.decorator的方式实现，简化部分操作，以下部分注释掉
 # def store_job_rate():
 #     '''
@@ -80,12 +81,14 @@ def store_job_rate():
     '''
        存储当前作业以及当前作业的进度
     '''
+
     @wrapt.decorator
-    def wrapper(wrapped,instance,args,kwargs):
+    def wrapper(wrapped, instance, args, kwargs):
         # 获取当前作业的信息
         # 从instance中 获取 job 中的基本信息，以及当前的rate，写入/更新数据库中的记录
         # 将作业信息以及当前的rate更新至数据库
         return wrapped(*args, **kwargs)
+
     return wrapper
 
 
@@ -191,7 +194,8 @@ class JobOil(JobRun):
                 2- 将传入的参数写入数据库
                 3- 过一段时间去指定路径下获取指定名称的nc文件
                 4- 将nc文件写入数据库
-
+                TODO:[*] 19-12-17
+                准备将所需的步骤加入一个数组中(此处需注意需要统一传入的参数——或者使用*args,**kwargs）
         :return:
         '''
         request = MsgRequest()
@@ -207,7 +211,7 @@ class JobOil(JobRun):
 
     @change_rate(rate=10)
     @store_job_rate()
-    def do_requsest(self, request: MsgRequest):
+    def do_requsest(self, request: MsgRequest, *args, **kwargs):
         '''
             根据传入的参数执行脚本文件
         :param request:
@@ -219,3 +223,47 @@ class JobOil(JobRun):
         # 执行之后，向request中写入进度
         # 此处放在装饰器中，不在此处
         # request.set_content_type_params('rate', 0.2)
+
+    @change_rate(rate=50)
+    @store_job_rate()
+    def do_writein_db(self, request: MsgRequest, *args, **kwargs):
+        '''
+            将传入的oil_pattern 状态写入数据库
+        :param request:
+        :return:
+        '''
+        pass
+
+
+    @change_rate(rate=70)
+    @store_job_rate()
+    def do_match_targetfile(self,request:MsgRequest,*args,**kwargs):
+        '''
+            定时去指定目录下判断指定文件是否存在
+                注意其中需要加入定时器
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        '''
+        pass
+
+    @change_rate(rate=90)
+    @store_job_rate()
+    def do_store_model(self,request:MsgRequest,*args,**kwargs):
+        '''
+            将nc文件写入数据库
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        '''
+        pass
+
+    def do_end(self,request:MsgRequest):
+        '''
+            当前得作业结束
+        :param request:
+        :return:
+        '''
+

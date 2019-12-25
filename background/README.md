@@ -46,3 +46,6 @@ job主要包括几个步骤：
 │ ├── script               <- 所有的执行各模型的脚本放置此目录下
 │ ├── main.py               <- 入口文件
 </code></pre>
+
+重新梳理后的工作流如下图：
+![alt job info](../document/99img/background/oil写入数据库流程.png)  

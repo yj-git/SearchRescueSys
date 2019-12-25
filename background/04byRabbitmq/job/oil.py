@@ -1,6 +1,6 @@
 from core.Job import JobRun, change_rate, store_job_rate
 from msg.request import MsgRequest
-
+from models.middleModel import OilPatternMidModel
 
 class JobOil(JobRun):
     '''
@@ -27,6 +27,10 @@ class JobOil(JobRun):
         self._do_funcs = [self.get_request, self.do_requsest, self.do_writein_db, self.do_match_targetfile,
                           self.do_store_model, self.do_end]
         # 由于所有需要do job的方法签名是一样的
+        # TODO:[-] 19-12-25 此处存在一个设计上的问题:若执行到某一步骤，该步骤耗时较长，则会阻塞下面的流程
+        # 现在来看主要存在耗时较长的步骤为:do_requsest | do_writein_db
+        # 此处由于是消息队列中的消费者模块（用来处理生产者丢过来的长时间作业的），所以对于耗时的作业也在do_job中统一执行
+        # TODO:[*] 19-12-25 一个问题是作业的状态持久化的问题，对于突然断电了，或者服务器down机产生的持久化的问题如何解决？
         for func in self._do_funcs:
             func(request)
         # self.do_requsest(request)

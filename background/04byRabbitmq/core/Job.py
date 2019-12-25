@@ -6,7 +6,7 @@ from functools import wraps
 import wrapt
 
 from msg.request import MsgRequest
-from models.middleModel import OilPatternMidModel
+
 
 
 # def write_rate(rate):

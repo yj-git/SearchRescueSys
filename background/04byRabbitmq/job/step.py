@@ -13,6 +13,7 @@ import xarray as xar
 from core.data import OilSpillingData
 from common.common import exe_run_time
 
+
 class BaseStep:
     '''
         step的父类
@@ -57,6 +58,7 @@ class OilStep(BaseStep):
                     # 获取指定timestamp的所有factor的dataframe
                     xr_merage = self._creat_merage_targettime(index)
                     # 写入数据库
+                    print(f'当前循环位置:{index}')
                     oil_temp = OilSpillingData(xr_merage, 'test1')
                     oil_temp.save_2_db()
                 pass
@@ -128,5 +130,5 @@ class OilStep(BaseStep):
             xr_temp_now = self.ds_xr.isel(time=index).get(factor)
             xr_merage = xar.merge([xr_merage, xr_temp_now])
             # xr_temp_now = xr_merage
-        return xr_merage.where(xr_merage < 2000).to_dataframe().dropna(how='any')
+        return xr_merage.where(xr_merage <= 2000).to_dataframe().dropna(how='any')
         # return xr_merage

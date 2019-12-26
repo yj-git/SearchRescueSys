@@ -15,8 +15,10 @@ class OilSpillingData:
 
     @exe_run_time
     def save_2_db(self):
+        # 批量写入时先放在一个数组中
+        list_data=[]
         for x_time_temp in range(len(self.df)):
-            temp_data = self.df.iloc[0]
+            temp_data = self.df.iloc[x_time_temp]
             # 0-24
             wind_temp = model.WindModel(x=temp_data.get('x_wind'),
                                         y=temp_data.get('y_wind'))
@@ -46,7 +48,9 @@ class OilSpillingData:
                                                wind=wind_temp, status=status_temp, code=self.code,
                                                wt=wt_temp, mass=mass_temp, water_fraction=water_fraction,
                                                oil=oil_temp)
-            oil_model.save()
+
+            list_data.append(oil_model)
+            # oil_model.save()
             # 对当前的时间对应的所有点进行平均
             # 0-24
             # wind_temp = model.WindModel(x=self.ds['x_wind'][:].data[:].T[x_time_temp].mean(),
@@ -62,3 +66,5 @@ class OilSpillingData:
             #                                               num=str(y_trajectory_temp))
             # search_avg_model.save()
         # x_index = x_index + 1
+        # TODO:[-] 19-12-26 批量写入，经对比效率提升很明显
+        model.OilSpillingModel.objects.insert(list_data)

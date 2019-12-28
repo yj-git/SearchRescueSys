@@ -1,9 +1,11 @@
+
 from models import model
 import pandas as pd
 
 from core.db import my_connet
 
 from common.common import exe_run_time
+
 
 class OilSpillingData:
     # 1 先连接数据库
@@ -14,9 +16,9 @@ class OilSpillingData:
         self.code = code
 
     @exe_run_time
-    def save_2_db(self):
+    def save_2_db(self, time):
         # 批量写入时先放在一个数组中
-        list_data=[]
+        list_data = []
         for x_time_temp in range(len(self.df)):
             temp_data = self.df.iloc[x_time_temp]
             # 0-24
@@ -67,4 +69,37 @@ class OilSpillingData:
             # search_avg_model.save()
         # x_index = x_index + 1
         # TODO:[-] 19-12-26 批量写入，经对比效率提升很明显
-        model.OilSpillingModel.objects.insert(list_data)
+        # model.OilSpillingModel.objects.insert(list_data)
+        # TODO:[*] 19-12-27 对于每个时间的拼接而成的df，需要求mean
+        df_mean = self.df.mean()
+        current_temp = model.CurrentModel(x=df_mean.get('x_sea_water_velocity'),
+                                          y=df_mean.get('y_sea_water_velocity'))
+        wind_temp = model.WindModel(x=df_mean.get('x_wind'),
+                                    y=df_mean.get('y_wind'))
+        current_temp = model.CurrentModel(x=df_mean.get('x_sea_water_velocity'),
+                                          y=df_mean.get('y_sea_water_velocity'))
+        point_temp = [round(df_mean.get('lon').item(), 6),
+                      round(df_mean.get('lat').item(), 6)]
+        time_temp = df_mean.get('time')
+        status_temp = df_mean.get('status')
+
+        # 质量model
+        mass_temp = model.MassModel(oil=df_mean.get('mass_oil'),
+                                    evaporated=df_mean.get('mass_evaporated'),
+                                    dispersed=df_mean.get('mass_dispersed'))
+        # 油的model
+        # 有可能是masked的，所以需要判断
+        oil_temp = model.OilModel(
+            density=df_mean.get('oil_film_thickness'),
+            film_thickness=df_mean.get('density'))
+
+        wt_temp = df_mean.get('sea_water_temperature')
+        water_fraction = df_mean.get('water_fraction')
+        oil_avg_model = model.OilspillingAvgModel(time=time, point=[round(df_mean.get('lon').item(), 6),
+                                                                         round(df_mean.get('lat').item(), 6)],
+                                                  code=self.code, status=df_mean.get('status'), current=current_temp,
+                                                  wind=wind_temp, wt=wt_temp, mass=mass_temp,
+                                                  water_fraction=water_fraction, oil=oil_temp
+                                                  )
+        oil_avg_model.save()
+        pass

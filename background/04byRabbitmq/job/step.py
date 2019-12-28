@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime
 import numpy as np
 import netCDF4 as nc
 import pandas as pd
@@ -58,9 +58,12 @@ class OilStep(BaseStep):
                     # 获取指定timestamp的所有factor的dataframe
                     xr_merage = self._creat_merage_targettime(index)
                     # 写入数据库
-                    print(f'当前循环位置:{index}')
+                    print(f'当前循环位置:{index},对应时间:{time}')
                     oil_temp = OilSpillingData(xr_merage, 'test1')
-                    oil_temp.save_2_db()
+                    # 注意这个time是时间戳！
+                    # TODO:[*] 19-12-27 注意windows中，时间戳的计数被 * 1000
+                    # dt = datetime.fromtimestamp(time / 1000)
+                    oil_temp.save_2_db(time)
                 pass
 
     def _check_file_exist(self):
@@ -107,9 +110,15 @@ class OilStep(BaseStep):
                 timestamp
         :return:
         '''
+        # TODO:[*] 19-12-27 此处存在的一个bug是将df中的time tolist的时候会自动转成时间戳？此处的转换貌似有点问题
+        # < xarray.DataArray
+        # 'time'(time: 73) >
+        # array(['2018-01-14T22:20:00.000000000', '2018-01-14T23:20:00.000000000',
+        #        '2018-01-15T00:20:00.000000000', '2018-01-15T01:20:00.000000000',
         times = self.ds_xr.coords.get('time')
         if times is not None:
-            return times.values.tolist()
+            # TODO:[-] 19-12-27 注意此处需要将datetime64进行一下转换，使用pd.to_datetime方法
+            return pd.to_datetime(times.values)
         return []
 
     def _creat_merage_targettime(self, index: int):

@@ -14,6 +14,7 @@ import concurrent.futures
 # 引入计时器
 from .common import exe_run_time
 
+
 class BaseData:
     '''
         所有data的父类，主要用来记录filename，dirpath等信息
@@ -382,8 +383,9 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
             # 0-73
             wind_temp = model.WindModel(x=self._all_data_dict['x_wind'][y_trajectory_temp, x_time_temp],
                                         y=self._all_data_dict['y_wind'][y_trajectory_temp, x_time_temp])
-            current_temp = model.CurrentModel(x=self._all_data_dict['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
-                                              y=self._all_data_dict['y_sea_water_velocity'][y_trajectory_temp, x_time_temp])
+            current_temp = model.CurrentModel(
+                x=self._all_data_dict['x_sea_water_velocity'][y_trajectory_temp, x_time_temp],
+                y=self._all_data_dict['y_sea_water_velocity'][y_trajectory_temp, x_time_temp])
             # point = [all_data['lon'][i], all_data['lat'][i]]
             point_temp = [round(self._all_data_dict['lon'][y_trajectory_temp, x_time_temp].item(), 6),
                           round(self._all_data_dict['lat'][y_trajectory_temp, x_time_temp].item(), 6)]
@@ -391,14 +393,16 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
             status_temp = self._all_data_dict['status'][y_trajectory_temp, x_time_temp]
             # 质量model
             mass_temp = model.MassModel(oil=self._all_data_dict['mass_oil'][y_trajectory_temp, x_time_temp],
-                                        evaporated=self._all_data_dict['mass_evaporated'][y_trajectory_temp, x_time_temp],
+                                        evaporated=self._all_data_dict['mass_evaporated'][
+                                            y_trajectory_temp, x_time_temp],
                                         dispersed=self._all_data_dict['mass_dispersed'][y_trajectory_temp, x_time_temp])
             # 油的model
             # TODO:[*] 19-09-19 注意self.ds['density']对数组进行索引是一个masked_array
             # 有可能是masked的，所以需要判断
             oil_temp = model.OilModel(
-                density=self._all_data_dict['density'][y_trajectory_temp, x_time_temp] if self._all_data_dict['density'][
-                                                                                  y_trajectory_temp, x_time_temp].mask == True else None,
+                density=self._all_data_dict['density'][y_trajectory_temp, x_time_temp] if
+                self._all_data_dict['density'][
+                    y_trajectory_temp, x_time_temp].mask == True else None,
                 film_thickness=self._all_data_dict['oil_film_thickness'][y_trajectory_temp, x_time_temp] if
                 self._all_data_dict['oil_film_thickness'][
                     y_trajectory_temp, x_time_temp].mask == True else None)
@@ -406,8 +410,9 @@ class OilSpillingData(BaseData, BaseCorrdinateAxis):
             wt_temp = self._all_data_dict['sea_water_temperature'][y_trajectory_temp, x_time_temp] if \
                 self._all_data_dict['sea_water_temperature'][
                     y_trajectory_temp, x_time_temp].mask == True else None
-            water_fraction = self._all_data_dict['water_fraction'][y_trajectory_temp, x_time_temp] if self._all_data_dict['water_fraction'][
-                                                                                              y_trajectory_temp, x_time_temp].mask == True else None
+            water_fraction = self._all_data_dict['water_fraction'][y_trajectory_temp, x_time_temp] if \
+            self._all_data_dict['water_fraction'][
+                y_trajectory_temp, x_time_temp].mask == True else None
             # TODO:[*] 19-09-19 此处的思路 若出现--的这种情况，直接跳过，不用save了
             # 若为np.nan 的话直接跳过，不处理
             if (wt_temp == np.nan) is False:

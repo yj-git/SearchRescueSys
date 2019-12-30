@@ -2,10 +2,10 @@ import threading
 import pika
 import time
 import threading
-from tlogger import insertLog
 import random
 import datetime
-
+import os
+import json
 
 randseed = 10
 
@@ -16,22 +16,33 @@ def callback(ch, method, propeties, body):
           " Received %r and logstate:start working" % body)
 
     # 添加日志
-    # insertLog(body, 0, method.consumer_tag+' is handling start at' +
-    #          datetime.datetime.now().__str__())
 
     #time.sleep(random.randint(0, randseed))
     handle_task(body)
     print(" [D] "+method.consumer_tag+" Done and logstate end")
 
     # 更新日志
-    # insertLog(body, 1, method.consumer_tag+' was finished at' +
-    #          datetime.datetime.now().__str__())
 
-# 处理事件的方法,目前接收参数
+
+# 处理事件的方法,目前接收json参数
 
 
 def handle_task(msgp):
-    print('handle this '+msgp.decode())
+    jsonstr = msgp.decode()
+    jobj = json.loads(jsonstr)
+    timestr = jobj['Time']
+    dirname = timestr.replace(
+        '-', '').replace('T', '').replace('Z', '').replace(':', '').split('.')[0][:-2]
+    # 生成文件夹
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    print('handle this '+jsonstr)
+
+# 这里面写处理过程，调用什么方法生成文件
+
+
+def demo():
+    pass
 
 
 class Mythread(threading.Thread):
@@ -55,11 +66,12 @@ class Mythread(threading.Thread):
         self.work()
 
 
+# 客户端开启的线程数
 threadnum = 5
+# 客户端线程数列表
 tlist = []
 for i in range(threadnum):
     tlist.append(Mythread(callback, 'thread'+str(i)))
-
 
 for t in tlist:
     t.start()

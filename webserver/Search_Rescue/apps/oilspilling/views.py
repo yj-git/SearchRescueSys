@@ -1,6 +1,4 @@
-from django.shortcuts import render
 from rest_framework.decorators import APIView
-from rest_framework import status
 from rest_framework.response import Response
 # Create your views here.
 import dateutil
@@ -9,6 +7,9 @@ import dateutil
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
 from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer, StartEndDateMidModelSerializer
+
+# 新加入的延时的任务
+from apps.oilspilling.tasks.tasks import my_task
 
 
 class OilSpillingTrackAvgView(APIView):
@@ -97,7 +98,7 @@ class OilSpillingTrackAvgDateRangeView(APIView):
         if code is not None:
             # 根据time去重
             list_avg = OilspillingAvgModel.objects(code=code).distinct(field='time')
-            if len(list_avg)>0:
+            if len(list_avg) > 0:
                 list_avg = list(set(list_avg))
                 # 排序
                 list_avg.sort()
@@ -109,3 +110,10 @@ class OilSpillingTrackAvgDateRangeView(APIView):
                 return Response(StartEndDateMidModelSerializer(temp).data)
             return Response()
         Response('未提供code')
+
+
+class CreateOilSpillingView(APIView):
+    def post(self, request):
+        my_task.delay('测试测试')
+        pass
+        return Response()

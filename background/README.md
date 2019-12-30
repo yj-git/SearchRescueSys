@@ -51,3 +51,7 @@ job主要包括几个步骤：
 
 重新梳理后的工作流如下图：
 ![alt job info](../document/99img/background/oil写入数据库流程.png)  
+
+---
+19-12-30 
+将celery加入到django项目中

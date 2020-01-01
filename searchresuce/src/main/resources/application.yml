@@ -1,14 +1,20 @@
 spring:
-#  application:
-#    name: com.xing.example
+  application:
+    name: com.nmefc.searchresuce
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: searchrescue
   data:
     mongodb:
       host: 127.0.0.1
       port: 27017
-      database: searchrescue
+      database: typhoon
 
 server:
-  port: 8083
+  port: 8084
 
-logging:
-  config: classpath:conf/log4j2.xml
+# TODO:[*] 20-01-01 暂时注释掉此log组件，会引起异常错误
+#logging:
+#  config: classpath:conf/log4j2.xml

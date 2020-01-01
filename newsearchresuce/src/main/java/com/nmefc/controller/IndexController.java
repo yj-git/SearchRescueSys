@@ -1,33 +1,21 @@
-package com.nmefc.searchresuce.controller;
+package com.nmefc.controller;
 
-import com.nmefc.searchresuce.entity.OilSpillingResult;
-import com.nmefc.searchresuce.service.OilSpillingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
-//@RestController
 @Controller
 @CrossOrigin(origins = "*",allowedHeaders ="*" )
 //@RequestMapping("/oil")
 public class IndexController {
 
 //    private final static Logger logger = LoggerFactory.getLogger(IndexController.class);
-
-    @Autowired
-    OilSpillingService oilSpillingService;
-
     @ResponseBody
 //    @GetMapping("/track")
     @RequestMapping("/")
     public String oilTrack() {
         String code=new String();
-
-        OilSpillingResult oilSpillingResult=new OilSpillingResult();
-        oilSpillingResult.setOils(oilSpillingService.findByCode(code));
 //        return oilSpillingResult;
         return "test";
     }

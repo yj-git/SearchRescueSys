@@ -1,4 +1,4 @@
-package com.nmefc.searchresuce.entity;
+package com.nmefc.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -13,8 +13,8 @@ import java.util.Date;
 /**
  * \* Created with IntelliJ IDEA.
  * \* User: evase
- * \* Date: 2019/12/30
- * \* Time: 21:53
+ * \* Date: 2020/1/2
+ * \* Time: 20:07
  * \* To change this template use File | Settings | File Templates.
  * \* Description:
  * \
@@ -37,16 +37,17 @@ public class OilSpillingEntity {
 
     private Date time;
 
-    @GeoSpatialIndexed
-    private Double[] point;
+    private WindModel wind;
+//    @GeoSpatialIndexed
+//    private Double[] point;
 
-    /**
-     * 海温
-     */
-    private float wt;
-
-    /**
-     * 水含量
-     */
-    private float water_fraction;
+//    /**
+////     * 海温
+////     */
+////    private float wt;
+////
+////    /**
+////     * 水含量
+////     */
+////    private float water_fraction;
 }

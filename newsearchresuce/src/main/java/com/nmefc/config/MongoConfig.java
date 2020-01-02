@@ -1,4 +1,4 @@
-package com.nmefc.searchresuce.config;
+package com.nmefc.config;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -15,8 +15,8 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 /**
  * \* Created with IntelliJ IDEA.
  * \* User: evase
- * \* Date: 2019/12/30
- * \* Time: 21:37
+ * \* Date: 2020/1/2
+ * \* Time: 20:06
  * \* To change this template use File | Settings | File Templates.
  * \* Description:
  * \

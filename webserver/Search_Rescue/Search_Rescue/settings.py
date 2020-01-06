@@ -83,10 +83,19 @@ WSGI_APPLICATION = 'Search_Rescue.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+        'NAME': 'searchrescue',  # 数据库名
+        'USER': 'root',  # 账号
+        'PASSWORD': '123456',  # 密码
+        'HOST': '127.0.0.1',  # HOST
+        'POST': 3306,  # 端口
     }
+
 }
 
 # Password validation
@@ -153,3 +162,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 # celery时区设置，使用settings中TIME_ZONE同样的时区
 CELERY_TIMEZONE = TIME_ZONE
+
+# nc文件存储的根目录
+NC_STORE_DIR = r''

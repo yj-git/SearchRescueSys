@@ -21,8 +21,8 @@ def main():
 def do_job():
     # TODO:[*] 19-12-25 测试OilStep
     # oil = OilStep(r'D:\02proj\SearchRescue\SearchRescueSys\background\01byJupyter\data', 'sanjioil.nc')
-    # # oil = OilStep(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data', 'sanjioil.nc')
-    # oil.do_job()
+    oil = OilStep(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data', 'sanjioil.nc')
+    oil.do_job()
     print('作业执行完成')
 
 if __name__ == '__main__':

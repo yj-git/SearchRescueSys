@@ -55,3 +55,7 @@ job主要包括几个步骤：
 ---
 19-12-30 
 将celery加入到django项目中
+
+---
+20-01-06  
+将`04byRabbitmq`中的proj移入`webserver`中由`apps/oilspilling/views/CreateOilSpillingView`调用

@@ -32,6 +32,7 @@ class OilSpillingTrackView(APIView):
     def get(self, request):
         '''
             根据指定的 date 获取该date的 所有溢油点
+            TODO:[*] 20-01-06 此处准备重写 若重写的话，不将oil对应的数据入库，数据库中只记录文件所在路径，直接读取文件获取对应的信息
         :param request:
         :return:
         '''

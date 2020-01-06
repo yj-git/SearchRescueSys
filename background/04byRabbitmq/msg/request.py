@@ -34,3 +34,7 @@ class MsgRequest:
             return self.content_params.get(key)
         else:
             return None
+
+
+    def __str__(self):
+        return f'{self.content_params}'

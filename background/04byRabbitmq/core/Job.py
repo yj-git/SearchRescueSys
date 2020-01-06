@@ -6,7 +6,7 @@ from functools import wraps
 import wrapt
 
 from msg.request import MsgRequest
-from models.middleModel import OilPatternMidModel
+
 
 
 # def write_rate(rate):
@@ -53,10 +53,12 @@ def change_rate(rate):
         # 获取request 参数
         request: MsgRequest = args[0]
         request.set_content_type_params('rate', rate)
+        print(request)
         # args[1] = request
         return wrapped(*args, **kwargs)
 
     return wrapper
+
 
 # TODO:[-] 19-12-01 改为使用@wrapt.decorator的方式实现，简化部分操作，以下部分注释掉
 # def store_job_rate():
@@ -80,12 +82,17 @@ def store_job_rate():
     '''
        存储当前作业以及当前作业的进度
     '''
+
     @wrapt.decorator
-    def wrapper(wrapped,instance,args,kwargs):
+    def wrapper(wrapped, instance, args, kwargs):
         # 获取当前作业的信息
         # 从instance中 获取 job 中的基本信息，以及当前的rate，写入/更新数据库中的记录
         # 将作业信息以及当前的rate更新至数据库
+        print(f'持久化保存rate以及user相关信息')
+        print(
+            f'casename:{instance.casename}|userid:{instance.userid}|jobid:{instance.jobid}|stamp:{instance.created}')
         return wrapped(*args, **kwargs)
+
     return wrapper
 
 
@@ -171,7 +178,7 @@ class JobRun(JobBase):
         pass
 
     @abstractmethod
-    def doJob(self, **kwargs):
+    def do_job(self, **kwargs):
         '''
             执行脚本文件
             需要由继承的类实现的方法
@@ -179,43 +186,3 @@ class JobRun(JobBase):
         '''
 
 
-class JobOil(JobRun):
-    '''
-        一个溢油case
-    '''
-
-    def do_job(self, **kwargs):
-        '''
-            搜救的case主要流程:
-                1- 根据传入的参数，执行脚本文件
-                2- 将传入的参数写入数据库
-                3- 过一段时间去指定路径下获取指定名称的nc文件
-                4- 将nc文件写入数据库
-
-        :return:
-        '''
-        request = MsgRequest()
-        self.do_requsest(request)
-
-    def get_request(self, request: MsgRequest):
-        '''
-            获取传过来的 request
-        :param request:
-        :return:
-        '''
-        pass
-
-    @change_rate(rate=10)
-    @store_job_rate()
-    def do_requsest(self, request: MsgRequest):
-        '''
-            根据传入的参数执行脚本文件
-        :param request:
-        :return:
-        '''
-        oil_pattern: OilPatternMidModel = request.get_content_type_params('oil_pattern')
-        # TODO:[*] 19-11-28 下面只是模拟调用脚本的步骤
-        print(oil_pattern)
-        # 执行之后，向request中写入进度
-        # 此处放在装饰器中，不在此处
-        # request.set_content_type_params('rate', 0.2)

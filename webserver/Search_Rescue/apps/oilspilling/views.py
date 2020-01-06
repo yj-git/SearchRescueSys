@@ -1,6 +1,4 @@
-from django.shortcuts import render
 from rest_framework.decorators import APIView
-from rest_framework import status
 from rest_framework.response import Response
 # Create your views here.
 import dateutil
@@ -9,6 +7,9 @@ import dateutil
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
 from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer, StartEndDateMidModelSerializer
+
+# 新加入的延时的任务
+from apps.oilspilling.tasks.tasks import my_task
 
 
 class OilSpillingTrackAvgView(APIView):
@@ -31,6 +32,7 @@ class OilSpillingTrackView(APIView):
     def get(self, request):
         '''
             根据指定的 date 获取该date的 所有溢油点
+            TODO:[*] 20-01-06 此处准备重写 若重写的话，不将oil对应的数据入库，数据库中只记录文件所在路径，直接读取文件获取对应的信息
         :param request:
         :return:
         '''
@@ -97,7 +99,7 @@ class OilSpillingTrackAvgDateRangeView(APIView):
         if code is not None:
             # 根据time去重
             list_avg = OilspillingAvgModel.objects(code=code).distinct(field='time')
-            if len(list_avg)>0:
+            if len(list_avg) > 0:
                 list_avg = list(set(list_avg))
                 # 排序
                 list_avg.sort()
@@ -109,3 +111,10 @@ class OilSpillingTrackAvgDateRangeView(APIView):
                 return Response(StartEndDateMidModelSerializer(temp).data)
             return Response()
         Response('未提供code')
+
+
+class CreateOilSpillingView(APIView):
+    def post(self, request):
+        my_task.delay('测试测试')
+        pass
+        return Response()

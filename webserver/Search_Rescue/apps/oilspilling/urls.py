@@ -11,5 +11,6 @@ urlpatterns = [
     # 指定 date 与 code 的溢油 avg 的realdata
     url(r'^realdata/target/$', TargetDateRealDataView.as_view()),
     # 根据code获取指定的时间范围（date）
-    url(r'^track/date/range/$', OilSpillingTrackAvgDateRangeView.as_view())
+    url(r'^track/date/range/$', OilSpillingTrackAvgDateRangeView.as_view()),
+    url(r'^create/model/$', CreateOilSpillingView.as_view())
 ]

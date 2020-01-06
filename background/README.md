@@ -26,3 +26,32 @@ job主要包括几个步骤：
   
 + 写入db
 
+# 2 background 工程结构设计
+## 2.2
+- [x]  19-12-26 
+ 现将目录结构改为：     
+ <pre><code>
+├──./                            
+├──04 byRabbitmq
+│ ├── conf                 <- 配置文件目录
+│ │ ├──setting.py
+│ ├── core                 <- 核心文件目录
+│ │ ├──job.py              <- 部分核心装饰器|Job的状态（3种）|作业的基础父类JobBase,继承自JobBase的供其他实现job的父类——其中定义了do_job抽象方法，需要由子类实现
+│ │ ├──store.py
+│ │ ├──data.py             <- 所有直接和mongodb交互的类与方法
+│ ├── job                  <- 所有的job的实现子类目录(现有:oil|rescue...)
+│ │ ├──oil.py
+│ │ ├──step.py             <- 读取指定预报产品的nc文件的相关业务操作(执行都是通过调用 do_job 的方式进行操作)     
+│ ├── model
+│ ├── models
+│ ├── msg                  <- 在job中的各个方法直接通用的传递消息的参数为request，放在此目录下
+│ ├── script               <- 所有的执行各模型的脚本放置此目录下
+│ ├── main.py               <- 入口文件
+</code></pre>
+
+重新梳理后的工作流如下图：
+![alt job info](../document/99img/background/oil写入数据库流程.png)  
+
+---
+19-12-30 
+将celery加入到django项目中

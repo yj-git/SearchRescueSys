@@ -16,15 +16,22 @@ def callback(ch, method, propeties, body):
           " Received %r and logstate:start working" % body)
 
     # 添加日志
-    insertLog(body, 0, method.consumer_tag+' is handling start at' +
-              datetime.datetime.now().__str__())
+    # insertLog(body, 0, method.consumer_tag+' is handling start at' +
+    #          datetime.datetime.now().__str__())
 
-    time.sleep(random.randint(0, randseed))
+    #time.sleep(random.randint(0, randseed))
+    handle_task(body)
     print(" [D] "+method.consumer_tag+" Done and logstate end")
 
     # 更新日志
-    insertLog(body, 1, method.consumer_tag+' was finished at' +
-              datetime.datetime.now().__str__())
+    # insertLog(body, 1, method.consumer_tag+' was finished at' +
+    #          datetime.datetime.now().__str__())
+
+# 处理事件的方法,目前接收参数
+
+
+def handle_task(msgp):
+    print('handle this '+msgp.decode())
 
 
 class Mythread(threading.Thread):

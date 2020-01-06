@@ -1,17 +1,14 @@
-package com.nmefc.searchresuce.entity;
+package com.nmefc.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * \* Created with IntelliJ IDEA.
  * \* User: evase
- * \* Date: 2019/12/30
- * \* Time: 21:54
+ * \* Date: 2020/1/2
+ * \* Time: 20:23
  * \* To change this template use File | Settings | File Templates.
  * \* Description:
  * \
@@ -19,6 +16,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class OilSpillingResult {
-    private List<OilSpillingEntity> oils= Collections.emptyList();
+public class WindModel {
+    private Double x;
+    private Double y;
 }

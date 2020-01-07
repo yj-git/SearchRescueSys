@@ -7,7 +7,7 @@ import sys
 TASK_DIR = r'D:/02proj/SearchRescue/SearchRescueSys/background/04byRabbitmq/'
 sys.path.append(TASK_DIR)
 # from main import do_job
-import main
+# import main
 
 
 # @shared_task

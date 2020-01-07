@@ -19,6 +19,8 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # TODO:[*] 20-01-07 引入drf的权限认证
+    path('api-auth/', include('rest_framework.urls')),
     url('^rescue/', include(('rescue.urls', "rescue"), namespace="rescue")),
     url('^oilspilling/', include(('oilspilling.urls', "oilspilling"), namespace="oilspilling")),
 ]

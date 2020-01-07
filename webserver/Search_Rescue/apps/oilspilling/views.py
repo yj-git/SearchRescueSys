@@ -3,6 +3,9 @@ from rest_framework.response import Response
 # Create your views here.
 import dateutil
 
+# 引入drf的权限认证
+from rest_framework import permissions
+
 # 本项目的
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
@@ -11,8 +14,8 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
 # 新加入的延时的任务
 from apps.oilspilling.tasks.tasks import my_task
 
-
 class OilSpillingTrackAvgView(APIView):
+    permission_classes = [permissions.]
     def get(self, request):
         '''
             根据code获取该code的溢油随着时间的平均轨迹点

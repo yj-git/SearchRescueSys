@@ -6,6 +6,10 @@ import dateutil
 # 引入drf的权限认证
 from rest_framework import permissions
 
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 # 本项目的
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
@@ -14,8 +18,10 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
 # 新加入的延时的任务
 from apps.oilspilling.tasks.tasks import my_task
 
+
 class OilSpillingTrackAvgView(APIView):
-    permission_classes = [permissions.]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request):
         '''
             根据code获取该code的溢油随着时间的平均轨迹点
@@ -121,3 +127,16 @@ class CreateOilSpillingView(APIView):
         my_task.delay('测试测试')
         pass
         return Response()
+
+
+class TestViewset(viewsets.ModelViewSet):
+    # permission_classes = (permissions.IsAuthenticated)
+    # queryset = OilSpillingModel.objects(code='sanjioil')[0]
+    # TODO:[*] 20-01-06 此处使用此序列化器会有问题
+    serializer_class = OilSpillingModelSerializer
+
+    # @action(methods=['get'], detail=False)
+    def get_queryset(self):
+
+        # def test(self, request):
+        return OilSpillingModel.objects(code='sanjioil')[0]

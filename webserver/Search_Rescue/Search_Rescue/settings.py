@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_mongoengine',
+    # 引入drf的token
+    'rest_framework.authtoken',
     'corsheaders',
     'rescue',
     'oilspilling'
@@ -96,6 +100,18 @@ DATABASES = {
         'POST': 3306,  # 端口
     }
 
+}
+
+# TODO:[*] 20-01-08 为了使用jwt而引入的
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 # Password validation

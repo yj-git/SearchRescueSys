@@ -17,10 +17,14 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
 
+# 引入权限验证
+from rest_framework.authtoken import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # TODO:[*] 20-01-07 引入drf的权限认证
     path('api-auth/', include('rest_framework.urls')),
+    path('api-token-auth/', views.obtain_auth_token),
     url('^rescue/', include(('rescue.urls', "rescue"), namespace="rescue")),
     url('^oilspilling/', include(('oilspilling.urls', "oilspilling"), namespace="oilspilling")),
 ]

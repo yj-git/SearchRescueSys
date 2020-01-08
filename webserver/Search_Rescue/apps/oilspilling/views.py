@@ -10,10 +10,14 @@ from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+
+# rest_framework_mongoengine  相关
+from rest_framework_mongoengine import viewsets as drf_viewsets
 # 本项目的
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
-from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer, StartEndDateMidModelSerializer
+from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer, StartEndDateMidModelSerializer, \
+    OilSpillingModelSerializerByEngine
 
 # 新加入的延时的任务
 from apps.oilspilling.tasks.tasks import my_task
@@ -129,14 +133,18 @@ class CreateOilSpillingView(APIView):
         return Response()
 
 
-class TestViewset(viewsets.ModelViewSet):
-    # permission_classes = (permissions.IsAuthenticated)
-    # queryset = OilSpillingModel.objects(code='sanjioil')[0]
+class TestViewset(drf_viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated)
+    # queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
+    # queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
     # TODO:[*] 20-01-06 此处使用此序列化器会有问题
-    serializer_class = OilSpillingModelSerializer
+    # 不再使用rest_framework_mongoengine 提供的序列化器了
+    serializer_class = OilSpillingModelSerializerByEngine
 
     # @action(methods=['get'], detail=False)
     def get_queryset(self):
-
-        # def test(self, request):
-        return OilSpillingModel.objects(code='sanjioil')[0]
+        queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
+        return queryset
+    #     pass
+    # def test(self, request):
+    # return Response(OilSpillingModelSerializer(self.queryset).data)

@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_mongoengine',
+    # 引入drf的token
+    'rest_framework.authtoken',
     'corsheaders',
     'rescue',
     'oilspilling'
@@ -91,7 +95,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
         'NAME': 'searchrescue',  # 数据库名
         'USER': 'root',  # 账号
-        'PASSWORD': 'admin123',  # 密码
+        'PASSWORD': '123456',  # 密码
         'HOST': '127.0.0.1',  # HOST
         'POST': 3306,  # 端口
     }

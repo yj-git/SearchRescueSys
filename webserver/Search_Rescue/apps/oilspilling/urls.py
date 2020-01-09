@@ -1,11 +1,14 @@
 from django.conf.urls import url, include
 from django.urls import path
 from .views import *
+
 from rest_framework import routers
 
 app_name = '[oilspilling]'
 router = routers.DefaultRouter()
-router.register(r'test', TestViewset, base_name='test')
+# router.register(r'test', TestViewset, base_name='test')
+# 注意此处的base_name 改为了basename(可以看一下源码)
+router.register(r'test', TestViewset, basename='test')
 
 oils = TestViewset.as_view({
     'get': 'list'
@@ -24,5 +27,8 @@ urlpatterns = [
     # re_path('^', include(router.urls)),
     # url(r'mytest/$',TestViewset.as_view(),name='oil')
     url(r'^api/', include(router.urls)),
+
+    # 加入apiview的token验证
+    url(r'testtoken/', TokenTestView.as_view())
 ]
 urlpatterns += router.urls

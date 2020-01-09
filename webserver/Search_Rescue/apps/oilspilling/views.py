@@ -14,8 +14,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 
-
-
 # rest_framework_mongoengine  相关
 from rest_framework_mongoengine import viewsets as drf_viewsets
 # 本项目的
@@ -128,7 +126,7 @@ class OilSpillingTrackAvgDateRangeView(APIView):
 
                 return Response(StartEndDateMidModelSerializer(temp).data)
             return Response()
-        Response('未提供code')
+        return Response('未填code', status=200)
 
 
 class CreateOilSpillingView(APIView):
@@ -138,10 +136,21 @@ class CreateOilSpillingView(APIView):
         return Response()
 
 
+# TODO:[*] 20-01-09 此处注释一下，不使用视图集，而使用APIView(个人觉得APIView对于请求的整个流程更好控制，Viewset还是不太熟悉)
+class TokenTestView(APIView):
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        # 注意此处可以通过 request._user 获取对应的user对象
+        return Response('')
+
+
 class TestViewset(drf_viewsets.ModelViewSet):
     # TODO:[*] 20-01-08 加入Token的认证
     # 注意此处不能使用 TokenAuthentication 的原因是 TokenAuthentication是 rest_framework.authentication的认证方式改为jwt的
     authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     # permission_classes = (IsAuthenticated,)
     # permission_classes = [TokenAuthentication]
     # queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
@@ -152,6 +161,8 @@ class TestViewset(drf_viewsets.ModelViewSet):
 
     # @action(methods=['get'], detail=False)
     def get_queryset(self):
+        # TODO:[*] 此处遇见一个问题：若mongo中不存在指定数据，那么会出现目标计算机无法连接的错误
+        # pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
         queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
         return queryset
     #     pass

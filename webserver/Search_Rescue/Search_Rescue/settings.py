@@ -14,6 +14,7 @@ import os
 import sys
 
 import mongoengine
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -94,8 +95,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
         'NAME': 'searchrescue',  # 数据库名
+        # by casablanca
         'USER': 'root',  # 账号
         'PASSWORD': '123456',  # 密码
+        # by cwb
+        # 'USER': 'root',  # 账号
+        # 'PASSWORD': '123456',  # 密码
         'HOST': '127.0.0.1',  # HOST
         'POST': 3306,  # 端口
     }
@@ -105,15 +110,20 @@ DATABASES = {
 # TODO:[*] 20-01-08 为了使用jwt而引入的
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 引入第三方的jwt认证
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
 }
 
+# TODO:[-] 20-01-08 加入jwt的设置（主要是过期时间）
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=24 * 60 * 60)
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 

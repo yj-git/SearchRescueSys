@@ -57,7 +57,8 @@ class OilSpillingTrackView(APIView):
         target_date_dt = dateutil.parser.parse(target_date_str)
         oil_track_list = []
         if code is not None:
-            oil_track_list = OilSpillingModel.objects(code=code, time=target_date_dt)
+            oil_track_list = OilSpillingModel.objects(
+                code=code, time=target_date_dt)
         json_data = OilSpillingModelSerializer(oil_track_list, many=True).data
         return Response(json_data)
 
@@ -80,7 +81,8 @@ class TargetDateRealDataView(APIView):
         target_data_dt = dateutil.parser.parse(target_data_str)
         real_data = None
         if code is not None:
-            real_data = OilspillingAvgModel.objects(code=code, time=target_data_dt)
+            real_data = OilspillingAvgModel.objects(
+                code=code, time=target_data_dt)
         json_data = OilspillingAvgModelSerializer(real_data[0]).data
         return Response(json_data)
 
@@ -97,8 +99,10 @@ class OilRealDataAvgView(APIView):
         target_date_dt = dateutil.parser.parse(target_date_str)
         real_data = None
         if code is not None:
-            real_data = OilspillingAvgModel.objects(code=code, time=target_date_dt)
-        json_data = OilspillingAvgModelSerializer(real_data[0], many=False).data
+            real_data = OilspillingAvgModel.objects(
+                code=code, time=target_date_dt)
+        json_data = OilspillingAvgModelSerializer(
+            real_data[0], many=False).data
         return Response(json_data)
         # pass
 
@@ -114,7 +118,8 @@ class OilSpillingTrackAvgDateRangeView(APIView):
         list_avg = []
         if code is not None:
             # 根据time去重
-            list_avg = OilspillingAvgModel.objects(code=code).distinct(field='time')
+            list_avg = OilspillingAvgModel.objects(
+                code=code).distinct(field='time')
             if len(list_avg) > 0:
                 list_avg = list(set(list_avg))
                 # 排序
@@ -143,14 +148,22 @@ class TokenTestView(APIView):
 
     def get(self, request):
         # 注意此处可以通过 request._user 获取对应的user对象
-        return Response('')
+        username = ''
+        if hasattr(request, '_user'):
+            if hasattr(request._user, 'username'):
+                name=request._user.username
+                username=name
+                pass
+            # username = request._user.username
+        # request._user.get('username')
+        return Response(username)
 
 
 class TestViewset(drf_viewsets.ModelViewSet):
     # TODO:[*] 20-01-08 加入Token的认证
     # 注意此处不能使用 TokenAuthentication 的原因是 TokenAuthentication是 rest_framework.authentication的认证方式改为jwt的
     authentication_classes = (JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,) 
     # permission_classes = (IsAuthenticated,)
     # permission_classes = [TokenAuthentication]
     # queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
@@ -163,7 +176,8 @@ class TestViewset(drf_viewsets.ModelViewSet):
     def get_queryset(self):
         # TODO:[*] 此处遇见一个问题：若mongo中不存在指定数据，那么会出现目标计算机无法连接的错误
         # pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
-        queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')
+        queryset = OilSpillingModel.objects(
+            code='sanjioil', time='2018-01-14T23:20:00Z')
         return queryset
     #     pass
     # def test(self, request):

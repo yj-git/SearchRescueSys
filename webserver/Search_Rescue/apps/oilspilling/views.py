@@ -1,3 +1,5 @@
+import sys
+
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 # Create your views here.
@@ -135,10 +137,28 @@ class OilSpillingTrackAvgDateRangeView(APIView):
 
 
 class CreateOilSpillingView(APIView):
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
-        my_task.delay('测试测试')
-        pass
-        return Response()
+        # 注意此处可以通过 request._user 获取对应的user对象
+        username = ''
+        if hasattr(request, '_user'):
+            if hasattr(request._user, 'username'):
+                name = request._user.username
+                username = name
+                try:
+
+                    # 获取了用户名称之后，向celery提交耗时作业
+                    my_task.delay(username)
+                    pass
+                    return Response('提交成功')
+                except TypeError:
+                    # raise ImportError('Missing redis library (pip install redis)')
+                    # kombu.exceptions.OperationalError: Error 10061 connecting to localhost: 6379.由于目标计算机积极拒绝，无法连接。.
+                    print("Unexpected error:", sys.exc_info()[0])
+                    return Response('Unexpected error')
+        return Response('提交失败')
 
 
 # TODO:[*] 20-01-09 此处注释一下，不使用视图集，而使用APIView(个人觉得APIView对于请求的整个流程更好控制，Viewset还是不太熟悉)
@@ -147,12 +167,18 @@ class TokenTestView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+        return Response("请求成功")
+        pass
+
+    def post(self, request):
         # 注意此处可以通过 request._user 获取对应的user对象
         username = ''
         if hasattr(request, '_user'):
             if hasattr(request._user, 'username'):
-                name=request._user.username
-                username=name
+                name = request._user.username
+                username = name
+                # 获取了用户名称之后，向celery提交耗时作业
+                my_task.delay("")
                 pass
             # username = request._user.username
         # request._user.get('username')
@@ -163,7 +189,7 @@ class TestViewset(drf_viewsets.ModelViewSet):
     # TODO:[*] 20-01-08 加入Token的认证
     # 注意此处不能使用 TokenAuthentication 的原因是 TokenAuthentication是 rest_framework.authentication的认证方式改为jwt的
     authentication_classes = (JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,) 
+    permission_classes = (IsAuthenticated,)
     # permission_classes = (IsAuthenticated,)
     # permission_classes = [TokenAuthentication]
     # queryset = OilSpillingModel.objects(code='sanjioil', time='2018-01-14T23:20:00Z')

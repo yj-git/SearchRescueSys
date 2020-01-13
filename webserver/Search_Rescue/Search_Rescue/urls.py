@@ -33,4 +33,5 @@ urlpatterns = [
     path('login/', obtain_jwt_token),
     url('^rescue/', include(('rescue.urls', "rescue"), namespace="rescue")),
     url('^oilspilling/', include(('oilspilling.urls', "oilspilling"), namespace="oilspilling")),
+    url('^user/', include(('user.urls', "auth"), namespace="user")),
 ]

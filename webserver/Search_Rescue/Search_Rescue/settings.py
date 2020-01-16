@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': 'searchrescue',  # 数据库名
         # by casablanca
         'USER': 'root',  # 账号
-        'PASSWORD': '123456',  # 密码
+        'PASSWORD': 'admin123',  # 密码
         # by cwb
         # 'USER': 'root',  # 账号
         # 'PASSWORD': '123456',  # 密码

@@ -38,6 +38,8 @@ class OilSpillingTrackAvgView(APIView):
         :return:
         '''
         code = request.GET.get('code', None)
+        # TODO:[*] 20-01-16 此处修改为直接读取nc文件，不读取数据库
+
         track_list = []
         if code is not None:
             track_list = OilspillingAvgModel.objects(code=code)

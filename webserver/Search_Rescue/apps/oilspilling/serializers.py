@@ -106,15 +106,15 @@ class OilspillingAvgModelSerializer(serializers.Serializer):
     status = serializers.IntegerField()
     time = serializers.DateTimeField()
     point = serializers.DictField()
-    current = CurrentModelSerializer()
-    wind = WindModelSerializer()
+    # current = CurrentModelSerializer()
+    # wind = WindModelSerializer()
     # 海温
-    wt = serializers.FloatField()
-    mass = MassModelSerializer()
+    # wt = serializers.FloatField()
+    # mass = MassModelSerializer()
     # 水含量
-    water_fraction = serializers.FloatField()
+    # water_fraction = serializers.FloatField()
 
-    oil = OilModelSerializer()
+    # oil = OilModelSerializer()
 
 
 class StartEndDateMidModelSerializer(serializers.Serializer):

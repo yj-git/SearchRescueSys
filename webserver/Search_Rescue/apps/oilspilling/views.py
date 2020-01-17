@@ -27,6 +27,8 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
 # 新加入的延时的任务
 from apps.oilspilling.tasks.tasks import my_task
 
+from apps.util.reader import OilFileReader, create_reader
+
 
 class OilSpillingTrackAvgView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -38,11 +40,15 @@ class OilSpillingTrackAvgView(APIView):
         :return:
         '''
         code = request.GET.get('code', None)
-        # TODO:[*] 20-01-16 此处修改为直接读取nc文件，不读取数据库
-
+        # TODO:[-] 20-01-16 此处修改为直接读取nc文件，不读取数据库
         track_list = []
         if code is not None:
-            track_list = OilspillingAvgModel.objects(code=code)
+            # track_list = OilspillingAvgModel.objects(code=code)
+            reader_func = create_reader('file')
+            reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data',
+                                 'sanjioil.nc')
+            track_list = reader.read_avg_track('test')
+        # TODO:[*] 20-01-17 此处注意一下，由于重新修改了序列化的原始data model 改为了mid model，mid model中缺少部分需要序列化的字段，序列化时会提示有错误，注意！
         json_data = OilspillingAvgModelSerializer(track_list, many=True).data
         return Response(json_data)
         pass

@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import os
-
+from datetime import datetime
 # numpy 相关
 import numpy as np
 import pandas as pd
@@ -8,11 +8,13 @@ import numpy.ma as ma
 # 读取nc文件相关
 import netCDF4 as nc
 import xarray as xar
+from apps.oilspilling.middle_model import OilSpillingAvgMidModel
+from apps.common.tools import exe_run_time
 
 
 class IOilReader(metaclass=ABCMeta):
     @abstractmethod
-    def init_dataset(self):
+    def _init_dataset(self):
         pass
 
     @abstractmethod
@@ -28,7 +30,7 @@ class IOilReader(metaclass=ABCMeta):
         pass
 
 
-class OilDbReader(IOilReader):
+class OilFileReader(IOilReader):
     def __init__(self, root_path: str, file_name: str):
         self.root_path = root_path
         self.file_name = file_name
@@ -61,7 +63,6 @@ class OilDbReader(IOilReader):
             return self.xarr.dims
         else:
             self._init_dataset()
-            # TODO:[*] 此处这么写可能有问题，需要试一下
             return self.get_dims()
 
     def get_vars(self):
@@ -98,16 +99,51 @@ class OilDbReader(IOilReader):
         else:
             return False
 
+    # TODO:[*] 注意此处加入了统计时间的装饰器会影响返回的list(加入后返回list为空)
+    # @exe_run_time
     def read_avg_track(self, code):
         '''
             根据传入的code获取指定code的平均轨迹
         :param code:
         :return:
         '''
+        # list_date = [datetime.now()]
+        list_avg_models = []
         # 判断status是否存在
+        if self.check_vars_exist('status'):
+            # 若存在status，根据时间维度获取连续时间的有效散点的轨迹均值
+
+            for index, temp_time in enumerate(self.get_coord('time')):
+                xr_merge = None
+                print(f'当前时间{temp_time}|{index}')
+                xr_temp = self.xarr.isel(time=index)['status']
+                df_finial = xr_temp.where(xr_temp >= 0).to_dataframe().dropna(how='any')
+                df_finial = df_finial[df_finial.status <= 0]
+                lat_mean = df_finial['lat'].mean()
+                lon_mean = df_finial['lon'].mean()
+                status_mean = df_finial['status'].mean()
+                # TODO:[*] 20-01-17 注意此处的time_time.values为datetime64需要转换为datetime
+                temp_ts = pd.Timestamp(temp_time.values)
+
+                list_avg_models.append(
+                    OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean}, temp_ts))
+
+        return list_avg_models
+
+    def get_coord(self, dim: str):
+        '''
+            获取指定维度的全部值
+        :param dim:
+        :return:
+        '''
+        if self.xarr is not None:
+            return self.xarr.coords[dim]
+        else:
+            self._init_dataset()
+            return self.get_coord(dim)
 
 
-class OilFileReader(IOilReader):
+class OilDbReader(IOilReader):
     def read(self):
         pass
 

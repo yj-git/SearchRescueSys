@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import numpy.ma as ma
 # 读取nc文件相关
-import netCDF4 as nc
+# import netCDF4 as nc
 import xarray as xar
 from apps.oilspilling.middle_model import OilSpillingAvgMidModel
 from apps.common.tools import exe_run_time
@@ -100,7 +100,7 @@ class OilFileReader(IOilReader):
             return False
 
     # TODO:[*] 注意此处加入了统计时间的装饰器会影响返回的list(加入后返回list为空)
-    # @exe_run_time
+    @exe_run_time
     def read_avg_track(self, code):
         '''
             根据传入的code获取指定code的平均轨迹
@@ -109,6 +109,9 @@ class OilFileReader(IOilReader):
         '''
         # list_date = [datetime.now()]
         list_avg_models = []
+        factors = ['x_wind', 'y_wind', 'status', 'x_sea_water_velocity', 'y_sea_water_velocity', 'mass_oil',
+                   'mass_evaporated', 'mass_dispersed', 'oil_film_thickness', 'density', 'sea_water_temperature',
+                   'water_fraction']
         # 判断status是否存在
         if self.check_vars_exist('status'):
             # 若存在status，根据时间维度获取连续时间的有效散点的轨迹均值
@@ -116,17 +119,62 @@ class OilFileReader(IOilReader):
             for index, temp_time in enumerate(self.get_coord('time')):
                 xr_merge = None
                 print(f'当前时间{temp_time}|{index}')
+
+                # TODO:[-] 20-01-18 住一此处，按需加载对性能影响很重要，若全在全部的vals会导致读取速度变慢(只读取同一个factor也会变慢)
                 xr_temp = self.xarr.isel(time=index)['status']
-                df_finial = xr_temp.where(xr_temp >= 0).to_dataframe().dropna(how='any')
-                df_finial = df_finial[df_finial.status <= 0]
-                lat_mean = df_finial['lat'].mean()
-                lon_mean = df_finial['lon'].mean()
-                status_mean = df_finial['status'].mean()
+                # xr_temp = self.xarr.isel(time=index)
+                # TODO:[*] 20-01-18 之前只读取的status，需要读取全部的factor
+                # 方式1: dataarray->df->筛选
+                # 当前方法: read_avg_track耗时：5.346711158752441
+                # df_finial = xr_temp.where(xr_temp >= 0).to_dataframe().dropna(how='any')
+                # df_finial = df_finial[df_finial.status <= 0]
+                # TODO:[*] 20-01-18 使用多个where的方式，会不会影响效率？
+                # 方式2: dataarray 多重条件搜索 -> dataframe ->dropna
+                # 当前方法:read_avg_track耗时：5.772573709487915
+                # 当前方法: read_avg_track耗时：5.840391635894775
+                # 此耗时比较稳定了
+                # df_finial = xr_temp.where(xr_temp >= 0).where(xr_temp < 1).to_dataframe().dropna(how='any')
+                #
+                # # 以上方式1+2均使用一下方式获取均值及status
+                # lat_mean = df_finial['lat'].mean()
+                # lon_mean = df_finial['lon'].mean()
+                # status_mean = df_finial['status'].mean()
+
+                # 方式3: DataArray 多重条件搜索-> dropna
+                # 经测试，还是方式3的读取方式最快，大概耗时5.1s左右
+                # 当前方法: read_avg_track耗时：5.108347415924072
+                xr_filter = xr_temp.where(xr_temp >= 0).where(xr_temp < 1).dropna(dim='trajectory',
+                                                                                                      how='any')
+                # xr_filter = xr_temp.where(xr_temp['status'] >= 0).where(xr_temp['status'] < 1).dropna(dim='trajectory',
+                #                                                                                       how='any')
+                # 当前方法: read_avg_track耗时：3.9484479427337646
+                # 当前方法: read_avg_track耗时：3.828770637512207
+                # xr_filter = xr_temp.where(xr_temp >= 0).dropna(dim='trajectory', how='any')
+                lat_mean = xr_filter['lat'].mean().data.tolist()
+                lon_mean = xr_filter['lon'].mean().data.tolist()
+                # x_wind = xr_filter['x_wind'].mean().data.tolist()
+                # y_wind = xr_filter['y_wind'].mean().data.tolist()
+                # x_sea_water_velocity = xr_filter['x_sea_water_velocity'].mean().data.tolist()
+                # y_sea_water_velocity = xr_filter['y_sea_water_velocity'].mean().data.tolist()
+                # mass_oil = xr_filter['mass_oil'].mean().data.tolist()
+                # mass_evaporated = xr_filter['mass_evaporated'].mean().data.tolist()
+                # mass_dispersed = xr_filter['mass_dispersed'].mean().data.tolist()
+                # oil_film_thickness = xr_filter['oil_film_thickness'].mean().data.tolist()
+                # density = xr_filter['density'].mean().data.tolist()
+                # sea_water_temperature = xr_filter['sea_water_temperature'].mean().data.tolist()
+                # water_fraction = xr_filter['water_fraction'].mean().data.tolist()
+                status_mean = xr_filter.mean().data.tolist()
                 # TODO:[*] 20-01-17 注意此处的time_time.values为datetime64需要转换为datetime
+
                 temp_ts = pd.Timestamp(temp_time.values)
 
                 list_avg_models.append(
-                    OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean}, temp_ts))
+                    OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean},temp_ts))
+                # list_avg_models.append(
+                #     OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean}, temp_ts, x_wind,
+                #                            y_wind, x_sea_water_velocity, y_sea_water_velocity, mass_oil,
+                #                            mass_evaporated, mass_dispersed, oil_film_thickness, density,
+                #                            sea_water_temperature, water_fraction))
 
         return list_avg_models
 

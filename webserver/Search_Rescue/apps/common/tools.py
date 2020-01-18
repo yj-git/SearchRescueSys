@@ -1,4 +1,6 @@
 import time
+import functools
+
 
 def exe_run_time(func):
     '''
@@ -6,9 +8,12 @@ def exe_run_time(func):
     :param func:
     :return:
     '''
+
+    @functools.wraps(func)
     def wrapper(*args, **kw):
         local_time = time.time()
-        func(*args, **kw)
+        # 注意此处需要获取func的执行返回的方法并返回
+        res = func(*args, **kw)
         print(f'当前方法:{func.__name__}耗时：{time.time() - local_time}')
-
+        return res
     return wrapper

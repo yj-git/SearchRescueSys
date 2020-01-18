@@ -45,7 +45,9 @@ class OilSpillingTrackAvgView(APIView):
         if code is not None:
             # track_list = OilspillingAvgModel.objects(code=code)
             reader_func = create_reader('file')
-            reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data',
+            # reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data',
+            #                      'sanjioil.nc')
+            reader = reader_func(r'C:\01Proj\SearchRescueSys\data\demo_data',
                                  'sanjioil.nc')
             track_list = reader.read_avg_track('test')
         # TODO:[*] 20-01-17 此处注意一下，由于重新修改了序列化的原始data model 改为了mid model，mid model中缺少部分需要序列化的字段，序列化时会提示有错误，注意！

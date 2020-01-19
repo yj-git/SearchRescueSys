@@ -44,14 +44,16 @@ class OilModelSerializerByEngine(drf_serializers.EmbeddedDocumentSerializer):
         model = OilModel
         fields = '__all__'
 
+
 class OilSpillingTrackModelSerializer(serializers.Serializer):
     '''
         溢油轨迹model 序列化器
     '''
-    code = serializers.CharField()
+    # code = serializers.CharField()
     status = serializers.IntegerField()
-    time = serializers.DateTimeField()
+    # time = serializers.DateTimeField()
     point = serializers.DictField()
+
 
 class OilSpillingModelSerializer(serializers.Serializer):
     '''
@@ -85,6 +87,7 @@ class OilSpillingModelSerializerByEngine(drf_serializers.DocumentSerializer):
     '''
         溢油基础model
     '''
+
     class Meta:
         model = OilSpillingModel
         fields = '__all__'
@@ -102,8 +105,6 @@ class OilSpillingModelSerializerByEngine(drf_serializers.DocumentSerializer):
     # water_fraction = drf_serializers.FloatField()
 
     # oil = OilModelSerializerByEngine()
-
-
 
 
 class OilspillingAvgModelSerializer(serializers.Serializer):

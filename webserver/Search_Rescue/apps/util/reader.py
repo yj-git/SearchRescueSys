@@ -210,15 +210,24 @@ class OilFileReader(IOilReader, IOilScatter):
         # 根据datetime找到对应的time的index
         # 根据status获取散点
         # 获取对应时间的 DataArray
-        xr_merge = xar.merge([self.xarr.isel(time=[0]).get('status')])
+        # TODO:[*] 20-01-19 此处改为通过 时间维度直接获取对应的值，不再使用时间索引
+        # xr_merge = xar.merge([self.xarr.isel(time=[60]).get('status')])
+        xr_merge = xar.merge([self.xarr.sel(time=now).get('status')])
         # 将DataArray -> DataSet
         xr_merge = xr_merge.where(xr_merge >= 0).where(xr_merge < 1).to_dataframe().dropna(how='any')
         for index in range(len(xr_merge)):
             # 将DataFrame -> Series
             row_data = xr_merge.iloc[index]
             # 将dataset 转成model
-            list_track.append(OilSpillingTrackMidModel(code, row_data['status'], row_data.name[0].to_pydatetime(),
+            list_track.append(OilSpillingTrackMidModel(row_data['status'],
                                                        {'lat': row_data['lat'], 'lon': row_data['lon']}))
+            # print(str(row_data['status'])+":"+str(row_data['lon'])+":"+str(row_data['lat']))
+            # print(index)
+        # 使用列表推导
+        # list_track = [OilSpillingTrackMidModel(xr_merge.iloc[index]['status'],
+        #                                        {'lat': xr_merge.iloc[index]['lat'], 'lon': xr_merge.iloc[index]['lon']})
+        #               for index in
+        #               range(len(xr_merge))]
         return list_track
 
 

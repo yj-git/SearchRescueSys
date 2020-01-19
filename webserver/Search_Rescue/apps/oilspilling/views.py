@@ -70,9 +70,10 @@ class OilSpillingTrackView(APIView):
         oil_track_list = []
         if code is not None:
             reader_func = create_reader('file')
-            reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
-                                 'sanjioil.nc')
-            oil_track_list = reader.read_current_track('test', datetime.now())
+            reader = reader_func(r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data', 'sanjioil.nc')
+            # reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
+            #                      'sanjioil.nc')
+            oil_track_list = reader.read_current_track('test', target_date_str)
 
             # oil_track_list = OilSpillingModel.objects(
             #     code=code, time=target_date_dt)

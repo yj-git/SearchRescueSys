@@ -41,8 +41,6 @@ class OilSpillingAvgMidModel:
 
 
 class OilSpillingTrackMidModel:
-    def __init__(self, code, status, time, point):
-        self.code = code
+    def __init__(self, status, point):
         self.status = status
-        self.time = time
         self.point = point

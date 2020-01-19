@@ -8,7 +8,7 @@ import numpy.ma as ma
 # 读取nc文件相关
 # import netCDF4 as nc
 import xarray as xar
-from apps.oilspilling.middle_model import OilSpillingAvgMidModel
+from apps.oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel
 from apps.common.tools import exe_run_time
 
 
@@ -30,7 +30,19 @@ class IOilReader(metaclass=ABCMeta):
         pass
 
 
-class OilFileReader(IOilReader):
+class IOilScatter(metaclass=ABCMeta):
+    @abstractmethod
+    def read_current_track(self, code: str, now: datetime):
+        '''
+            根据code与当前时间获取对应的散点
+        :param code:
+        :param now:
+        :return:
+        '''
+        pass
+
+
+class OilFileReader(IOilReader, IOilScatter):
     def __init__(self, root_path: str, file_name: str):
         self.root_path = root_path
         self.file_name = file_name
@@ -144,7 +156,7 @@ class OilFileReader(IOilReader):
                 # 经测试，还是方式3的读取方式最快，大概耗时5.1s左右
                 # 当前方法: read_avg_track耗时：5.108347415924072
                 xr_filter = xr_temp.where(xr_temp >= 0).where(xr_temp < 1).dropna(dim='trajectory',
-                                                                                                      how='any')
+                                                                                  how='any')
                 # xr_filter = xr_temp.where(xr_temp['status'] >= 0).where(xr_temp['status'] < 1).dropna(dim='trajectory',
                 #                                                                                       how='any')
                 # 当前方法: read_avg_track耗时：3.9484479427337646
@@ -169,7 +181,7 @@ class OilFileReader(IOilReader):
                 temp_ts = pd.Timestamp(temp_time.values)
 
                 list_avg_models.append(
-                    OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean},temp_ts))
+                    OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean}, temp_ts))
                 # list_avg_models.append(
                 #     OilSpillingAvgMidModel(code, status_mean, {'lat': lat_mean, 'lon': lon_mean}, temp_ts, x_wind,
                 #                            y_wind, x_sea_water_velocity, y_sea_water_velocity, mass_oil,
@@ -189,6 +201,25 @@ class OilFileReader(IOilReader):
         else:
             self._init_dataset()
             return self.get_coord(dim)
+
+    @exe_run_time
+    def read_current_track(self, code: str, now: datetime) -> []:
+        list_track = []
+        if self.xarr is None:
+            self._init_dataset()
+        # 根据datetime找到对应的time的index
+        # 根据status获取散点
+        # 获取对应时间的 DataArray
+        xr_merge = xar.merge([self.xarr.isel(time=[0]).get('status')])
+        # 将DataArray -> DataSet
+        xr_merge = xr_merge.where(xr_merge >= 0).where(xr_merge < 1).to_dataframe().dropna(how='any')
+        for index in range(len(xr_merge)):
+            # 将DataFrame -> Series
+            row_data = xr_merge.iloc[index]
+            # 将dataset 转成model
+            list_track.append(OilSpillingTrackMidModel(code, row_data['status'], row_data.name[0].to_pydatetime(),
+                                                       {'lat': row_data['lat'], 'lon': row_data['lon']}))
+        return list_track
 
 
 class OilDbReader(IOilReader):

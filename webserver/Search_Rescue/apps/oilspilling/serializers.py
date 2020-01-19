@@ -44,6 +44,14 @@ class OilModelSerializerByEngine(drf_serializers.EmbeddedDocumentSerializer):
         model = OilModel
         fields = '__all__'
 
+class OilSpillingTrackModelSerializer(serializers.Serializer):
+    '''
+        溢油轨迹model 序列化器
+    '''
+    code = serializers.CharField()
+    status = serializers.IntegerField()
+    time = serializers.DateTimeField()
+    point = serializers.DictField()
 
 class OilSpillingModelSerializer(serializers.Serializer):
     '''

@@ -1,5 +1,5 @@
 import sys
-
+from datetime import datetime
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
 # Create your views here.
@@ -22,7 +22,7 @@ from rest_framework_mongoengine import viewsets as drf_viewsets
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
 from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializer, StartEndDateMidModelSerializer, \
-    OilSpillingModelSerializerByEngine
+    OilSpillingModelSerializerByEngine, OilSpillingTrackModelSerializer
 
 # 新加入的延时的任务
 from apps.oilspilling.tasks.tasks import my_task
@@ -69,9 +69,14 @@ class OilSpillingTrackView(APIView):
         target_date_dt = dateutil.parser.parse(target_date_str)
         oil_track_list = []
         if code is not None:
-            oil_track_list = OilSpillingModel.objects(
-                code=code, time=target_date_dt)
-        json_data = OilSpillingModelSerializer(oil_track_list, many=True).data
+            reader_func = create_reader('file')
+            reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
+                                 'sanjioil.nc')
+            oil_track_list = reader.read_current_track('test', datetime.now())
+
+            # oil_track_list = OilSpillingModel.objects(
+            #     code=code, time=target_date_dt)
+        json_data = OilSpillingTrackModelSerializer(oil_track_list, many=True).data
         return Response(json_data)
 
 

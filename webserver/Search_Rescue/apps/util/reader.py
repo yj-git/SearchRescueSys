@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import os
+import sys
 from datetime import datetime
 # numpy 相关
 import numpy as np
@@ -63,7 +64,11 @@ class OilFileReader(IOilReader, IOilScatter):
             # TODO:[*] 此处需要测试一下内存使用情况
             # 读取nc文件
             # self.ds = nc.Dataset(self.full_path)
-            self.xarr = xar.open_dataset(self.full_path)
+            # 加入判断文件是否存在的判断
+            if os.path.isfile(self.full_path):
+                self.xarr = xar.open_dataset(self.full_path)
+            else:
+                raise IOError
 
     @property
     def get_dims(self):
@@ -212,22 +217,30 @@ class OilFileReader(IOilReader, IOilScatter):
         # 获取对应时间的 DataArray
         # TODO:[*] 20-01-19 此处改为通过 时间维度直接获取对应的值，不再使用时间索引
         # xr_merge = xar.merge([self.xarr.isel(time=[60]).get('status')])
-        xr_merge = xar.merge([self.xarr.sel(time=now).get('status')])
-        # 将DataArray -> DataSet
-        xr_merge = xr_merge.where(xr_merge >= 0).where(xr_merge < 1).to_dataframe().dropna(how='any')
-        for index in range(len(xr_merge)):
-            # 将DataFrame -> Series
-            row_data = xr_merge.iloc[index]
-            # 将dataset 转成model
-            list_track.append(OilSpillingTrackMidModel(row_data['status'],
-                                                       {'lat': row_data['lat'], 'lon': row_data['lon']}))
-            # print(str(row_data['status'])+":"+str(row_data['lon'])+":"+str(row_data['lat']))
-            # print(index)
-        # 使用列表推导
-        # list_track = [OilSpillingTrackMidModel(xr_merge.iloc[index]['status'],
-        #                                        {'lat': xr_merge.iloc[index]['lat'], 'lon': xr_merge.iloc[index]['lon']})
-        #               for index in
-        #               range(len(xr_merge))]
+        try:
+            xr_merge = xar.merge([self.xarr.sel(time=now).get('status')])
+            # 将DataArray -> DataSet
+            xr_merge = xr_merge.where(xr_merge >= 0).where(xr_merge < 1).to_dataframe().dropna(how='any')
+            for index in range(len(xr_merge)):
+                # 将DataFrame -> Series
+                row_data = xr_merge.iloc[index]
+                # 将dataset 转成model
+                list_track.append(OilSpillingTrackMidModel(row_data['status'],
+                                                           {'lat': row_data['lat'], 'lon': row_data['lon']}))
+                # print(str(row_data['status'])+":"+str(row_data['lon'])+":"+str(row_data['lat']))
+                # print(index)
+            # 使用列表推导
+            # list_track = [OilSpillingTrackMidModel(xr_merge.iloc[index]['status'],
+            #                                        {'lat': xr_merge.iloc[index]['lat'], 'lon': xr_merge.iloc[index]['lon']})
+            #               for index in
+            #               range(len(xr_merge))]
+        except KeyError:
+            print('不存在的key索引/时间超出范围')
+            raise KeyError
+        except:
+            print(f'其他错误:{sys.exc_info()[0]}')
+            raise
+
         return list_track
 
 

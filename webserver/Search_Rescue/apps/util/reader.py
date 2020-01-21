@@ -66,7 +66,7 @@ class OilFileReader(IOilReader, IOilScatter):
             # self.ds = nc.Dataset(self.full_path)
             # 加入判断文件是否存在的判断
             if os.path.isfile(self.full_path):
-                self.xarr = xar.open_dataset(self.full_path)
+                self.xarr = xar.open_dataset(self.full_path).load()
             else:
                 raise IOError
 
@@ -208,8 +208,10 @@ class OilFileReader(IOilReader, IOilScatter):
             return self.get_coord(dim)
 
     @exe_run_time
-    def read_current_track(self, code: str, now: datetime) -> []:
+    def read_current_track(self, code: str, now: datetime, **kwargs) -> []:
         list_track = []
+        page_index = kwargs.get('page_index')
+        page_count = kwargs.get('page_count')
         if self.xarr is None:
             self._init_dataset()
         # 根据datetime找到对应的time的index
@@ -221,6 +223,8 @@ class OilFileReader(IOilReader, IOilScatter):
             xr_merge = xar.merge([self.xarr.sel(time=now).get('status')])
             # 将DataArray -> DataSet
             xr_merge = xr_merge.where(xr_merge >= 0).where(xr_merge < 1).to_dataframe().dropna(how='any')
+            # TODO:[*] 20-01-21 此处加入了分页
+            xr_merge = xr_merge[page_index * page_count:(page_index + 1) * page_count]
             for index in range(len(xr_merge)):
                 # 将DataFrame -> Series
                 row_data = xr_merge.iloc[index]

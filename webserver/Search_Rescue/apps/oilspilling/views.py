@@ -86,16 +86,20 @@ class OilSpillingTrackView(APIView):
         # TODO:[*] 20-01-20 最新的设计想通过分批加载的方式解决加载较慢的问题
         target_date_str = request.GET.get('date')
         code = request.GET.get('code', None)
+        page_index = int(request.GET.get('pageindex', 0))
+        page_count = int(request.GET.get('pagecount', 2000))
         target_date_dt = dateutil.parser.parse(target_date_str)
         oil_track_list = []
         json_data = None
+        msg = 'no error'
         if code is not None:
             try:
                 reader_func = create_reader('file')
                 # reader = reader_func(r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data', 'sanjioil.nc')
                 reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
                                      'sanjioil.nc')
-                oil_track_list = reader.read_current_track('test', target_date_str)
+                oil_track_list = reader.read_current_track('test', target_date_str, page_index=page_index,
+                                                           page_count=page_count)
 
                 # oil_track_list = OilSpillingModel.objects(
                 #     code=code, time=target_date_dt)
@@ -104,7 +108,13 @@ class OilSpillingTrackView(APIView):
                 msg = '不存在的key索引/时间超出范围'
             except:
                 msg = '其他错误'
-        return Response(msg if json_data is None else json_data)
+        return Response(
+            {
+                'data': json_data,
+                'error': msg
+            }
+        )
+        # return Response(msg if json_data is None else json_data)
 
 
 class TargetDateRealDataView(APIView):

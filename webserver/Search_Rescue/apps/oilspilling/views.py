@@ -29,6 +29,20 @@ from apps.oilspilling.tasks.tasks import my_task
 
 from apps.util.reader import OilFileReader, create_reader
 
+_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+
+_RESULT_FILE = 'sanjioil.nc'
+
+TYPE_EM = 'dev'
+
+
+def FULL_PATH():
+    import os
+    if TYPE_EM == 'dev':
+        return os.path.join(_ROOT_DIR, _RESULT_FILE)
+    else:
+        return ''
+
 
 class OilSpillingTrackAvgView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -135,20 +149,22 @@ class OilSpillingTrackAvgDateRangeView(APIView):
         code = request.GET.get('code', None)
         list_avg = []
         if code is not None:
-            # 根据time去重
-            list_avg = OilspillingAvgModel.objects(
-                code=code).distinct(field='time')
-            if len(list_avg) > 0:
-                list_avg = list(set(list_avg))
-                # 排序
-                list_avg.sort()
-                # for temp in list_avg:
-                #     print(temp)
-                # 获取起始时间及终止时间以及日期列表
-                temp = StartEndDateMidModel(list_avg[0], list_avg[-1])
+            reader_func = create_reader('file')
+            reader = reader_func(_ROOT_DIR, _RESULT_FILE)
+            list_avg = reader.read_date_range(code=code)
 
-                return Response(StartEndDateMidModelSerializer(temp).data)
-            return Response()
+            # TODO:[-] 20-01-21 不再使用数据库的读取这种方式，放在OilDbReader中
+            # 根据time去重
+            # list_avg = OilspillingAvgModel.objects(
+            #     code=code).distinct(field='time')
+            # if len(list_avg) > 0:
+            #     list_avg = list(set(list_avg))
+            #     # 排序
+            #     list_avg.sort()
+            temp = StartEndDateMidModel(list_avg[0], list_avg[-1])
+
+            return Response(StartEndDateMidModelSerializer(temp).data)
+        # return Response()
         return Response('未填code', status=200)
 
 

@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^realdata/target/$', TargetDateRealDataView.as_view()),
     # 根据code获取指定的时间范围（date）
     url(r'^track/date/range/$', OilSpillingTrackAvgDateRangeView.as_view()),
+    # url(r'^date/range/$',Rang)
     url(r'^create/model/$', CreateOilSpillingView.as_view()),
     # 商品列表页
     # re_path('^', include(router.urls)),

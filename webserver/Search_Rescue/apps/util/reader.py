@@ -11,6 +11,8 @@ import xarray as xar
 from apps.oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel
 from apps.common.tools import exe_run_time
 
+from apps.oilspilling.models import OilspillingAvgModel
+
 
 class IOilReader(metaclass=ABCMeta):
     @abstractmethod
@@ -97,7 +99,7 @@ class OilFileReader(IOilReader, IOilScatter):
         :param dims:
         :return:
         '''
-        pass
+        return dims in self.xarr.coords.keys()
 
     def check_vars_exist(self, var_temp: str) -> bool:
         '''
@@ -230,10 +232,34 @@ class OilFileReader(IOilReader, IOilScatter):
         #               range(len(xr_merge))]
         return list_track
 
+    def read_date_range(self, **kwargs) -> {}:
+        '''
+            获取当前的时间维度的范围
+        :return:
+        '''
+        res = None
+        if self.xarr is None:
+            self._init_dataset()
+        if self.check_dims_exist('time'):
+            res = [pd.to_datetime(self.xarr.coords['time'].min().values), pd.to_datetime(
+                self.xarr.coords['time'].max().values)]
+        return res
+
 
 class OilDbReader(IOilReader):
     def read(self):
         pass
+
+    def read_date_range(self, **kwargs):
+        code = kwargs.get('code')
+        # 根据time去重
+        list_avg = OilspillingAvgModel.objects(
+            code=code).distinct(field='time')
+        if len(list_avg) > 0:
+            list_avg = list(set(list_avg))
+            # 排序
+            list_avg.sort()
+        return list_avg
 
 
 def create_reader(type: str):

@@ -15,7 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 # TODO:[*] 引入jwt的token认证
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-
+from rest_framework.pagination import PageNumberPagination
 # rest_framework_mongoengine  相关
 from rest_framework_mongoengine import viewsets as drf_viewsets
 # 本项目的
@@ -44,6 +44,16 @@ def FULL_PATH():
         return ''
 
 
+class LargeResultsSetPagination(PageNumberPagination):
+    '''
+        提取散点用的分页类
+    '''
+    page_size = 400
+    page_size_query_param = 'page_size'
+    page_query_param = 'page'
+    max_page_size = 1000
+
+
 class OilSpillingTrackAvgView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -55,22 +65,31 @@ class OilSpillingTrackAvgView(APIView):
         '''
         code = request.GET.get('code', None)
         # TODO:[-] 20-01-16 此处修改为直接读取nc文件，不读取数据库
+
         track_list = []
+        msg = ''
         if code is not None:
-            # track_list = OilspillingAvgModel.objects(code=code)
-            reader_func = create_reader('file')
-            # reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data',
-            #                      'sanjioil.nc')
-            reader = reader_func(r'C:\01Proj\SearchRescueSys\data\demo_data',
-                                 'sanjioil.nc')
-            track_list = reader.read_avg_track('test')
+            try:
+                # track_list = OilspillingAvgModel.objects(code=code)
+                reader_func = create_reader('file')
+                # reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data',
+                #                      'sanjioil.nc')
+                reader = reader_func(r'C:\01Proj\SearchRescueSys\data\demo_data',
+                                     'sanjioil.nc')
+                track_list = reader.read_avg_track('test')
+            except KeyError:
+                msg = '不存在的key索引/时间超出范围'
+            except:
+                msg = '其他错误'
         # TODO:[*] 20-01-17 此处注意一下，由于重新修改了序列化的原始data model 改为了mid model，mid model中缺少部分需要序列化的字段，序列化时会提示有错误，注意！
         json_data = OilspillingAvgModelSerializer(track_list, many=True).data
         return Response(json_data)
-        pass
 
 
 class OilSpillingTrackView(APIView):
+    # 设定提取指定时间的散点用的分页类(一次性提取3000个散点对后台压力有些大)
+    pagination_class = LargeResultsSetPagination
+
     def get(self, request):
         '''
             根据指定的 date 获取该date的 所有溢油点
@@ -78,21 +97,38 @@ class OilSpillingTrackView(APIView):
         :param request:
         :return:
         '''
+        # TODO:[*] 20-01-20 最新的设计想通过分批加载的方式解决加载较慢的问题
         target_date_str = request.GET.get('date')
         code = request.GET.get('code', None)
+        page_index = int(request.GET.get('pageindex', 0))
+        page_count = int(request.GET.get('pagecount', 2000))
         target_date_dt = dateutil.parser.parse(target_date_str)
         oil_track_list = []
+        json_data = None
+        msg = 'no error'
         if code is not None:
-            reader_func = create_reader('file')
-            reader = reader_func(r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data', 'sanjioil.nc')
-            # reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
-            #                      'sanjioil.nc')
-            oil_track_list = reader.read_current_track('test', target_date_str)
+            try:
+                reader_func = create_reader('file')
+                # reader = reader_func(r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data', 'sanjioil.nc')
+                reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
+                                     'sanjioil.nc')
+                oil_track_list = reader.read_current_track('test', target_date_str, page_index=page_index,
+                                                           page_count=page_count)
 
-            # oil_track_list = OilSpillingModel.objects(
-            #     code=code, time=target_date_dt)
-        json_data = OilSpillingTrackModelSerializer(oil_track_list, many=True).data
-        return Response(json_data)
+                # oil_track_list = OilSpillingModel.objects(
+                #     code=code, time=target_date_dt)
+                json_data = OilSpillingTrackModelSerializer(oil_track_list, many=True).data
+            except KeyError:
+                msg = '不存在的key索引/时间超出范围'
+            except:
+                msg = '其他错误'
+        return Response(
+            {
+                'data': json_data,
+                'error': msg
+            }
+        )
+        # return Response(msg if json_data is None else json_data)
 
 
 class TargetDateRealDataView(APIView):
@@ -112,11 +148,19 @@ class TargetDateRealDataView(APIView):
         # 转换成date
         target_data_dt = dateutil.parser.parse(target_data_str)
         real_data = None
+        json_data = None
+        msg = ''
         if code is not None:
-            real_data = OilspillingAvgModel.objects(
-                code=code, time=target_data_dt)
-        json_data = OilspillingAvgModelSerializer(real_data[0]).data
-        return Response(json_data)
+            try:
+                real_data = OilspillingAvgModel.objects(
+                    code=code, time=target_data_dt)
+                json_data = OilspillingAvgModelSerializer(real_data[0]).data
+            except KeyError:
+                msg = '不存在的key索引/时间超出范围'
+            except:
+                msg = '其他错误'
+
+        return Response(msg if json_data is None else json_data)
 
 
 class OilRealDataAvgView(APIView):

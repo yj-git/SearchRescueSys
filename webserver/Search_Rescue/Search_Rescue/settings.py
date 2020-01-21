@@ -98,19 +98,22 @@ DATABASES = {
         'NAME': 'searchrescue',  # 数据库名
         # by casablanca
         'USER': 'root',  # 账号
-        'PASSWORD': 'admin123',  # 密码
-        # 'PASSWORD': '123456',  # 密码
+        # 'PASSWORD': 'admin123',
+        'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
-        # 'PASSWORD': '123456',  # 密码
+        # 'PASSWORD': '123456',
         'HOST': '127.0.0.1',  # HOST
         'POST': 3306,  # 端口
     }
 
 }
 
-# TODO:[*] 20-01-08 为了使用jwt而引入的
+# TODO:[-] 20-01-08 为了使用jwt而引入的
 REST_FRAMEWORK = {
+    # 加入了分页
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 200,
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',
     ),

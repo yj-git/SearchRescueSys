@@ -32,9 +32,9 @@ from apps.oilspilling.tasks.tasks import my_task
 from apps.util.reader import OilFileReader, create_reader
 
 # 7530
-# _ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
 # 5820
-_ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
+# _ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
 
 _RESULT_FILE = 'sanjioil.nc'
 
@@ -59,6 +59,24 @@ class LargeResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
+class OilSpillingTrackCountView(APIView):
+    def get(self, request):
+        '''
+            获取指定时间的散点总数
+        :param request:
+        :return:
+        '''
+        target_date_str = request.GET.get('date', None)
+        code = request.GET.get('code', None)
+        target_date = dateutil.parser.parse(target_date_str)
+        if None in [target_date_str, code]:
+            return Response()
+        else:
+            reader_func = create_reader('file')
+            reader = reader_func(_ROOT_DIR, _RESULT_FILE)
+            return Response(reader.read_track_count(target_date))
+
+
 class OilSpillingTrackAvgView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -77,10 +95,7 @@ class OilSpillingTrackAvgView(APIView):
             try:
                 # track_list = OilspillingAvgModel.objects(code=code)
                 reader_func = create_reader('file')
-                # reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\background\01byJupyter\data',
-                #                      'sanjioil.nc')
-                reader = reader_func(r'C:\01Proj\SearchRescueSys\data\demo_data',
-                                     'sanjioil.nc')
+                reader = reader_func(_ROOT_DIR, _RESULT_FILE)
                 track_list = reader.read_avg_track('test')
             except KeyError:
                 msg = '不存在的key索引/时间超出范围'
@@ -114,9 +129,7 @@ class OilSpillingTrackView(APIView):
         if code is not None:
             try:
                 reader_func = create_reader('file')
-                # reader = reader_func(r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data', 'sanjioil.nc')
-                reader = reader_func(r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data',
-                                     'sanjioil.nc')
+                reader = reader_func(_ROOT_DIR, _RESULT_FILE)
                 oil_track_list = reader.read_current_track('test', target_date_str, page_index=page_index,
                                                            page_count=page_count)
 
@@ -127,12 +140,13 @@ class OilSpillingTrackView(APIView):
                 msg = '不存在的key索引/时间超出范围'
             except:
                 msg = '其他错误'
-        return Response(
-            {
-                'data': json_data,
-                'error': msg
-            }
-        )
+        # return Response(
+        #     {
+        #         'data': json_data,
+        #         'error': msg
+        #     }
+        # )
+        return Response(json_data)
         # return Response(msg if json_data is None else json_data)
 
 

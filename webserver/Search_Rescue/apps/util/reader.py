@@ -209,6 +209,20 @@ class OilFileReader(IOilReader, IOilScatter):
             self._init_dataset()
             return self.get_coord(dim)
 
+    @property
+    def times_count(self) -> int:
+        '''
+            获取time维度的长度
+        :return:
+        '''
+        if self.xarr is None:
+            self._init_dataset()
+        if self.check_dims_exist('time'):
+            # 若存在time的维度，则获取time的count
+            return len(self.xarr.coords['time'])
+        else:
+            return 0
+
     @exe_run_time
     def read_current_track(self, code: str, now: datetime, **kwargs) -> []:
         list_track = []
@@ -231,15 +245,20 @@ class OilFileReader(IOilReader, IOilScatter):
                 # 将DataFrame -> Series
                 row_data = xr_merge.iloc[index]
                 # 将dataset 转成model
-                list_track.append(OilSpillingTrackMidModel(row_data['status'],
-                                                           {'lat': row_data['lat'], 'lon': row_data['lon']}))
+
+                # TODO:[-] 20-01-22 注意此处需要保持与之前的接口的兼容性，之前的接口返回的point是一个数组类型，point.coordinates
+                # list_track.append(OilSpillingTrackMidModel(row_data['status'],
+                #                                            {'lat': row_data['lat'], 'lon': row_data['lon']}))
+                list_track.append(OilSpillingTrackMidModel(row_data['status'], {'coordinates': [row_data['lon'],
+                                                                                                row_data['lat']]}))
                 # print(str(row_data['status'])+":"+str(row_data['lon'])+":"+str(row_data['lat']))
                 # print(index)
-            # 使用列表推导
-            # list_track = [OilSpillingTrackMidModel(xr_merge.iloc[index]['status'],
-            #                                        {'lat': xr_merge.iloc[index]['lat'], 'lon': xr_merge.iloc[index]['lon']})
-            #               for index in
-            #               range(len(xr_merge))]
+                # 使用列表推导
+                # list_track = [OilSpillingTrackMidModel(xr_merge.iloc[index]['status'],
+                #                                        {'lat': xr_merge.iloc[index]['lat'], 'lon': xr_merge.iloc[index]['lon']})
+                #               for index in
+                #               range(len(xr_merge))]
+
         except KeyError:
             print('不存在的key索引/时间超出范围')
             raise KeyError
@@ -261,6 +280,25 @@ class OilFileReader(IOilReader, IOilScatter):
             res = [pd.to_datetime(self.xarr.coords['time'].min().values), pd.to_datetime(
                 self.xarr.coords['time'].max().values)]
         return res
+
+    def read_track_count(self, dt: datetime) -> int:
+        '''
+            获取指定时间的散点
+        :param dt:
+        :return:
+        '''
+        count = 0
+        if self.xarr is None:
+            self._init_dataset()
+        if self.check_dims_exist('time'):
+            try:
+                ds = self.xarr.sel(time=dt)['status']
+                # TODO:[-] 20-01-22 注意此处一定需要对status的范围进行筛选
+                count = len(ds.where(ds >= 0).where(ds < 1).to_dataframe().dropna(how='any'))
+            except KeyError:
+                print('时间超出索引范围')
+
+        return count
 
 
 class OilDbReader(IOilReader):

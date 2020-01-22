@@ -4,28 +4,28 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-4">时间</div>
-        <div class="col-md-8">{{oil.time}}</div>
+        <div class="col-md-8">{{ oil.time }}</div>
       </div>
       <div class="row">
         <div class="col-md-4">中心位置</div>
-        <div class="col-md-8">{{oil.latlon}}</div>
+        <div class="col-md-8">{{ oil.latlon }}</div>
       </div>
       <div class="row row_footer">
         <div class="typhoon_footer">
           <div class="columnar my_primary">
-            <div class="main_val">{{oil.windVal}}</div>
+            <div class="main_val">{{ oil.windVal }}</div>
             <div class="vice_vak">风速</div>
           </div>
           <div class="columnar my_success">
-            <div class="main_val">{{oil.windDir|dirConvert}}</div>
+            <div class="main_val">{{ oil.windDir | dirConvert }}</div>
             <div class="vice_vak">风向</div>
           </div>
           <div class="columnar my_info">
-            <div class="main_val">{{oil.currentVal}}</div>
+            <div class="main_val">{{ oil.currentVal }}</div>
             <div class="vice_vak">流速</div>
           </div>
           <div class="columnar my_danger">
-            <div class="main_val">{{oil.currentDir|dirConvert}}</div>
+            <div class="main_val">{{ oil.currentDir | dirConvert }}</div>
             <div class="vice_vak">流向</div>
           </div>
         </div>
@@ -33,7 +33,7 @@
     </div>
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { OilMidModel } from "@/middle_model/oil";
 // import { dirConvertDec } from "@/decorator/mymath";
@@ -171,4 +171,4 @@ export default class RightBarDetail extends Vue {
   text-align: center;
   font-size: 0.625rem;
 }
-</style>    
+</style>

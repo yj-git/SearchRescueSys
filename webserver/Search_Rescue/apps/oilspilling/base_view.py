@@ -1,7 +1,6 @@
 import os
 from apps.util.user import get_user
 
-
 class OilBaseView:
     def get_mearn(self, factor: str, uid: int, **kwargs):
         '''

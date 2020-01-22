@@ -196,3 +196,9 @@ CELERY_TIMEZONE = TIME_ZONE
 
 # nc文件存储的根目录
 NC_STORE_DIR = r''
+
+# TODO:[-] 20-01-22 加入了分页的部分配置
+PAGINATION = {
+    'DEFAULT_COUNT': 500,
+    'DEFAULT_INDEX': 0
+}

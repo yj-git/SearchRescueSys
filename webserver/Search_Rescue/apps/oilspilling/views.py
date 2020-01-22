@@ -18,6 +18,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.pagination import PageNumberPagination
 # rest_framework_mongoengine  相关
 from rest_framework_mongoengine import viewsets as drf_viewsets
+# 本项目的配置
+from Search_Rescue.settings import PAGINATION
 # 本项目的
 from .models import OilspillingAvgModel, OilSpillingModel
 from .middle_model import StartEndDateMidModel
@@ -29,7 +31,10 @@ from apps.oilspilling.tasks.tasks import my_task
 
 from apps.util.reader import OilFileReader, create_reader
 
-_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+# 7530
+# _ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+# 5820
+_ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
 
 _RESULT_FILE = 'sanjioil.nc'
 
@@ -100,8 +105,8 @@ class OilSpillingTrackView(APIView):
         # TODO:[*] 20-01-20 最新的设计想通过分批加载的方式解决加载较慢的问题
         target_date_str = request.GET.get('date')
         code = request.GET.get('code', None)
-        page_index = int(request.GET.get('pageindex', 0))
-        page_count = int(request.GET.get('pagecount', 2000))
+        page_index = int(request.GET.get('pageindex', PAGINATION['DEFAULT_INDEX']))
+        page_count = int(request.GET.get('pagecount', PAGINATION['DEFAULT_COUNT']))
         target_date_dt = dateutil.parser.parse(target_date_str)
         oil_track_list = []
         json_data = None

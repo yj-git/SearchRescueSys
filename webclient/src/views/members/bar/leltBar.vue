@@ -68,14 +68,18 @@
     >
       <!-- 作业列表 -->
       <el-submenu index="1">
-        <template slot="title">作业列表</template>
+        <template slot="title"
+          >作业列表</template
+        >
         <el-menu-item index="2-1">
           <router-link to="/caselist">历史案例</router-link>
         </el-menu-item>
       </el-submenu>
       <!-- 风场及流场 -->
       <el-submenu index="2">
-        <template slot="title">风场及流场</template>
+        <template slot="title"
+          >风场及流场</template
+        >
         <el-menu-item index="2-1">
           <router-link to="/caselist">风场</router-link>
         </el-menu-item>
@@ -85,26 +89,33 @@
       </el-submenu>
       <!-- 搜救模型 -->
       <el-submenu index="3">
-        <template slot="title">搜救</template>
+        <template slot="title"
+          >搜救</template
+        >
         <el-menu-item index="2-1">
           <router-link to="/rescuemap">历史案例</router-link>
         </el-menu-item>
       </el-submenu>
       <!-- 溢油模型 -->
       <el-submenu index="4">
-        <template slot="title">溢油</template>
+        <template slot="title"
+          >溢油</template
+        >
         <el-menu-item index="4-1">
           <router-link to="/oilmap">展示方式1</router-link>
         </el-menu-item>
         <el-menu-item index="4-2">
           <router-link to="/newoilmap">展示方式2</router-link>
         </el-menu-item>
+        <el-menu-item index="4-3">
+          <router-link to="/mergeoilmap">展示方式3</router-link>
+        </el-menu-item>
       </el-submenu>
     </el-menu>
     <!-- <div class="line"></div> -->
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 @Component({})
 export default class center_map extends Vue {
@@ -119,10 +130,10 @@ export default class center_map extends Vue {
 #left_bar {
   display: flex;
   flex-direction: column;
-  .el-menu--horizontal{
+  .el-menu--horizontal {
     // background: #115368ef;
     // 去掉element ui 导航栏的底部的bottom的dash边框
-    border-bottom:0px;
+    border-bottom: 0px;
   }
 }
 </style>

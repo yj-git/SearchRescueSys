@@ -85,11 +85,15 @@ import OilRightBar from "@/views/bar/oilRightBar.vue";
 import OilFactorSelect from "@/views/members/select/OilFactorSelect.vue";
 import {
   loadOilSpillingAvgTrackList,
-  loadOilScatterTrackList,
+  loadOilScatterTrackListPage,
   loadOilRealData,
   loadOilSpillingAvgRealData,
-  getTargetCodeDateRange
+  getTargetCodeDateRange,
+  getTargetTimeTrackCount
 } from "@/api/api";
+
+// TODO:[-] 20-01-23 尝试将oil的部分操作放在oil 类中()
+import { Oil, IOptions } from "./oil";
 
 import { OilPointRealDataMidModel } from "@/middle_model/rescue";
 import { OilMidModel } from "@/middle_model/oil";
@@ -163,7 +167,8 @@ export default class OilSpillingMap extends Vue {
 
   mounted() {
     // 由于是测试，页面加载完成后先加载当前 code 的平均轨迹
-    this.loadTrackAvgList();
+    // TODO:[*] 20-01-23 暂时去掉页面加载后读取平均轨迹的步骤(暂时去掉)
+    // this.loadTrackAvgList();
     // TODO:[*] 19-11-07 将loadDate的操作放在created中
     // this.startDate = new Date(2018, 0, 14, 22, 20);
     // // TODO:[*] 19-11-05:页面加载时需要获取当前code对应的旗帜时间
@@ -191,7 +196,7 @@ export default class OilSpillingMap extends Vue {
     });
   }
   // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
-  loadTrackHeatmap(): void {
+  loadTrackHeatmap(code: string, dt: Date, index: number, count: number): void {
     let myself = this;
     //TODO:[*] 19-11-13 清除统一放在clearAllLayer中，此处暂时注释掉
     // this.clearScatterPoint();
@@ -200,7 +205,8 @@ export default class OilSpillingMap extends Vue {
     //TODO:[*] 19-11-04 清除layerHeat
     this.clearHeatLayer();
     // TODO:[*] 19-10-16 尝试加入热力图的效果
-    loadOilScatterTrackList(this.code, this.targetDate).then(res => {
+    // TODO:[*] 20-01-23 注意此处由直接调用当前的vue中的data取值，改为由方法参数取值
+    loadOilScatterTrackListPage(code, dt, index, count).then(res => {
       if (res.status === 200) {
         // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
         // 尝试使用直接添加的方式
@@ -256,12 +262,19 @@ export default class OilSpillingMap extends Vue {
   }
 
   // 加载散点图
-  loadTrackScatterPoint(): void {
+  loadTrackScatterPoint(
+    code: string,
+    dt: Date,
+    index: number,
+    count: number
+  ): void {
     let myself = this;
     //TODO:[*] 19-11-13 清除统一放在clearAllLayer中，此处暂时注释掉
     // this.clearScatterPoint();
     let mymap: any = this.$refs.basemap["mapObject"];
-    loadOilScatterTrackList(this.code, this.targetDate).then(res => {
+
+    // TODO:[*] 20-01-23 注意此处由直接调用当前的vue中的data取值，改为由方法参数取值
+    loadOilScatterTrackListPage(code, dt, index, count).then(res => {
       if (res.status === 200) {
         // TODO : [*] 19-09-25 注意此处 使用leaflet2vue插件会导致vue的组件崩溃。
         // 尝试使用直接添加的方式
@@ -307,14 +320,14 @@ export default class OilSpillingMap extends Vue {
   }
 
   testOnOver(temp: OilPointRealDataMidModel): void {
-    console.log("鼠标移入点");
+    // console.log("鼠标移入点");
     if (this.tempOilDivIcon != null) {
       this.clearOilDivFromMap();
     }
     // console.log(temp);
     loadOilRealData(this.code, temp.date).then(res => {
       if (res.status === 200) {
-        console.log(res);
+        // console.log(res);
         let tempData = res.data;
         let oilTemp = new OilMidModel(
           tempData["time"],
@@ -347,7 +360,7 @@ export default class OilSpillingMap extends Vue {
     let oilDivIconTemp = L.marker([tempOil.latlon[1], tempOil.latlon[0]], {
       icon: oilDivIcon
     }).addTo(myMap);
-    console.log("将divIcon插入map中");
+    // console.log("将divIcon插入map中");
     myself.tempOilDivIcon = oilDivIconTemp;
   }
 
@@ -355,7 +368,7 @@ export default class OilSpillingMap extends Vue {
     let myself = this;
     loadOilSpillingAvgRealData(code, date).then(res => {
       if (res.status === 200) {
-        console.log(res.data);
+        // console.log(res.data);
         let data = res.data;
         myself.oilAvgRealData = new OilMidModel(
           data["time"],
@@ -384,7 +397,7 @@ export default class OilSpillingMap extends Vue {
                 [ ] -3 每天的格子数量
 
         */
-        console.log(res);
+        // console.log(res);
         let daysCount = getDaysNum(start, end);
         myself.days = daysCount;
         myself.startDate = start;
@@ -397,7 +410,7 @@ export default class OilSpillingMap extends Vue {
 
   // 将当前的溢油数据的div从map中移出
   clearOilDivFromMap(): void {
-    console.log("鼠标移出");
+    // console.log("鼠标移出");
     let myself = this;
     let mymap: any = this.$refs.basemap["mapObject"];
     mymap.removeLayer(myself.tempOilDivIcon);
@@ -426,25 +439,37 @@ export default class OilSpillingMap extends Vue {
   @Getter("getShowFactor", { namespace: "oil" }) getShowFactor;
   @Watch("getShowFactor")
   OnShowFactor(val: number) {
-    console.log(`监听到vuex中namespace:oil factor发生变化:${val}`);
+    // console.log(`监听到vuex中namespace:oil factor发生变化:${val}`);
     this.showFactor = val;
-    this.loadTrackFactory();
+    // TODO:[*] 20-01-23 此处暂时注释掉对于factor改变后应该加载的业务逻辑
+    // this.loadTrackFactory();
   }
 
   // TODO:[*] 19-11-12 根据 current showType showFactor决定的加载的layer
-  loadTrackFactory(): void {
+  loadTrackFactory(count: number): void {
     let val: number = this.showType;
     // TODO:[*] 19-11-13 加入了clear方法，清除散点以及热图（或放在各个load方法中）
     this.clearAllLayer();
+    let oilCls = new Oil({
+      code: this.code,
+      dt: this.targetDate,
+      interval: 1000,
+      pageCount: 200
+    });
     switch (val) {
       // 散点
       case ShowType.SCATTER:
         // 切换为散点视图
-        this.loadTrackScatterPoint();
+        // TODO:[*] 20-01-23 此处放弃读取散点的原先方式，改为直接调用oil.ts的方法的方式
+        // this.loadTrackScatterPoint();
+        oilCls.intervalLoadTracks(count, this.loadTrackScatterPoint);
         break;
       case ShowType.HEATMAP:
         // 切换为热图视图
-        this.loadTrackHeatmap();
+        // TODO:[*] 20-01-23 此处改为和上面的加载散点的相同的方式
+        // 20-01-23 原始版本注释掉
+        // this.loadTrackHeatmap();
+        oilCls.intervalLoadTracks(count, this.loadTrackHeatmap);
         break;
     }
   }
@@ -452,13 +477,13 @@ export default class OilSpillingMap extends Vue {
   @Getter("getShowType", { namespace: "oil" }) getShowType: number;
   @Watch("getShowType")
   onShowType(val: number) {
-    console.log(`监听到vuex中namespace:oil type发生变化:${val}`);
+    // console.log(`监听到vuex中namespace:oil type发生变化:${val}`);
     this.showType = val;
   }
 
   @Watch("tempOil")
   onOil(oil: OilMidModel) {
-    console.log(`监听oil发生变化，现值为${this.tempOil}`);
+    // console.log(`监听oil发生变化，现值为${this.tempOil}`);
   }
 
   @Getter("getCurrent", { namespace: "map" }) getcurrent;
@@ -466,19 +491,22 @@ export default class OilSpillingMap extends Vue {
   onCurrent(val: Date) {
     let myself = this;
     this.targetDate = new Date(val);
-    // let currentDt: Date = new Date();
-    // if (val != "") {
-    //   currentDt = new Date(val);
-    // }
+    // TODO:[*] 20-01-23 选定时间更新后先获取当前时间的散点总数
+    getTargetTimeTrackCount(this.code, val).then(res => {
+      if (res.status === 200) {
+        let trackCount = res.data;
+        // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
+        this.loadTrackFactory(trackCount);
 
-    // console.log(val);
-    // 先加载oil 的realdata，再加载热力图
-    this.loadTargetRealData(myself.code, myself.targetDate);
-    // TODO:[*] 19-10-31 此处需要加入一个切换的功能
-    // this.loadTrackFactory()
-    // this.loadTrackHeatmap();
-    // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
-    this.loadTrackFactory();
+        // TODO:[*] 20-01-23 根据获取的当前时间的散点的数量，执行分页请求
+        // 先加载oil 的realdata，再加载热力图
+        this.loadTargetRealData(myself.code, myself.targetDate);
+        // TODO:[*] 19-10-31 此处需要加入一个切换的功能
+        // this.loadTrackFactory()
+        // this.loadTrackHeatmap();
+        
+      }
+    });
   }
 }
 </script>

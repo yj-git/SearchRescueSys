@@ -53,7 +53,7 @@ export class Oil {
    *
    * @memberof Oil
    */
-  intervalLoadTracks(count: number, func: any) {
+  intervalLoadTracks(count: number, func: any, options: { rate: number }) {
     // let interval = this.options?.interval;
     // 讲结果向上取整
     let pageIndex = Math.ceil(count / this.pageCount);
@@ -67,17 +67,22 @@ export class Oil {
     // 注意不需要再写循环了，只在定时器中做计数器的加法即可
 
     let index_temp = 0;
+    options.rate = 0;
     console.log(new Date());
     console.log(`${index_temp}`);
     this.loadTracks(index_temp, func);
     let timer = setInterval(() => {
       console.log(new Date());
       index_temp++;
+      // 当前的进度(向上取整)
+      options.rate = Math.ceil((100 / pageIndex) * index_temp);
+      // console.log(options.rate);
       console.log(`${index_temp}`);
       this.loadTracks(index_temp, func);
 
       if (index_temp === pageIndex || index_temp > pageIndex) {
         clearInterval(timer);
+        options.rate = 100;
         console.log("请求结束");
       }
     }, this.interval);

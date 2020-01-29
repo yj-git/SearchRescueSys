@@ -34,6 +34,30 @@
         :days="days"
         :interval="interval"
       ></TimeBar>
+      <div id="process">
+        <!-- TODO:[-] 20-01-27 使用eu的进度条 -->
+        <!-- <el-progress
+          :text-inside="true"
+          :stroke-width="18"
+          :percentage="processOptions.rate"
+        ></el-progress> -->
+        <!-- 使用bt的进度条 -->
+        <!-- <div
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          role="progressbar"
+          aria-valuenow="{{processOptions.rate}}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 75%"
+        ></div> -->
+        <!-- 使用bootstrap-vue的组件 -->
+        <b-progress
+          :value="processOptions.rate"
+          :max="100"
+          show-progress
+          animated
+        ></b-progress>
+      </div>
     </div>
     <div id="right_bar">
       <!-- TODO:[*] 19-10-28 加入右侧信息栏_v1版本 -->
@@ -45,8 +69,14 @@
         :targetDate="current"
       ></OilRightBar>
     </div>
+
     <div class="left_select">
       <OilFactorSelect></OilFactorSelect>
+      <CurdBtn></CurdBtn>
+    </div>
+    <!-- TODO:[-] 20-01-27 在地图页面加入创建等的btn -->
+    <div id="toolbar_btns">
+      <!-- <CurdBtn></CurdBtn> -->
     </div>
   </div>
 </template>
@@ -83,6 +113,7 @@ import RightDetailBar from "@/views/members/bar/rightBarDetail.vue";
 import RightOilBar from "@/views/members/bar/rightOilBar.vue";
 import OilRightBar from "@/views/bar/oilRightBar.vue";
 import OilFactorSelect from "@/views/members/select/OilFactorSelect.vue";
+import CurdBtn from "@/views/members/tools/CurdBtn.vue";
 import {
   loadOilSpillingAvgTrackList,
   loadOilScatterTrackListPage,
@@ -115,7 +146,8 @@ import { OilFactor, ShowType } from "@/enum/OilSelect";
     RightDetailBar,
     RightOilBar,
     OilRightBar,
-    OilFactorSelect
+    OilFactorSelect,
+    CurdBtn
     // LeafletHeatmap
   }
 })
@@ -157,6 +189,8 @@ export default class OilSpillingMap extends Vue {
   // TODO:[*] 19-11-12 加入show type与show factor
   showType: number;
   showFactor: number;
+  // TODO:[*] 20-01-27 与进度相关的options
+  processOptions: { rate: number } = { rate: 0 };
   created() {
     this.startDate = new Date();
     this.targetDate = new Date();
@@ -460,16 +494,24 @@ export default class OilSpillingMap extends Vue {
       // 散点
       case ShowType.SCATTER:
         // 切换为散点视图
-        // TODO:[*] 20-01-23 此处放弃读取散点的原先方式，改为直接调用oil.ts的方法的方式
+        // TODO:[-] 20-01-23 此处放弃读取散点的原先方式，改为直接调用oil.ts的方法的方式
         // this.loadTrackScatterPoint();
-        oilCls.intervalLoadTracks(count, this.loadTrackScatterPoint);
+        oilCls.intervalLoadTracks(
+          count,
+          this.loadTrackScatterPoint,
+          this.processOptions
+        );
         break;
       case ShowType.HEATMAP:
         // 切换为热图视图
         // TODO:[*] 20-01-23 此处改为和上面的加载散点的相同的方式
         // 20-01-23 原始版本注释掉
         // this.loadTrackHeatmap();
-        oilCls.intervalLoadTracks(count, this.loadTrackHeatmap);
+        oilCls.intervalLoadTracks(
+          count,
+          this.loadTrackHeatmap,
+          this.processOptions
+        );
         break;
     }
   }
@@ -484,6 +526,11 @@ export default class OilSpillingMap extends Vue {
   @Watch("tempOil")
   onOil(oil: OilMidModel) {
     // console.log(`监听oil发生变化，现值为${this.tempOil}`);
+  }
+
+  @Watch("processOptions.rate")
+  onProcessOptions(rate: number) {
+    console.log(`监听到processOptions发生变化:${rate}`);
   }
 
   @Getter("getCurrent", { namespace: "map" }) getcurrent;
@@ -504,7 +551,6 @@ export default class OilSpillingMap extends Vue {
         // TODO:[*] 19-10-31 此处需要加入一个切换的功能
         // this.loadTrackFactory()
         // this.loadTrackHeatmap();
-        
       }
     });
   }
@@ -532,6 +578,15 @@ export default class OilSpillingMap extends Vue {
     top: 150px;
     left: 50px;
     z-index: 1500;
+    display: flex;
+  }
+
+  #toolbar_btns {
+    position: absolute;
+    top: 17em;
+    // left: 10em;
+    z-index: 1500;
+    width: 70%;
   }
 }
 #map_content {
@@ -539,6 +594,14 @@ export default class OilSpillingMap extends Vue {
   // padding: 10px;
   flex: 5;
   @centermap();
+  #process {
+    margin-right: 10rem;
+    position: absolute;
+    bottom: 8rem;
+    left: 12rem;
+    z-index: 1500;
+    width: 15em;
+  }
 }
 #right_bar {
   flex: 1;
@@ -557,6 +620,7 @@ export default class OilSpillingMap extends Vue {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+// 加载散点的进度条
 
 .oil_icon_default {
   width: 750px !important;

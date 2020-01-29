@@ -13,6 +13,10 @@ import jquery from "jquery";
 // 引入bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.js";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+
+// TODO:[-] 20-01-27 加入了bootstrap-vue
+import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 // 引入element ui
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
@@ -39,6 +43,8 @@ import "font-awesome/css/font-awesome.css";
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 // Vue.use(moment);
 Vue.prototype.moment = moment;
 new Vue({

@@ -2,13 +2,15 @@
   <div>
     <oilModelDetial :oilModelDetailData="oilModelDetailData"></oilModelDetial>
     <oilData :oilRealData="oilRealData"></oilData>
-    <timeBar :step="step" :index="index" :startDate="startDate" :count="count"></timeBar>
+    <!-- <timeBar :step="step" :index="index" :startDate="startDate" :count="count"></timeBar> -->
   </div>
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import oilData from "@/views/oil/oilDataForm.vue";
-import oilModelDetial from "@/views/oil/oilModelDetailForm.vue";
+// TODO:[-] 20-01-28 此处修改了布局方式
+// import oilModelDetial from "@/views/oil/oilModelDetailForm.vue";
+import oilModelDetial from "@/views/oil/oilModelDetailForm2.vue";
 // import timeBar from "@/views/timebar/DayCardV1/DayComp.vue";
 import timeBar from "@/views/members/timebar/DaysComp.vue";
 import { OilMidModel, OilModelDetailMidModel } from "@/middle_model/oil";
@@ -92,5 +94,4 @@ export default class RightInfoBar extends Vue {
   }
 }
 </script>
-<style scoped>
-</style>
+<style scoped></style>

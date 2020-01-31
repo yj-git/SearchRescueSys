@@ -1,6 +1,6 @@
 <template>
   <div id="oil_detail" class="card mb-3 box-shadow">
-    <div class="card-header">溢油数据</div>
+    <!-- <div class="card-header">溢油数据</div>
     <div class="card-body">
       <div class="row">
         <div class="col-md-4">时间</div>
@@ -30,32 +30,73 @@
           </div>
         </div>
       </div>
+    </div> -->
+    <div id="oil_detail" class="mb-3 box-shadow">
+      <div class="card-header">实时数据</div>
+      <div class="card-body">
+        <div class="form">
+          <div class="cell">
+            <div class="title">时间</div>
+            <div class="content">
+              2020-01-28 17
+            </div>
+          </div>
+          <div class="cell">
+            <div class="title">中心位置</div>
+            <div class="content">120, 95</div>
+          </div>
+        </div>
+        <div class="form">
+          <div class="cell">
+            <div class="title">风速</div>
+            <div class="content my-font-primary">
+              5.21
+            </div>
+          </div>
+          <div class="cell">
+            <div class="title">风向</div>
+            <div class="content my-font-primary">-128.34</div>
+          </div>
+        </div>
+        <div class="form">
+          <div class="cell">
+            <div class="title">流速</div>
+            <div class="content my-font-primary">
+              0.33
+            </div>
+          </div>
+          <div class="cell">
+            <div class="title">流向</div>
+            <div class="content my-font-primary">45</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { OilMidModel } from "@/middle_model/oil";
-import moment from "moment";
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { OilMidModel } from '@/middle_model/oil'
+import moment from 'moment'
 @Component({
   filters: {
     fortmatDate(now: Date) {
-      return moment(now).format("YYYY-MM-DD HH");
+      return moment(now).format('YYYY-MM-DD HH')
     }
   }
 })
-export default class OilDataForm extends Vue {
+export default class OilRealDataForm extends Vue {
   get computedTest() {
-    return null;
+    return null
   }
-  public mydata: any = null;
+  public mydata: any = null
   @Prop(Object)
-  private oilRealData!: OilMidModel;
+  private oilRealData!: OilMidModel
   public mounted() {}
 }
 </script>
 <style scoped lang="less">
-@import "../../styles/base";
+@import '../../styles/base';
 #oil_detail {
   /* width: 200px; */
   font-size: 0.7em;

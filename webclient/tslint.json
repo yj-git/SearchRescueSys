@@ -1,0 +1,9 @@
+{
+  "defaultSeverity": "off",
+  "jsRules": {},
+  "extends": ["tslint:latest", "tslint-config-prettier"],
+  "rules": {
+    "no-constant-condition": true
+  },
+  "rulesDirectory": []
+}

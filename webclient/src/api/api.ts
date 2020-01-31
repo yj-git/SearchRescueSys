@@ -29,6 +29,16 @@ const loadTrackAvgList = (code: string) => {
   });
 };
 
+const getTargetTimeTrackCount = (code: string, dt: Date) => {
+  const countUrl = `${host}/oilspilling/times/count/`;
+  return axios.get(countUrl, {
+    params: {
+      code: code,
+      date: dt
+    }
+  });
+};
+
 /**
  * 加载指定 code 与 date 的溢油 avg realdata
  *
@@ -61,7 +71,7 @@ const loadOilSpillingAvgTrackList = (code: string) => {
   });
 };
 /**
- * 加载指定 code 及 对应时间 的散点
+ * 加载指定 code 及 对应时间 的散点 原始版本(一次性读取散点版本)
  *
  * @param {string} code
  * @param {Date} targetDate
@@ -73,6 +83,32 @@ const loadOilScatterTrackList = (code: string, targetDate: Date) => {
     params: {
       code: code,
       date: targetDate
+    }
+  });
+};
+
+/**
+ * 分页读取散点(非一次性读取散点)
+ *
+ * @param {string} code
+ * @param {Date} targetDate
+ * @param {number} pageindex
+ * @param {number} pagecount
+ * @returns
+ */
+const loadOilScatterTrackListPage = (
+  code: string,
+  targetDate: Date,
+  pageindex: number,
+  pagecount: number
+) => {
+  let trackAvglistUrl = `${host}/oilspilling/track/`;
+  return axios.get(trackAvglistUrl, {
+    params: {
+      code: code,
+      date: targetDate,
+      pageindex: pageindex,
+      pagecount: pagecount
     }
   });
 };
@@ -92,7 +128,6 @@ const loadOilRealData = (code: string, targetDate: Date) => {
     }
   });
 };
-
 
 /**
  * 获取指定code对应的时间范围(start,end)
@@ -118,5 +153,7 @@ export {
   loadOilScatterTrackList,
   loadOilRealData,
   loadOilSpillingAvgRealData,
-  getTargetCodeDateRange
+  getTargetCodeDateRange,
+  getTargetTimeTrackCount,
+  loadOilScatterTrackListPage
 };

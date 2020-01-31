@@ -14,6 +14,7 @@ import os
 import sys
 
 import mongoengine
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,9 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_mongoengine',
+    # 引入drf的token
+    'rest_framework.authtoken',
     'corsheaders',
     'rescue',
-    'oilspilling'
+    'oilspilling',
+    'user'
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -90,14 +96,42 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
         'NAME': 'searchrescue',  # 数据库名
+        # by casablanca
         'USER': 'root',  # 账号
-        'PASSWORD': '123456',  # 密码
+        # 7530
+        # 'PASSWORD': 'admin123',
+        # 5820
+        # 5510
+        'PASSWORD': '123456',
+        # by cwb
+        # 'USER': 'root',  # 账号
+        # 'PASSWORD': '123456',
         'HOST': '127.0.0.1',  # HOST
         'POST': 3306,  # 端口
     }
 
 }
 
+# TODO:[-] 20-01-08 为了使用jwt而引入的
+REST_FRAMEWORK = {
+    # 加入了分页
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 200,
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 引入第三方的jwt认证
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+# TODO:[-] 20-01-08 加入jwt的设置（主要是过期时间）
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=24 * 60 * 60)
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -165,3 +199,9 @@ CELERY_TIMEZONE = TIME_ZONE
 
 # nc文件存储的根目录
 NC_STORE_DIR = r''
+
+# TODO:[-] 20-01-22 加入了分页的部分配置
+PAGINATION = {
+    'DEFAULT_COUNT': 500,
+    'DEFAULT_INDEX': 0
+}

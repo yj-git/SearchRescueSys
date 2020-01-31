@@ -1,5 +1,7 @@
 from django.db import models
+# TODO:[*] 20-01-08 注意此处改为使用mongoengine.Doucment，好像之前就是 -_-||
 from mongoengine import *
+
 # Create your models here.
 
 # 本项目中的
@@ -43,6 +45,7 @@ class OilSpillingModel(Document):
     water_fraction = FloatField()
 
     oil = EmbeddedDocumentField(OilModel)
+
 
 
 class OilspillingAvgModel(Document):

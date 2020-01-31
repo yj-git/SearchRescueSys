@@ -1,26 +1,30 @@
 <template>
-  <div>
+  <div id="container">
     <oilModelDetial :oilModelDetailData="oilModelDetailData"></oilModelDetial>
     <oilData :oilRealData="oilRealData"></oilData>
-    <timeBar :step="step" :index="index" :startDate="startDate" :count="count"></timeBar>
+    <RangePie></RangePie>
+    <!-- <timeBar :step="step" :index="index" :startDate="startDate" :count="count"></timeBar> -->
   </div>
 </template>
-<script lang='ts'>
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import oilData from "@/views/oil/oilDataForm.vue";
-import oilModelDetial from "@/views/oil/oilModelDetailForm.vue";
+<script lang="ts">
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import oilData from '@/views/oil/oilRealDataForm.vue'
+// TODO:[-] 20-01-28 此处修改了布局方式
+// import oilModelDetial from "@/views/oil/oilModelDetailForm.vue";
+import oilModelDetial from '@/views/oil/oilModelDetailForm2.vue'
 // import timeBar from "@/views/timebar/DayCardV1/DayComp.vue";
-import timeBar from "@/views/members/timebar/DaysComp.vue";
-import { OilMidModel, OilModelDetailMidModel } from "@/middle_model/oil";
-import { OilEquation } from "@/enum/Equation";
-import { XYMidMode, PointMidModel } from "@/middle_model/coordinate";
-import moment from "moment";
+import timeBar from '@/views/members/timebar/DaysComp.vue'
+import RangePie from '@/views/members/pie/rangePie.vue'
+import { OilMidModel, OilModelDetailMidModel } from '@/middle_model/oil'
+import { OilEquation } from '@/enum/Equation'
+import { XYMidMode, PointMidModel } from '@/middle_model/coordinate'
+import moment from 'moment'
 // 组件引入
-@Component({ components: { oilModelDetial, oilData, timeBar } })
+@Component({ components: { oilModelDetial, oilData, timeBar, RangePie } })
 export default class RightInfoBar extends Vue {
-  public mydata: any = null;
+  public mydata: any = null
   // 时间 bar 的间隔
-  public step: number = 1;
+  public step: number = 1
   // public index: number = 3;
   // public startDate: Date = new Date();
   // public count: number = 72;
@@ -42,28 +46,28 @@ export default class RightInfoBar extends Vue {
     72,
     81,
     OilEquation.RungeKutta
-  );
+  )
   @Prop(Object)
-  oilRealData!: OilMidModel;
+  oilRealData!: OilMidModel
 
   @Prop(Number)
-  days: number = 3;
+  days: number = 3
 
   @Prop(Date)
-  startDate: Date;
+  startDate: Date
 
   // start: Date = this.startDate;
 
   @Prop(Number)
-  interval: number = 24;
+  interval: number = 24
 
   // 当前时间
   @Prop(Date)
-  targetDate: Date;
+  targetDate: Date
   // current: Date = this.targetDate;
   public mounted() {}
   get computedTest() {
-    return null;
+    return null
   }
 
   // 获取当前的date(targetDate) 是在timebar中的第几个位置
@@ -77,20 +81,23 @@ export default class RightInfoBar extends Vue {
       (this.targetDate.getTime() - this.startDate.getTime()) /
         (1000 * 60 * 60) /
         this.timeInterval +
-      this.startDate.getHours() * this.timeInterval;
-    index = Math.floor(index);
-    return index;
+      this.startDate.getHours() * this.timeInterval
+    index = Math.floor(index)
+    return index
   }
 
   get timeInterval() {
-    return 24 / this.interval;
+    return 24 / this.interval
   }
 
   //
   get count() {
-    return this.days * this.interval;
+    return this.days * this.interval
   }
 }
 </script>
 <style scoped>
+#container {
+  height: 100%;
+}
 </style>

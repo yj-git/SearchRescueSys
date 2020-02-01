@@ -4,23 +4,24 @@
     </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import echarts from 'echarts';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import echarts from 'echarts'
 @Component({})
 export default class CustomPie extends Vue {
-    mydata: any = null;
-    chart?: any = null;
-    testData: string = '100';
-    testModel: number = 123;
-    leftNum: number = 100;
-    currentNum: number = 0;
+    mydata: any = null
+    chart?: any = null
+    @Prop(Number)
+    leftNum: number
+    @Prop(Number)
+    currentNum: number
     mounted() {
-        this.initChart();
+        //
+        this.initChart()
     }
     initChart(): void {
-        let chartEle = document.getElementById('range_pie') as HTMLDivElement;
+        let chartEle = document.getElementById('range_pie') as HTMLDivElement
         if (chartEle != null) {
-            this.chart = echarts.init(chartEle);
+            this.chart = echarts.init(chartEle)
             let option = {
                 backgroundColor: '#1a6865',
 
@@ -53,12 +54,11 @@ export default class CustomPie extends Vue {
                         radius: '55%',
                         center: ['50%', '50%'],
                         color: ['rgb(84, 240, 17)', 'rgb(249, 241, 17)'],
-                        data: [
-                            { value: 0, name: '加载进度' },
-                            { value: 100, name: '剩余进度' }
-                        ].sort(function(a, b) {
-                            return a.value - b.value;
-                        }),
+                        data: [{ value: 0, name: '当前散点数' }, { value: 100, name: '总数' }].sort(
+                            function(a, b) {
+                                return a.value - b.value
+                            }
+                        ),
                         roseType: 'radius',
                         label: {
                             color: 'rgba(255, 255, 255, 0.3)'
@@ -80,7 +80,7 @@ export default class CustomPie extends Vue {
                         animationType: 'scale',
                         animationEasing: 'elasticOut',
                         animationDelay: function(idx) {
-                            return Math.random() * 200;
+                            return Math.random() * 200
                         }
                     }
                 ],
@@ -91,23 +91,23 @@ export default class CustomPie extends Vue {
                     'rgb(200,200,169)',
                     'rgb(131,175,155)'
                 ]
-            };
-            this.chart.setOption(option);
-            this.timerReloadData();
+            }
+            this.chart.setOption(option)
+            // this.timerReloadData()
         }
     }
     // 定时更新数据
     timerReloadData(): void {
-        let index = 0;
-        let _that = this;
+        let index = 0
+        let _that = this
         let timer = setInterval(() => {
-            index++;
-            _that.leftNum = 100 - index * 10;
-            _that.currentNum = index * 10;
+            index++
+            _that.leftNum = 100 - index * 10
+            _that.currentNum = index * 10
             if (_that.leftNum <= 0) {
-                clearInterval(timer);
+                clearInterval(timer)
             }
-        }, 2000);
+        }, 2000)
     }
     @Watch('currentNum')
     onCurrentNum(val: number) {
@@ -115,29 +115,42 @@ export default class CustomPie extends Vue {
             series: [
                 {
                     data: [
-                        { value: this.currentNum, name: '加载进度' },
-                        { value: this.leftNum, name: '剩余进度' }
+                        { value: this.currentNum, name: '当前散点数' },
+                        { value: this.leftNum, name: '总数' }
                     ]
                 }
             ]
-        };
+        }
         // 修改设置
         if (this.chart != undefined) {
-            this.chart.setOption(option);
+            this.chart.setOption(option)
         }
     }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
+@import '../../../styles/base';
 .container {
     height: calc(100% - 460px);
-    background-color: #bbbbbb;
+    // background-color: #bbbbbb;
+    padding: 0;
+    @formradius();
 }
 #range_pie {
     /* width: 217px; */
     width: 100%;
     /* height: 200px; */
     height: 100%;
-    background: rgb(202, 195, 195);
+    // background: rgb(202, 195, 195);
+    @formradius();
+    div:last-child {
+        @formradius();
+    }
+}
+#range_pie > div {
+    background: red;
+}
+#range_pie > div:last-child {
+    width: 80%;
 }
 </style>

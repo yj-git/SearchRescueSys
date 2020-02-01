@@ -38,6 +38,7 @@
     "leaflet.heat": "^0.2.0",
     "moment": "^2.24.0",
     "node-pre-gyp": "^0.13.0",
+    "tslint-config-prettier": "^1.18.0",
     "vue": "^2.6.10",
     "vue-awesome": "^4.0.2",
     "vue-class-component": "^7.0.2",

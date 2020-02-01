@@ -2,75 +2,63 @@
 @radius: 0.5rem;
 
 @formmargin: {
-  margin: 1em;
-}
+    margin: 1em;
+};
 
 @centerbackground: {
-  background: linear-gradient(#465581, #313b59);
-}
-
-;
+    background: linear-gradient(#465581, #313b59);
+};
 
 @formbox: {
-  // 加入一个阴影效果
-  box-shadow: 2px 2px 3px black;
-}
+    // 加入一个阴影效果
+    box-shadow: 2px 2px 3px black;
+};
 
-;
+@formradius: {
+    // 加入四个角的圆角+阴影
+    border-top-left-radius: 15px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+};
 
 // div的遮罩
 @divshadow: {
-  background-color: rgba(0, 0, 0, 0.12);
-}
-
-;
+    background-color: rgba(0, 0, 0, 0.12);
+};
 
 @formmoreshadow: {
-  box-shadow: 0px 5px 11px #333333;
-}
-
-;
+    box-shadow: 0px 5px 11px #333333;
+};
 
 @bottomradius: {
-  /* 底部圆角 */
-  border-bottom-left-radius: @radius;
-  border-bottom-right-radius: @radius;
-}
-
-;
+    /* 底部圆角 */
+    border-bottom-left-radius: @radius;
+    border-bottom-right-radius: @radius;
+};
 
 @allradius: {
-  @bottomradius();
-  border-top-left-radius: @radius;
-  border-top-right-radius: @radius;
-}
-
-;
+    @bottomradius();
+    border-top-left-radius: @radius;
+    border-top-right-radius: @radius;
+};
 
 @center: {
-  height: 86vh;
-  display: flex;
-  flex: 22;
-  background: linear-gradient(rgb(70, 85, 129), rgb(49, 59, 89));
-}
-
-;
+    height: 86vh;
+    display: flex;
+    flex: 22;
+    background: linear-gradient(rgb(70, 85, 129), rgb(49, 59, 89));
+};
 
 // 加入了内部的padding的center map 的父类
 @centermap: {
-  padding: 10px;
-}
-
-;
+    padding: 10px;
+};
 
 @button: {
-  margin-left: 0.5em;
-}
-
-;
+    margin-left: 0.5em;
+};
 
 @test: {
-  background: black;
-}
-
-;
+    background: black;
+};

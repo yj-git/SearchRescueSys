@@ -8,9 +8,11 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import echarts from 'echarts'
 @Component({})
 export default class CustomPie extends Vue {
-    mydata: any = null
+    mydata = null
     chart?: any = null
-    testata: number
+
+    // testata: number
+    // testdata:string=123
     @Prop(Number)
     leftNum: number
     @Prop(Number)

@@ -10,7 +10,7 @@ import echarts from 'echarts'
 export default class CustomPie extends Vue {
     mydata = null
     chart?: any = null
-
+    // abc: string = '123'
     // testata: number
     // testdata:string=123
     @Prop(Number)

@@ -13,7 +13,7 @@ export interface IPageOptions {
     pageCount: number
 }
 
-export interface IOptions extends IOilOptions, IPageOptions { }
+export interface IOptions extends IOilOptions, IPageOptions {}
 
 interface Callback {
     (code: string, dt: Date, index: number, count: number): void

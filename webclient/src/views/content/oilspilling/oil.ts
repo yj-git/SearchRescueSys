@@ -13,7 +13,7 @@ export interface IPageOptions {
     pageCount: number
 }
 
-export interface IOptions extends IOilOptions, IPageOptions {}
+export interface IOptions extends IOilOptions, IPageOptions { }
 
 interface Callback {
     (code: string, dt: Date, index: number, count: number): void
@@ -76,7 +76,6 @@ export class Oil {
         console.log(`${index_temp}`)
         options.num.current = 0
         this.loadTracks(index_temp, func)
-
         // TODO:[-] 20-02-01 重新调整修改current的逻辑
         // 统一放在oilSpillingMap中修改，不放在Oil中修改，只是在调用本方法时，先执行清空操作
         // options.num.current = this.pageCount * index_temp

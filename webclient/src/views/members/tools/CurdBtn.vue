@@ -23,6 +23,7 @@
                 :iconstyle="'fa-stop-circle'"
                 :levelstyle="'my-succes'"
                 :showsize="'small'"
+                @click.native="onClick"
             ></InfoBox>
             <!-- <InfoBox
         :count="18"
@@ -31,10 +32,12 @@
         :levelstyle="'my-warning'"
       ></InfoBox> -->
         </div>
-        <div class="user-caselist">
-            <!-- <JobListUser :isMin="true"></JobListUser> -->
-            <JobList></JobList>
-        </div>
+        <transition name="fade">
+            <div class="user-caselist" v-show="isShowByList">
+                <!-- <JobListUser :isMin="true"></JobListUser> -->
+                <JobList></JobList>
+            </div>
+        </transition>
     </div>
 </template>
 <script lang="ts">
@@ -47,9 +50,14 @@ import JobList from '@/views/members/table/JobListMin.vue'
 })
 export default class CurdBtn extends Vue {
     mydata: any = null
+    isShowByList: boolean = false
     mounted() {}
     get computedTest() {
         return null
+    }
+    onClick() {
+        this.isShowByList = !this.isShowByList
+        console.log('被点击了')
     }
 }
 </script>
@@ -79,5 +87,12 @@ export default class CurdBtn extends Vue {
     .user-caselist {
         width: 20em;
     }
+}
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
 }
 </style>

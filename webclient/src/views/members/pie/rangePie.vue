@@ -10,6 +10,7 @@ import echarts from 'echarts'
 export default class CustomPie extends Vue {
     mydata: any = null
     chart?: any = null
+    testata: number
     @Prop(Number)
     leftNum: number
     @Prop(Number)
@@ -54,11 +55,12 @@ export default class CustomPie extends Vue {
                         radius: '55%',
                         center: ['50%', '50%'],
                         color: ['rgb(84, 240, 17)', 'rgb(249, 241, 17)'],
-                        data: [{ value: 0, name: '当前散点数' }, { value: 100, name: '总数' }].sort(
-                            function(a, b) {
-                                return a.value - b.value
-                            }
-                        ),
+                        data: [
+                            { value: 0, name: '当前散点数' },
+                            { value: 100, name: '总数' }
+                        ].sort(function(a, b) {
+                            return a.value - b.value
+                        }),
                         roseType: 'radius',
                         label: {
                             color: 'rgba(255, 255, 255, 0.3)'

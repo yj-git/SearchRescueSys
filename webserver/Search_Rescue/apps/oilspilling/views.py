@@ -32,13 +32,13 @@ from apps.oilspilling.tasks.tasks import my_task
 from apps.util.reader import OilFileReader, create_reader
 
 # 7530
-_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+# _ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
 # 5820
 # _ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
 # 5510
 # _ROOT_DIR = r'C:\01Proj\SearchRescueSys\data\demo_data'
 # p52s
-# _ROOT_DIR = r'D:\03data\oil'
+_ROOT_DIR = r'D:\03data\oil'
 
 _RESULT_FILE = 'sanjioil.nc'
 

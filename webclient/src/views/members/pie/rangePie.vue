@@ -20,6 +20,8 @@ export default class CustomPie extends Vue {
     mounted() {
         //
         this.initChart()
+        console.log('测试eslint')
+        
     }
     initChart(): void {
         let chartEle = document.getElementById('range_pie') as HTMLDivElement

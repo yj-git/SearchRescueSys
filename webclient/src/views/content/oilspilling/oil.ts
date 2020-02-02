@@ -15,9 +15,7 @@ export interface IPageOptions {
 
 export interface IOptions extends IOilOptions, IPageOptions {}
 
-interface Callback {
-    (code: string, dt: Date, index: number, count: number): void
-}
+type Callback = (code: string, dt: Date, index: number, count: number) => void
 
 export class Oil {
     private defaultsOil: IOilOptions = {
@@ -32,10 +30,10 @@ export class Oil {
     private code: string
     private dt: Date
     private interval: number
-    private pageCount: number = 200
+    private pageCount = 200
     private options: IOptions
 
-    constructor(options?: IOptions) {
+    public constructor(options?: IOptions) {
         this.options = {
             ...this.defaultsOil,
             ...this.defaultsPage,
@@ -53,14 +51,14 @@ export class Oil {
      *
      * @memberof Oil
      */
-    intervalLoadTracks(
+    public intervalLoadTracks(
         count: number,
         func: any,
         options: { rate: number; num: { current: number; sum: number } }
     ) {
         // let interval = this.options?.interval;
         // 讲结果向上取整
-        let pageIndex = Math.ceil(count / this.pageCount)
+        const pageIndex = Math.ceil(count / this.pageCount)
         // 循环进行分页请求
         // for (var index = 0; index < pageIndex; index++) {
         //   setTimeout(() => {
@@ -79,7 +77,7 @@ export class Oil {
         // TODO:[-] 20-02-01 重新调整修改current的逻辑
         // 统一放在oilSpillingMap中修改，不放在Oil中修改，只是在调用本方法时，先执行清空操作
         // options.num.current = this.pageCount * index_temp
-        let timer = setInterval(() => {
+        const timer = setInterval(() => {
             console.log(new Date())
             index_temp++
             // 当前的进度(向上取整)
@@ -119,10 +117,10 @@ export class Oil {
      * @param {Callback} func
      * @memberof Oil
      */
-    loadTracks(index: number, func: Callback) {
+    public loadTracks(index: number, func: Callback): void {
         // let _that = this;
         // 获取每页的page_count
-        let defaultCount = this.options.pageCount
+        const defaultCount = this.options.pageCount
         func(this.code, this.dt, index, defaultCount)
     }
 }

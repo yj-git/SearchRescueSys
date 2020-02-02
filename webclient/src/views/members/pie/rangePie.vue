@@ -17,16 +17,16 @@ export default class CustomPie extends Vue {
     leftNum: number
     @Prop(Number)
     currentNum: number
-    mounted() {
+    mounted(): void {
         //
         this.initChart()
         console.log('测试eslint')
     }
     initChart(): void {
-        let chartEle = document.getElementById('range_pie') as HTMLDivElement
+        const chartEle = document.getElementById('range_pie') as HTMLDivElement
         if (chartEle != null) {
             this.chart = echarts.init(chartEle)
-            let option = {
+            const option = {
                 backgroundColor: '#1a6865',
 
                 title: {
@@ -84,7 +84,7 @@ export default class CustomPie extends Vue {
 
                         animationType: 'scale',
                         animationEasing: 'elasticOut',
-                        animationDelay: function(idx) {
+                        animationDelay: function(idx): number {
                             return Math.random() * 200
                         }
                     }
@@ -104,8 +104,8 @@ export default class CustomPie extends Vue {
     // 定时更新数据
     timerReloadData(): void {
         let index = 0
-        let _that = this
-        let timer = setInterval(() => {
+        const _that = this
+        const timer = setInterval(() => {
             index++
             _that.leftNum = 100 - index * 10
             _that.currentNum = index * 10
@@ -115,8 +115,8 @@ export default class CustomPie extends Vue {
         }, 2000)
     }
     @Watch('currentNum')
-    onCurrentNum(val: number) {
-        let option = {
+    onCurrentNum(val: number): void {
+        const option = {
             series: [
                 {
                     data: [

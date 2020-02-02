@@ -5,15 +5,28 @@ module.exports = {
     // plugins: ['@typescript-eslint'], //定义了该eslint文件所依赖的插件
     plugins: ['@typescript-eslint', 'prettier', 'vue'],
     // 参考https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/README.md
+    // 目前使用的拓展有：
+    // eslint-plugin-vue
+    // eslint-config-alloy
+    // typescript-eslint
     extends: [
+        // 新加入了alloy用来
+        // TODO:[*] 引入了腾讯的规范会出现冲突
+        // 'alloy',
+        // 'alloy/typescript',
+        // 'alloy/vue',
+
+        // TODO:由于采用了alloy去掉的配置
         'eslint:recommended',
         // 'plugin:@typescript-eslint/eslint-recommended',
         // 接口不能是I开头
+        // TODO:由于采用了alloy去掉的配置
         'plugin:@typescript-eslint/recommended',
         // TODO:[-]下面这个standard-with-typescript需要注释掉否则会有冲突
         // 'standard-with-typescript',
         // prettier/@typescript-eslint：//使得@typescript-eslint中的样式规范失效，遵循prettier中的样式规范
 
+        // TODO:由于采用了alloy去掉的配置
         'prettier/@typescript-eslint',
         // plugin:prettier/recommended：使用prettier中的样式规范，且如果使得ESLint会检测prettier的格式问题，同样将格式问题以error的形式抛出
         // 'plugin:prettier/recommended'
@@ -22,18 +35,19 @@ module.exports = {
         // TODO:[-] 注意要使用下面这个插件，否则会与eslint有冲突
         // 文件检测说明配置extends
         // eslint-plugin-vue
-        'plugin:vue/base',
-        // 新加入了alloy用来
-        'alloy',
-        'alloy/typescript'
-        // 'plugin:vue/essential'
+        'plugin:vue/essential'
+        // TODO:由于采用了alloy去掉的配置
+        // 'plugin:vue/base'
+
         // TODO:[*] 仿照vue cli创建的部分拓展
+        // TODO:由于采用了alloy去掉的配置
         // '@vue/prettier',
         // '@vue/typescript'
     ],
     env: {
         browser: true
     },
+    // 目前使用的parser器有typescript-eslint / parser
     parserOptions: {
         ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
         sourceType: 'module', // Allows for the use of imports,

@@ -35,4 +35,4 @@ module.exports = {
     htmlWhitespaceSensitivity: 'css',
     // 换行符使用 lf
     endOfLine: 'lf'
-}
+};

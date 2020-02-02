@@ -1,9 +1,0 @@
-{
-    "defaultSeverity": "off",
-    "jsRules": {},
-    "extends": ["tslint:latest"],
-    "rules": {
-        "no-constant-condition": true
-    },
-    "rulesDirectory": []
-}

@@ -5,13 +5,15 @@ module.exports = {
     extends: [
         'eslint:recommended',
         // 'plugin:@typescript-eslint/eslint-recommended',
-        // 'plugin:@typescript-eslint/recommended',
+        // 接口不能是I开头
+        'plugin:@typescript-eslint/recommended',
         // TODO:[-]下面这个standard-with-typescript需要注释掉否则会有冲突
         // 'standard-with-typescript',
         // prettier/@typescript-eslint：//使得@typescript-eslint中的样式规范失效，遵循prettier中的样式规范
+
         'prettier/@typescript-eslint',
         // plugin:prettier/recommended：使用prettier中的样式规范，且如果使得ESLint会检测prettier的格式问题，同样将格式问题以error的形式抛出
-        'plugin:prettier/recommended',
+        // 'plugin:prettier/recommended'
         // TODO:[-]加入了vue的插件，否则会提示xx'<'的错误
         // 'plugin:vue/recommended'
         // TODO:[-] 注意要使用下面这个插件，否则会与eslint有冲突

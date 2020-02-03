@@ -22,10 +22,10 @@ module.exports = {
         // TODO:[-] 注意要使用下面这个插件，否则会与eslint有冲突
         // 文件检测说明配置extends
         // eslint-plugin-vue
-        'plugin:vue/base',
+        'plugin:vue/base'
         // 新加入了alloy用来
-        'alloy',
-        'alloy/typescript'
+        // 'alloy',
+        // 'alloy/typescript'
         // 'plugin:vue/essential'
         // TODO:[*] 仿照vue cli创建的部分拓展
         // '@vue/prettier',

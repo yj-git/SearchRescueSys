@@ -27,7 +27,8 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
     OilSpillingModelSerializerByEngine, OilSpillingTrackModelSerializer
 
 # 新加入的延时的任务
-from apps.oilspilling.tasks.tasks import my_task
+# from apps.oilspilling.tasks.tasks import my_task
+from apps.tasks.tasks import my_task
 # from .oil_task import do_job
 from apps.util.reader import OilFileReader, create_reader
 

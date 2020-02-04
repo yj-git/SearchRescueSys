@@ -2,14 +2,7 @@
 import os
 from typing import List
 # 第三方的库
-import numpy as np
-import netCDF4 as nc
-import pandas as pd
-import numpy.ma as ma
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import xarray as xr
-from apps.oilspilling.tasks.tasks import Msg, JobState, NCJobBase, OilModelMsg, Event
+from apps.tasks.tasks import Msg, JobState, NCJobBase, OilModelMsg, Event
 # 本项目中
 from apps.oilspilling.middle_model import OilSpillingAvgMidModelbak
 # 复用搜救中的models

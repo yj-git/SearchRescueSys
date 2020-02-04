@@ -150,10 +150,10 @@ import { OilFactor, ShowType } from '@/enum/OilSelect'
 })
 export default class OilSpillingMap extends Vue {
     mydata: any = null
-    code: string = 'sanjioil'
-    zoom: number = 5
+    code = 'sanjioil'
+    zoom = 5
     center: any = [17.6, 131.6]
-    url: string =
+    url =
         '//map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}'
     // 指定时间
     // targetDate: Date = new Date();
@@ -177,9 +177,9 @@ export default class OilSpillingMap extends Vue {
     startDate: Date = new Date()
     targetDate: Date = new Date()
     finishDate: Date = new Date()
-    interval: number = 24
+    interval = 24
     // timebar共有多少天
-    days: number = 3
+    days = 3
 
     tempOilDivIcon: any = null
     tempOil: any = null
@@ -210,7 +210,7 @@ export default class OilSpillingMap extends Vue {
     }
     // 加载指定code的平均轨迹
     loadTrackAvgList(): void {
-        let myself = this
+        const myself = this
         loadOilSpillingAvgTrackList(this.code).then((res) => {
             if (res.status === 200) {
                 res.data.forEach((temp: any) => {
@@ -231,10 +231,10 @@ export default class OilSpillingMap extends Vue {
     }
     // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
     loadTrackHeatmap(code: string, dt: Date, index: number, count: number): void {
-        let myself = this
+        const myself = this
         //TODO:[*] 19-11-13 清除统一放在clearAllLayer中，此处暂时注释掉
         // this.clearScatterPoint();
-        let mymap: any = this.$refs.basemap['mapObject']
+        const mymap: any = this.$refs.basemap['mapObject']
         this.oilHeatmapList = []
         //TODO:[*] 19-11-04 清除layerHeat
         this.clearHeatLayer()
@@ -270,13 +270,13 @@ export default class OilSpillingMap extends Vue {
 
                 // 对应的是Leaflet.heat库
                 // 但是会提示：Property 'heatLayer' does not exist on type 'typeof import("D:/02proj/SearchRescue/SearchRescueSys/webclient/node_modules/@types/leaflet/index")'.
-                let list = this.oilHeatmapList
+                const list = this.oilHeatmapList
 
-                var testData = {
+                const testData = {
                     max: 2,
                     data: list
                 }
-                var cfg = {
+                const cfg = {
                     radius: 0.01,
                     maxOpacity: 0.8,
                     scaleRadius: true,
@@ -285,7 +285,7 @@ export default class OilSpillingMap extends Vue {
                     lngField: 'lng',
                     valueField: 'count'
                 }
-                var heatLayer = new HeatmapOverlay(cfg)
+                const heatLayer = new HeatmapOverlay(cfg)
 
                 heatLayer.setData(testData)
                 // TODO:[*] 19-11-04 添加完heatlayer后，再次更新时记得需要remove
@@ -297,10 +297,10 @@ export default class OilSpillingMap extends Vue {
 
     // 加载散点图
     loadTrackScatterPoint(code: string, dt: Date, index: number, count: number): void {
-        let myself = this
+        const myself = this
         //TODO:[*] 19-11-13 清除统一放在clearAllLayer中，此处暂时注释掉
         // this.clearScatterPoint();
-        let mymap: any = this.$refs.basemap['mapObject']
+        const mymap: any = this.$refs.basemap['mapObject']
 
         // TODO:[*] 20-01-23 注意此处由直接调用当前的vue中的data取值，改为由方法参数取值
         loadOilScatterTrackListPage(code, dt, index, count).then((res) => {
@@ -314,7 +314,7 @@ export default class OilSpillingMap extends Vue {
                     ])
 
                     // todo:[*] 19-10-16 暂时去掉散点，只保留热图
-                    let temp_circle = L.circle(
+                    const temp_circle = L.circle(
                         [temp.point.coordinates[1], temp.point.coordinates[0]],
                         {
                             radius: 30
@@ -336,7 +336,7 @@ export default class OilSpillingMap extends Vue {
     }
 
     clearScatterPoint(): void {
-        let mymap: any = this.$refs.basemap['mapObject']
+        const mymap: any = this.$refs.basemap['mapObject']
         this.oilScatterPointList = []
         this.oilScatterCircleList.forEach((temp) => {
             mymap.removeLayer(temp)
@@ -344,7 +344,7 @@ export default class OilSpillingMap extends Vue {
     }
 
     clearHeatLayer(): void {
-        let mymap: any = this.$refs.basemap['mapObject']
+        const mymap: any = this.$refs.basemap['mapObject']
         //去除掉heatlayer
         if (this.tempHeatLayer != null) {
             mymap.removeLayer(this.tempHeatLayer)
@@ -360,8 +360,8 @@ export default class OilSpillingMap extends Vue {
         loadOilRealData(this.code, temp.date).then((res) => {
             if (res.status === 200) {
                 // console.log(res);
-                let tempData = res.data
-                let oilTemp = new OilMidModel(
+                const tempData = res.data
+                const oilTemp = new OilMidModel(
                     tempData['time'],
                     tempData['status'],
                     tempData['code'],
@@ -378,18 +378,18 @@ export default class OilSpillingMap extends Vue {
     }
     // 向地图中添加溢油详细数据的div
     addOilDiv2Map(tempOil: OilMidModel): void {
-        let myself = this
-        let baseMap: any = this.$refs.basemap
-        let myMap: any = baseMap['mapObject']
-        let oilDivHtml = tempOil.toDivHtml()
-        let oilDivIcon = L.divIcon({
+        const myself = this
+        const baseMap: any = this.$refs.basemap
+        const myMap: any = baseMap['mapObject']
+        const oilDivHtml = tempOil.toDivHtml()
+        const oilDivIcon = L.divIcon({
             className: 'oil_icon_default',
             html: oilDivHtml,
             // 坐标，[相对于原点的水平位置（左加右减），相对原点的垂直位置（上加下减）]
             iconAnchor: [-20, 30]
         })
 
-        let oilDivIconTemp = L.marker([tempOil.latlon[1], tempOil.latlon[0]], {
+        const oilDivIconTemp = L.marker([tempOil.latlon[1], tempOil.latlon[0]], {
             icon: oilDivIcon
         }).addTo(myMap)
         // console.log("将divIcon插入map中");
@@ -397,11 +397,11 @@ export default class OilSpillingMap extends Vue {
     }
 
     loadTargetRealData(code: string, date: Date) {
-        let myself = this
+        const myself = this
         loadOilSpillingAvgRealData(code, date).then((res) => {
             if (res.status === 200) {
                 // console.log(res.data);
-                let data = res.data
+                const data = res.data
                 myself.oilAvgRealData = new OilMidModel(
                     data['time'],
                     data['status'],
@@ -416,12 +416,12 @@ export default class OilSpillingMap extends Vue {
 
     // TODO:[*] 19-11-05 根据当前的 code 获取oil avg的起止时间
     loadDateRange(): void {
-        let myself = this
+        const myself = this
         getTargetCodeDateRange(this.code).then((res) => {
             if (res.status === 200) {
                 // 获取起止时间
-                let start = new Date(res.data['start'])
-                let end = new Date(res.data['end'])
+                const start = new Date(res.data['start'])
+                const end = new Date(res.data['end'])
                 /*
           下面需要获取：
                 [ ] -1 有多少天
@@ -430,7 +430,7 @@ export default class OilSpillingMap extends Vue {
 
         */
                 // console.log(res);
-                let daysCount = getDaysNum(start, end)
+                const daysCount = getDaysNum(start, end)
                 myself.days = daysCount
                 myself.startDate = start
                 myself.finishDate = end
@@ -443,8 +443,8 @@ export default class OilSpillingMap extends Vue {
     // 将当前的溢油数据的div从map中移出
     clearOilDivFromMap(): void {
         // console.log("鼠标移出");
-        let myself = this
-        let mymap: any = this.$refs.basemap['mapObject']
+        const myself = this
+        const mymap: any = this.$refs.basemap['mapObject']
         mymap.removeLayer(myself.tempOilDivIcon)
         myself.tempOilDivIcon = null
     }
@@ -458,7 +458,7 @@ export default class OilSpillingMap extends Vue {
         // return ;
 
         // let currentStr: string = this.$store.state.current;
-        let currentStr: string = this.getcurrent
+        const currentStr: string = this.getcurrent
 
         let currentDt: Date = new Date()
         if (currentStr != '') {
@@ -479,10 +479,10 @@ export default class OilSpillingMap extends Vue {
 
     // TODO:[*] 19-11-12 根据 current showType showFactor决定的加载的layer
     loadTrackFactory(count: number): void {
-        let val: number = this.showType
+        const val: number = this.showType
         // TODO:[*] 19-11-13 加入了clear方法，清除散点以及热图（或放在各个load方法中）
         this.clearAllLayer()
-        let oilCls = new Oil({
+        const oilCls = new Oil({
             code: this.code,
             dt: this.targetDate,
             interval: 1000,
@@ -526,12 +526,12 @@ export default class OilSpillingMap extends Vue {
     @Getter('getCurrent', { namespace: 'map' }) getcurrent
     @Watch('current')
     onCurrent(val: Date) {
-        let myself = this
+        const myself = this
         this.targetDate = new Date(val)
         // TODO:[*] 20-01-23 选定时间更新后先获取当前时间的散点总数
         getTargetTimeTrackCount(this.code, val).then((res) => {
             if (res.status === 200) {
-                let trackCount = res.data
+                const trackCount = res.data
                 // TODO:[-] 20-02-01 将散点的总数赋值给options
                 myself.processOptions.num.sum = trackCount
                 this.loadTrackFactory(trackCount) // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法

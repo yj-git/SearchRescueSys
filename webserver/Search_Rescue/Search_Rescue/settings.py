@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rescue',
     'oilspilling',
-    'user'
+    'user',
+    'common'
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -205,3 +206,26 @@ PAGINATION = {
     'DEFAULT_COUNT': 500,
     'DEFAULT_INDEX': 0
 }
+
+# 测试时使用的读取nc文件的路径
+NC_OPTIONS = {
+    # 7530
+    '_ROOT_DIR': r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data',
+    # 5820
+    # _ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
+    # 5510
+    # _ROOT_DIR = r'C:\01Proj\SearchRescueSys\data\demo_data'
+    # p52s
+    # _ROOT_DIR = r'D:\03data\oil',
+    '_RESULT_FILE': 'sanjioil.nc'
+}
+# 7530
+_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+# 5820
+# _ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
+# 5510
+# _ROOT_DIR = r'C:\01Proj\SearchRescueSys\data\demo_data'
+# p52s
+# _ROOT_DIR = r'D:\03data\oil'
+
+_RESULT_FILE = 'sanjioil.nc'

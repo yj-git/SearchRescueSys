@@ -50,11 +50,8 @@ import JobList from '@/views/members/table/JobListMin.vue'
 })
 export default class CurdBtn extends Vue {
     mydata: any = null
-    isShowByList: boolean = false
+    isShowByList = false
     mounted() {}
-    get computedTest() {
-        return null
-    }
     onClick() {
         this.isShowByList = !this.isShowByList
         console.log('被点击了')

@@ -23,38 +23,46 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
     }
 })
 export default class JobListUser extends Vue {
-    tableData: any = [
+    tableData: {
+        id: string
+        date: string
+        name: string
+        state: string
+        tag: string
+        area: string
+        percent: number
+    }[] = [
         {
+            id: '001',
             date: '2016-05-02',
             name: 'case_a',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '作业中',
             tag: 'doing',
             area: 'ind',
             percent: 56
         },
         {
+            id: '001',
             date: '2016-05-04',
             name: 'case_b',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '排队中',
             tag: 'wait',
             area: 'scs',
             percent: 0
         },
         {
+            id: '001',
             date: '2016-05-01',
             name: 'case_c',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '已结束',
             tag: 'finish',
             area: 'bhs',
             percent: 100
         },
         {
+            id: '001',
             date: '2016-05-03',
             name: 'case_d',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '作业中',
             tag: 'doing',
             area: 'ecs',
@@ -73,9 +81,25 @@ export default class JobListUser extends Vue {
         }
         return level
     }
+
     // 是否为缩小版
     @Prop({ default: false })
     isMin!: boolean
+
+    onClick(item: {
+        id: string
+        date: string
+        name: string
+        state: string
+        tag: string
+        area: string
+        percent: number
+    }): void {
+        // 获取到选定的item的id传给后台即可
+        console.log(item.id)
+        // 根据指定的case的id以及user id获取模型信息
+        // 加载指定模型的平均轨迹
+    }
 
     get computedTest() {
         return null

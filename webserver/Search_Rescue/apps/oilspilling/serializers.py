@@ -106,6 +106,21 @@ class OilSpillingModelSerializerByEngine(drf_serializers.DocumentSerializer):
 
     # oil = OilModelSerializerByEngine()
 
+class OilspillingAvgModelSerializer_bak(serializers.Serializer):
+    '''
+        溢油平均值model
+    '''
+    code = serializers.CharField()
+    status = serializers.IntegerField()
+    time = serializers.DateTimeField()
+    point = serializers.DictField()
+    current = CurrentModelSerializer()
+    wind = WindModelSerializer()
+    # 海温
+    wt = serializers.FloatField()
+    mass = MassModelSerializer()
+    # 水含量
+    water_fraction = serializers.FloatField()
 
 class OilspillingAvgModelSerializer(serializers.Serializer):
     '''
@@ -115,13 +130,24 @@ class OilspillingAvgModelSerializer(serializers.Serializer):
     status = serializers.IntegerField()
     time = serializers.DateTimeField()
     point = serializers.DictField()
+    x_sea_water_velocity=serializers.FloatField()
+    y_sea_water_velocity=serializers.FloatField()
+    x_wind=serializers.FloatField()
+    y_wind=serializers.FloatField()
+    mass_oil=serializers.FloatField()
+    mass_evaporated=serializers.FloatField()
+    mass_dispersed=serializers.FloatField()
+    oil_film_thickness=serializers.FloatField()
+    density=serializers.FloatField()
+    sea_water_temperature=serializers.FloatField()
     # current = CurrentModelSerializer()
     # wind = WindModelSerializer()
+
     # 海温
     # wt = serializers.FloatField()
     # mass = MassModelSerializer()
     # 水含量
-    # water_fraction = serializers.FloatField()
+    water_fraction = serializers.FloatField()
 
     # oil = OilModelSerializer()
 

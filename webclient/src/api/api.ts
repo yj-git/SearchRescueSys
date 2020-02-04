@@ -11,7 +11,7 @@ axios.defaults.headers = {}
  * @returns
  */
 const loadTrackList = (code: string, targetDate: Date) => {
-    let trackAvglistUrl = `${host}/rescue/track/`
+    const trackAvglistUrl = `${host}/rescue/track/`
     return axios.get(trackAvglistUrl, {
         params: {
             code: code,
@@ -21,7 +21,7 @@ const loadTrackList = (code: string, targetDate: Date) => {
 }
 
 const loadTrackAvgList = (code: string) => {
-    let trackAvglistUrl = `${host}/rescue/track/avg/`
+    const trackAvglistUrl = `${host}/rescue/track/avg/`
     return axios.get(trackAvglistUrl, {
         params: {
             code: code
@@ -47,7 +47,7 @@ const getTargetTimeTrackCount = (code: string, dt: Date) => {
  * @returns
  */
 const loadOilSpillingAvgRealData = (code: string, targetDate: Date) => {
-    let url = `${host}/oilspilling/realdata/target/`
+    const url = `${host}/oilspilling/realdata/target/`
     return axios.get(url, {
         params: {
             code: code,
@@ -63,7 +63,7 @@ const loadOilSpillingAvgRealData = (code: string, targetDate: Date) => {
  * @returns
  */
 const loadOilSpillingAvgTrackList = (code: string) => {
-    let url = `${host}/oilspilling/track/avg/`
+    const url = `${host}/oilspilling/track/avg/`
     return axios.get(url, {
         params: {
             code: code
@@ -78,7 +78,7 @@ const loadOilSpillingAvgTrackList = (code: string) => {
  * @returns
  */
 const loadOilScatterTrackList = (code: string, targetDate: Date) => {
-    let trackAvglistUrl = `${host}/oilspilling/track/`
+    const trackAvglistUrl = `${host}/oilspilling/track/`
     return axios.get(trackAvglistUrl, {
         params: {
             code: code,
@@ -102,7 +102,7 @@ const loadOilScatterTrackListPage = (
     pageindex: number,
     pagecount: number
 ) => {
-    let trackAvglistUrl = `${host}/oilspilling/track/`
+    const trackAvglistUrl = `${host}/oilspilling/track/`
     return axios.get(trackAvglistUrl, {
         params: {
             code: code,
@@ -120,7 +120,7 @@ const loadOilScatterTrackListPage = (
  * @returns
  */
 const loadOilRealData = (code: string, targetDate: Date) => {
-    let oilRealDataUrl = `${host}/oilspilling/realdata/avg/`
+    const oilRealDataUrl = `${host}/oilspilling/realdata/avg/`
     return axios.get(oilRealDataUrl, {
         params: {
             code: code,
@@ -136,7 +136,7 @@ const loadOilRealData = (code: string, targetDate: Date) => {
  * @returns
  */
 const getTargetCodeDateRange = (code: string) => {
-    let tempUrl = `${host}/oilspilling/track/date/range/`
+    const tempUrl = `${host}/oilspilling/track/date/range/`
     return axios.get(tempUrl, {
         params: {
             code: code

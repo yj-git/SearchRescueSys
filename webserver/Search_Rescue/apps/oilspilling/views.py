@@ -32,13 +32,13 @@ from apps.oilspilling.tasks.tasks import my_task
 from apps.util.reader import OilFileReader, create_reader
 
 # 7530
-# _ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
 # 5820
 # _ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
 # 5510
 # _ROOT_DIR = r'C:\01Proj\SearchRescueSys\data\demo_data'
 # p52s
-_ROOT_DIR = r'D:\03data\oil'
+# _ROOT_DIR = r'D:\03data\oil'
 
 _RESULT_FILE = 'sanjioil.nc'
 
@@ -82,6 +82,9 @@ class OilSpillingTrackCountView(APIView):
 
 
 class OilSpillingTrackAvgView(APIView):
+    '''
+        获取指定code对应的全部散点的时间平均轨迹
+    '''
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request):
@@ -98,6 +101,7 @@ class OilSpillingTrackAvgView(APIView):
         if code is not None:
             try:
                 # track_list = OilspillingAvgModel.objects(code=code)
+                # TODO:[*] 20-02-03 此处需要修改当请求进来
                 reader_func = create_reader('file')
                 reader = reader_func(_ROOT_DIR, _RESULT_FILE)
                 track_list = reader.read_avg_track('test')

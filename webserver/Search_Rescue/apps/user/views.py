@@ -11,11 +11,18 @@ from apps.user.serializers import UserSerializer
 # from apps.user.common import check_case_name
 
 # 引入task中的任务
-from apps.tasks.oil_task import do_job
+# TODO:[*] 20-02-05 尝试将替换apps中的tasks为外置的tasks
+# from apps.tasks.oil_task import do_job
+# from tasks.oil_task import do_job
 # from apps.oilspilling.tasks.oil_task import do_job
 # from apps.user.operate import check_case_name
+# from apps.user.common import check_case_name
 # 尝试引入类型约束
 from typing import List
+# from apps.user.models import AuthUserDir, CaseInfo
+from .models import AuthUserDir, CaseInfo
+from .common import check_case_name
+# from apps.oilspilling.models import CurrentModel
 
 
 # Create your views here.
@@ -39,10 +46,10 @@ class UserListView(APIView):
         return Response(json_data)
 
 
-class UserTestListView(APIView):
+class UserDoJobListView(APIView):
     def get(self, request):
         user_id = request.GET.get('userid', None)
         case_name = request.GET.get('casename', None)
-        do_job()
-        # is_match = check_case_name(user_id, case_name)
+        # do_job()
+        is_match = check_case_name(user_id, case_name)
         # return Response(is_match)

@@ -11,7 +11,7 @@ from apps.oilspilling.middle_model import OilSpillingAvgMidModelbak
 from apps.rescue.models import WindModel, CurrentModel
 # 引入mongo model
 from apps.oilspilling.models import MassModel, OilModel, OilspillingAvgModel, OilSpillingModel
-from apps.util.common import get_path
+# from apps.util.common import get_path
 from apps.util.reader import OilFileReader, create_reader
 
 from Search_Rescue.settings import NC_OPTIONS
@@ -19,6 +19,7 @@ from Search_Rescue.settings import NC_OPTIONS
 
 # from apps.user.common import check_case_name
 # from apps.user import common
+from utils.common import check_case_name
 
 # from apps.user import common
 

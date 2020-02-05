@@ -28,8 +28,8 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
 
 # 新加入的延时的任务
 # from apps.oilspilling.tasks.tasks import my_task
-from apps.tasks.tasks import my_task
-# from .oil_task import do_job
+from tasks.tasks import my_task
+from .tasks.oil_task import do_job
 from apps.util.reader import OilFileReader, create_reader
 
 # 7530
@@ -313,7 +313,7 @@ class TestViewset(drf_viewsets.ModelViewSet):
     # def test(self, request):
     # return Response(OilSpillingModelSerializer(self.queryset).data)
 
-# class DoPyJobView(APIView):
-#     def get(self,request):
-#         # 直接调用tasks
-#         do_job()
+class DoPyJobView(APIView):
+    def get(self,request):
+        # 直接调用tasks
+        do_job()

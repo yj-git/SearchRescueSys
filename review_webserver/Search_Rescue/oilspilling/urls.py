@@ -1,7 +1,9 @@
 from django.conf.urls import url, include
 from django.urls import path
 # from .views import *
-from oilspilling.views import OilSpillingTrackView, OilSpillingTrackCountView, OilSpillingTrackAvgView,OilRealDataAvgView, TargetDateRealDataView, OilSpillingTrackAvgDateRangeView,TestViewset,CreateOilSpillingView,TokenTestView
+from oilspilling.views import OilSpillingTrackView, OilSpillingTrackCountView, OilSpillingTrackAvgView, \
+    OilRealDataAvgView, TargetDateRealDataView, OilSpillingTrackAvgDateRangeView, TestViewset, CreateOilSpillingView, \
+    TokenTestView, DoPyJobView
 
 from rest_framework import routers
 
@@ -31,7 +33,7 @@ urlpatterns = [
     # re_path('^', include(router.urls)),
     # url(r'mytest/$',TestViewset.as_view(),name='oil')
     url(r'^api/', include(router.urls)),
-
+    url(r'^do/job/$', DoPyJobView.as_view()),
     # 加入apiview的token验证
     url(r'testtoken/', TokenTestView.as_view())
 ]

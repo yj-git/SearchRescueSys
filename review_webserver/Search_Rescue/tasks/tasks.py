@@ -72,9 +72,10 @@ class Msg(Event):
         还需要一些job需要的参数，但是是动态的
     '''
 
-    def __init__(self, name: str, job_name: str, user_id: str, created: datetime, state: JobState, root: str,
+    def __init__(self, code: str, job_name: str, user_id: str, created: datetime, state: JobState, root: str,
                  msg: MsgBase = None):
-        self.name = name
+        self.name = code
+        # TODO:[-] 20-02-05注意job_name 就是对应的code
         self.job_name: str = job_name
         self.user_id: str = user_id
         self.created: datetime = created

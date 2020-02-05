@@ -318,3 +318,4 @@ class DoPyJobView(APIView):
     def get(self,request):
         # 直接调用tasks
         do_job()
+        return Response('写入成功')

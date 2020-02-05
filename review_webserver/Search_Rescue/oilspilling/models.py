@@ -19,6 +19,8 @@ class MassModel(EmbeddedDocument):
     dispersed = FloatField(default=None)
 
 
+
+
 class OilModel(EmbeddedDocument):
     '''
         油相关的model

@@ -31,6 +31,8 @@ class CaseInfo(models.Model):
     current_nondeterminacy = models.FloatField(null=True, verbose_name="流场不确定性")
     equation = models.IntegerField(null=True, verbose_name="求解方法")
 
+    class Meta:
+        db_table = 'user_caseinfo'
     # class Meta:
     #     app_label='users.models.CaseInfo'
 
@@ -39,6 +41,9 @@ class AuthUserDir(models.Model):
     id = models.AutoField(primary_key=True)
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
     did = models.ForeignKey(CaseInfo, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'user_authuserdir'
 
 
 class JobInfo(models.Model):
@@ -56,6 +61,9 @@ class JobInfo(models.Model):
     case_code = models.CharField(max_length=50, editable=False)
     gmt_create = models.DateTimeField(default=now, editable=False)
     gmt_modified = models.DateTimeField(default=now)
+
+    class Meta:
+        db_table = 'user_jobinfo'
 
 
 class JobUserRate(models.Model):
@@ -81,3 +89,6 @@ class JobUserRate(models.Model):
     # 需要加入一个创建/修改时间
     gmt_create = models.DateTimeField(default=now, editable=False)
     gmt_modified = models.DateTimeField(default=now)
+
+    class Meta:
+        db_table = 'user_jobuserrate'

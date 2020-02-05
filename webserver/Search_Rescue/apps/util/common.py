@@ -2,7 +2,7 @@
 from datetime import datetime
 import os
 
-ROOT_PATH = r''
+ROOT_PATH = r'D:\03data\search'
 
 
 def get_path(temp: str, dt: datetime):
@@ -12,3 +12,4 @@ def get_path(temp: str, dt: datetime):
     :return:
     '''
     return os.path.join(ROOT_PATH, temp, dt.strftime('%Y'), dt.strftime('%m'))
+

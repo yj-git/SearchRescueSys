@@ -33,34 +33,29 @@ class OilModelMsg(MsgBase):
         提供job之间传递的参数
     '''
 
-    def __init__(self, time: datetime, point: {}, wind_cofficient: float, wind_dir: float, simulation_step: float,
-                 console_step: float, current_nondet: float, wind_nondet: float, equation: float, other: {} = None):
-        self.time = time
-        self.point = point
-        self.wind_cofficient = wind_cofficient
-        self.wind_dir = wind_dir
-        self.simulation_step = simulation_step
-        self.console_step = console_step
-        self.current_nondet = current_nondet
-        self.wind_nondet = wind_nondet
-        self.equation = equation
-        self.other = other
-
-
-class Msg:
-    '''
-        每个job中需要传递的消息msg，包含一些必要的信息
-        还需要一些job需要的参数，但是是动态的
-    '''
-
-    def __init__(self, name: str, job_name: str, user_id: str, created: datetime, state: JobState, msg: MsgBase):
-        self.name = name
-        self.job_name: str = job_name
-        self.user_id: str = user_id
-        self.created: datetime = created
-        self.state: JobState = state
-        # 需要判断msg是否为继承自MsgBase
-        self.msg: MsgBase = msg if isinstance(msg, MsgBase) else None
+    # def __init__(self, time: datetime, point: {}, wind_cofficient: float, wind_dir: float, simulation_step: float,
+    #              console_step: float, current_nondet: float, wind_nondet: float, equation: float, other: {} = None):
+    #     self.time = time
+    #     self.point = point
+    #     self.wind_cofficient = wind_cofficient
+    #     self.wind_dir = wind_dir
+    #     self.simulation_step = simulation_step
+    #     self.console_step = console_step
+    #     self.current_nondet = current_nondet
+    #     self.wind_nondet = wind_nondet
+    #     self.equation = equation
+    #     self.other = other
+    def __init__(self):
+        self.time = None
+        self.point = None
+        self.wind_cofficient = None
+        self.wind_dir = None
+        self.simulation_step = None
+        self.console_step = None
+        self.current_nondet = None
+        self.wind_nondet = None
+        self.equation = None
+        self.other = {}
 
 
 class Event:
@@ -71,6 +66,26 @@ class Event:
         return self.name
 
 
+class Msg(Event):
+    '''
+        每个job中需要传递的消息msg，包含一些必要的信息
+        还需要一些job需要的参数，但是是动态的
+    '''
+
+    def __init__(self, name: str, job_name: str, user_id: str, created: datetime, state: JobState, root: str,
+                 msg: MsgBase = None):
+        self.name = name
+        self.job_name: str = job_name
+        self.user_id: str = user_id
+        self.created: datetime = created
+        self.state: JobState = state
+        # 需要判断msg是否为继承自MsgBase
+        self.msg: MsgBase = msg if isinstance(msg, MsgBase) else None
+        self.root: str = root
+        self.file_name: str = None
+        self.dir_path: str = None
+
+
 class NCJobBase:
     '''
         需要所有的job继承的父类，有抽象方法handle，需要每个job重写
@@ -79,7 +94,9 @@ class NCJobBase:
     def __init__(self, parent=None):
         self.parent = parent
 
-    def handle(self, even: Event):
+    def handle(self, even: Event, **kwargs):
+        # 找到的可选参数
+        msg = kwargs.get('msg')
         handler = 'handle_{}'.format(even)
         # 判断传入的事件，当前对象是否存在指定方法
         if hasattr(self, handler):
@@ -87,16 +104,15 @@ class NCJobBase:
             method = getattr(self, handler)
             # 执行该方法
             # 对传入的event事件进行处理
-            method(even)
+            method(even, **kwargs)
         elif self.parent:
-            self.parent.handle(even)
+            self.parent.handle(even, **kwargs)
         elif hasattr(self, 'handle_default'):
-            self.handle_default(even)
+            self.handle_default(even, **kwargs)
 
-    @abstractmethod
+    # @abstractmethod
     def handle_default(self, msg: Msg):
         pass
-
 
 
 # @shared_task

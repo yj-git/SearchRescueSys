@@ -9,7 +9,7 @@ import numpy.ma as ma
 # 读取nc文件相关
 # import netCDF4 as nc
 import xarray as xar
-from apps.oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel
+from apps.oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel,OilSpillingAvgMidModelbak
 from apps.common.tools import exe_run_time
 
 from apps.oilspilling.models import OilspillingAvgModel

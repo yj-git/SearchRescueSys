@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 # 本项目的模块
 from apps.user.serializers import UserSerializer
-from apps.user.common import check_case_name
+# from apps.user.common import check_case_name
 
 # 引入task中的任务
 from apps.tasks.oil_task import do_job
@@ -44,5 +44,5 @@ class UserTestListView(APIView):
         user_id = request.GET.get('userid', None)
         case_name = request.GET.get('casename', None)
         do_job()
-        is_match = check_case_name(user_id, case_name)
-        return Response(is_match)
+        # is_match = check_case_name(user_id, case_name)
+        # return Response(is_match)

@@ -15,7 +15,9 @@ from apps.util.common import get_path
 from apps.util.reader import OilFileReader, create_reader
 
 from Search_Rescue.settings import NC_OPTIONS
-from apps.user.common import check_case_name
+
+
+# from apps.user.common import check_case_name
 # from apps.user import common
 
 # from apps.user import common
@@ -96,7 +98,9 @@ class OilDbJob(NCJobBase):
         user_id: str = '1'
         nc_file_name: str = None
         if isinstance(msg.msg, OilModelMsg):
-            is_match = common.check_case_name(user_id, msg.job_name)
+            # TODO:[*] 20-02-05 此处会引发未知bug
+            is_match = True
+            # is_match = common.check_case_name(user_id, msg.job_name)
             # is_match = operate.my_do()
             # if hasattr(msg.msg, 'other'):
             #     if hasattr(msg.msg.other, 'finial_file')

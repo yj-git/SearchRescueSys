@@ -1,14 +1,7 @@
 # 此模块放置一下供其他app调用的接口方法
 from django.contrib.auth.models import User
-# from  .models import *
 # TODO:[*] 20-02-04 使用此处方式会出错？？
-# from apps.user.models import AuthUserDir,CaseInfo
-from apps.users.models import AuthUserDir,CaseInfo
-
-# from apps.user.models import AuthUserDir,CaseInfo
-# from .models import AuthUserDir
-from apps.rescue.models import SearchRescueAvgModel
-
+from .models import AuthUserDir,CaseInfo
 # 尝试引入类型约束
 from typing import List
 
@@ -34,3 +27,4 @@ def check_case_name(user_id: str, case_name: str) -> bool:
             return True
         return False
     pass
+

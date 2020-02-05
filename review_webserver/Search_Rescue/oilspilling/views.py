@@ -30,8 +30,8 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
 # from apps.oilspilling.tasks.tasks import my_task
 from tasks.tasks import my_task
 # from .tasks.oil_task import do_job
-from apps.oilspilling.tasks.oil_task import do_job
-from apps.util.reader import OilFileReader, create_reader
+from oilspilling.tasks.oil_task import do_job
+from util.reader import OilFileReader, create_reader
 
 # 7530
 _ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'

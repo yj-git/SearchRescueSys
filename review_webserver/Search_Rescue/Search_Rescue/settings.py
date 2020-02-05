@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     # 'user',
     'users',
     # 'apps.user',
-    'common'
+    # 'common'
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True

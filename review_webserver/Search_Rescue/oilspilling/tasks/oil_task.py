@@ -4,16 +4,16 @@ from typing import List
 # 第三方的库
 from tasks.tasks import Msg, JobState, NCJobBase, OilModelMsg, Event
 # 本项目中
-from apps.oilspilling.middle_model import OilSpillingAvgMidModelbak
+from oilspilling.middle_model import OilSpillingAvgMidModelbak
 # 复用搜救中的models
-from apps.rescue.models import WindModel, CurrentModel
+from rescue.models import WindModel, CurrentModel
 # 引入mongo model
-from apps.oilspilling.models import MassModel, OilModel, OilspillingAvgModel, OilSpillingModel
-from apps.util.common import get_path
-from apps.util.reader import OilFileReader, create_reader
+from oilspilling.models import MassModel, OilModel, OilspillingAvgModel, OilSpillingModel
+from util.common import get_path
+from util.reader import OilFileReader, create_reader
 # TODO:[*] 20-02-05 引发了一个错误，暂时去掉
 # from apps.user.models import AuthUserDir,CaseInfo,JobInfo
-from apps.users.models import AuthUserDir,CaseInfo,JobInfo
+from users.models import AuthUserDir,CaseInfo,JobInfo
 from Search_Rescue.settings import NC_OPTIONS
 # from apps.users.common import check_case_name
 from django.contrib.auth.models import User

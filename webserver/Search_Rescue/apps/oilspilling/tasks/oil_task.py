@@ -2,14 +2,7 @@
 import os
 from typing import List
 # 第三方的库
-import numpy as np
-import netCDF4 as nc
-import pandas as pd
-import numpy.ma as ma
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import xarray as xr
-from apps.oilspilling.tasks.tasks import Msg, JobState, NCJobBase, OilModelMsg, Event
+from tasks.tasks import Msg, JobState, NCJobBase, OilModelMsg, Event
 # 本项目中
 from apps.oilspilling.middle_model import OilSpillingAvgMidModelbak
 # 复用搜救中的models
@@ -18,10 +11,35 @@ from apps.rescue.models import WindModel, CurrentModel
 from apps.oilspilling.models import MassModel, OilModel, OilspillingAvgModel, OilSpillingModel
 from apps.util.common import get_path
 from apps.util.reader import OilFileReader, create_reader
-
+# TODO:[*] 20-02-05 引发了一个错误，暂时去掉
+# from apps.user.models import AuthUserDir,CaseInfo,JobInfo
+from apps.users.models import AuthUserDir,CaseInfo,JobInfo
 from Search_Rescue.settings import NC_OPTIONS
-from apps.user.common import check_case_name
+# from apps.users.common import check_case_name
+from django.contrib.auth.models import User
 
+def check_case_name(user_id: str, case_name: str) -> bool:
+    '''
+        根据指定user_id判断指定user_id是否已经创建了指定case_name
+    :param user_id:
+    :param case_name:
+    :return:
+    '''
+    # TODO:[*] 20-02-05 引发了一个错误，暂时去掉
+    # users = User.objects.filter(id=user_id)
+    # if len(users) > 0:
+    #     # 获取该用户的全部的case
+    #     rela_user_case: List[AuthUserDir] = AuthUserDir.objects.filter(uid=users[0].id)
+    #     case_names: List[str] = []
+    #     if len(rela_user_case) > 0:
+    #         # 获取所有的CaseInfo
+    #         case_names = [CaseInfo.objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
+    #     # 判断传入的case_name 是否存在在user的关系中
+    #     if case_name in case_names:
+    #         return True
+    #     return False
+    # pass
+    return True
 
 class OilPyJob(NCJobBase):
     '''
@@ -152,13 +170,13 @@ def do_job():
                     -3 存在读取获取每个时刻的均值
                     -4 将每个时刻的均值写入数据
     '''
-    # job_oil = OilPyJob()
-    # job_check_nc_file = OilExistNcFile(job_oil)
-    # job_read_nc_file = OilReadNcJob(job_check_nc_file)
-    # job_db = OilDbJob(job_read_nc_file)
-    # evt = Event('defalut')
-    # job_oil.handle(evt)
-    # job_check_nc_file.handle(evt)
-    # job_read_nc_file.handle(evt)
-    # job_db.handle(evt)
+    job_oil = OilPyJob()
+    job_check_nc_file = OilExistNcFile(job_oil)
+    job_read_nc_file = OilReadNcJob(job_check_nc_file)
+    job_db = OilDbJob(job_read_nc_file)
+    evt = Event('defalut')
+    job_oil.handle(evt)
+    job_check_nc_file.handle(evt)
+    job_read_nc_file.handle(evt)
+    job_db.handle(evt)
     pass

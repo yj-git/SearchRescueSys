@@ -50,7 +50,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rescue',
     'oilspilling',
-    'user'
+    # django.core.exceptions.ImproperlyConfigured: Application labels aren't unique, duplicates: user
+    # 'user',
+    'users',
+    # 'apps.user',
+    'common'
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True

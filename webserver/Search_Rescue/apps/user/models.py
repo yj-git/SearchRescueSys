@@ -14,7 +14,7 @@ class CaseInfo(models.Model):
     # 创建的case目录
     case_path = models.CharField(max_length=100)
     # case创建时间
-    create_date = models.DateTimeField(default=now, editable=False)
+    create_date = models.DateTimeField()
     # 预报的时间
     forecast_date = models.DateTimeField(default=now)
     # 保存case的部分提交的参数

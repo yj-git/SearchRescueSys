@@ -105,7 +105,6 @@ class OilSpillingModelSerializerByEngine(drf_serializers.DocumentSerializer):
     # water_fraction = drf_serializers.FloatField()
 
     # oil = OilModelSerializerByEngine()
-
 class OilspillingAvgModelSerializer_bak(serializers.Serializer):
     '''
         溢油平均值model
@@ -148,8 +147,6 @@ class OilspillingAvgModelSerializer(serializers.Serializer):
     # mass = MassModelSerializer()
     # 水含量
     water_fraction = serializers.FloatField()
-
-    # oil = OilModelSerializer()
 
 
 class StartEndDateMidModelSerializer(serializers.Serializer):

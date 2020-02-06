@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from django.urls import path
-from .views import *
+# from .views import *
+from apps.oilspilling.views import OilSpillingTrackView, OilSpillingTrackCountView, OilSpillingTrackAvgView,OilRealDataAvgView, TargetDateRealDataView, OilSpillingTrackAvgDateRangeView,TestViewset,CreateOilSpillingView,TokenTestView
 
 from rest_framework import routers
 

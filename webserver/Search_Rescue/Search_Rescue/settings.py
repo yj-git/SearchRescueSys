@@ -99,10 +99,10 @@ DATABASES = {
         # by casablanca
         'USER': 'root',  # 账号
         # 7530
-        'PASSWORD': 'admin123',
+        # 'PASSWORD': 'admin123',
         # 5820
         # 5510
-        # 'PASSWORD': '123456',
+        'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
         # 'PASSWORD': '123456',

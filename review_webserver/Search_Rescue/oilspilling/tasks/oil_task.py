@@ -73,7 +73,13 @@ class OilExistNcFile(NCJobBase):
         merge_path = get_path(msg.user_id, msg.created)
         # 不存在指定路径则创建
         if not os.path.exists(merge_path):
-            os.mkdir(merge_path)
+            # D:\03data\oil
+            # FileNotFoundError: [WinError 3]
+            # 系统找不到指定的路径。: 'D:\\03data\\oil\\123\\2020\\02'
+            # TODO:[*] 20-02-06 若不存在指定目录会报错？
+            # 使用 os.makedirs 创建多层级目录，使用os.mkdir只能创建一层目录
+            os.makedirs(merge_path)
+            # os.mkdir(merge_path)
         if os.path.exists(os.path.join(merge_path, merge_filename)):
             # 将最终目录返回
             finial_file = os.path.join(merge_path, merge_filename)
@@ -187,7 +193,7 @@ def do_job():
     job_check_nc_file = OilExistNcFile(job_oil)
     job_read_nc_file = OilReadNcJob(job_check_nc_file)
     job_db = OilDbJob(job_read_nc_file)
-    msg: Msg = Msg('code_test', 'test_case', '123', now(), JobState.RUNNING, r'D:\03data\search', OilModelMsg())
+    msg: Msg = Msg('code_test', 'test_case', '123', now(), JobState.RUNNING, r'D:\04git仓库\SearchRescueSys_new\SearchRescueSys\data\demo_data', OilModelMsg())
     # TODO:[-] 20-02-04 注意此处只需要调用最终的那个job即可，不需要每个都调用
     # job_oil.handle(evt)
     # job_check_nc_file.handle(evt)

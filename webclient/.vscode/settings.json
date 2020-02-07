@@ -18,22 +18,22 @@
     // 改进的TypeScript检测-一旦在ESLint中正确配置了TypeScript，就不再需要通过VS Code的eslint.validate设置进行其他配置。HTML和Vue.js文件也是如此。
     "eslint.validate": [
         "javascript",
-        // "javascriptreact",
-        // "typescript",
-        // "vue",
-        "html",
-        {
-            "language": "vue",
-            "autoFix": true
-        },
-        {
-            "language": "typescript",
-            "autoFix": true
-        },
-        {
-            "language": "typescriptreact",
-            "autoFix": true
-        }
+        "javascriptreact",
+        "typescript",
+        "vue",
+        "html"
+        // {
+        //     "language": "vue",
+        //     "autoFix": true
+        // },
+        // {
+        //     "language": "typescript",
+        //     "autoFix": true
+        // },
+        // {
+        //     "language": "typescriptreact",
+        //     "autoFix": true
+        // }
         // { "language": "vue", "autoFix": true },
         // {
         //     "language": "typescript",

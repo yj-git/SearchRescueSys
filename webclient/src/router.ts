@@ -7,6 +7,7 @@ import RescueMap from './views/content/rescue/rescueContent.vue'
 import OilMap from './views/content/oilspilling/oilSpillingMap.vue'
 import OilMapNew from './views/content/oilspilling/oilSpillingMap2.vue'
 import OilMapMerge from './views/content/oilspilling/oilSpillingMap3.vue'
+import Login from './views/content/login/login.vue'
 // import Home from "./views/Home.vue";
 
 Vue.use(Router)
@@ -49,6 +50,11 @@ export default new Router({
             path: '/mergeoilmap',
             name: 'mergeoilmap',
             component: OilMapMerge
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: Login
         }
         // {
         //   path: "/about",

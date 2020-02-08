@@ -106,6 +106,7 @@ DATABASES = {
         'PASSWORD': 'admin123',
         # 5820
         # 5510
+        # p52s
         # 'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
@@ -223,7 +224,7 @@ NC_OPTIONS = {
     '_RESULT_FILE': 'sanjioil.nc'
 }
 # 7530
-_ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
+_ROOT_DIR = r'D:\03data\search'
 # 5820
 # _ROOT_DIR = r'D:\02proj\new_SearchRescueSys\SearchRescueSys\data\demo_data'
 # 5510

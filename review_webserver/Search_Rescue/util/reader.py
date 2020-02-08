@@ -2,6 +2,9 @@ from abc import ABCMeta, abstractmethod
 import os
 import sys
 from datetime import datetime
+
+from typing import List
+
 # numpy 相关
 import numpy as np
 import pandas as pd
@@ -9,10 +12,24 @@ import numpy.ma as ma
 # 读取nc文件相关
 # import netCDF4 as nc
 import xarray as xar
-from oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel,OilSpillingAvgMidModelbak
+from oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel, OilSpillingAvgMidModelbak
 from util.tools import exe_run_time
 
 from oilspilling.models import OilspillingAvgModel
+
+
+class OilReaderBase:
+    def __init__(self, root_path: str, file_name: str):
+        self.root_path = root_path
+        self.file_name = file_name
+
+    @abstractmethod
+    def read(self):
+        pass
+
+    @abstractmethod
+    def read_avg_track(self, code) -> List[OilSpillingAvgMidModelbak]:
+        pass
 
 
 class IOilReader(metaclass=ABCMeta):
@@ -33,6 +50,16 @@ class IOilReader(metaclass=ABCMeta):
         pass
 
 
+class IOilTrack(metaclass=ABCMeta):
+    '''
+        所有实现轨迹的子类需要手动实现的抽象方法
+    '''
+
+    @abstractmethod
+    def read_avg_track(self, code) -> List[OilSpillingAvgMidModelbak]:
+        pass
+
+
 class IOilScatter(metaclass=ABCMeta):
     @abstractmethod
     def read_current_track(self, code: str, now: datetime):
@@ -45,10 +72,11 @@ class IOilScatter(metaclass=ABCMeta):
         pass
 
 
-class OilFileReader(IOilReader, IOilScatter):
+class OilFileReader(OilReaderBase, IOilReader, IOilScatter):
     def __init__(self, root_path: str, file_name: str):
-        self.root_path = root_path
-        self.file_name = file_name
+        # self.root_path = root_path
+        # self.file_name = file_name
+        super().__init__(root_path, file_name)
         self.xarr: xar = None
 
     @property
@@ -197,8 +225,6 @@ class OilFileReader(IOilReader, IOilScatter):
 
         return list_avg_models
 
-
-
     @exe_run_time
     def read_avg_track(self, code):
         # list_date = [datetime.now()]
@@ -239,7 +265,7 @@ class OilFileReader(IOilReader, IOilScatter):
                 # 当前方法: read_avg_track耗时：5.108347415924072
                 # 注意其中是包含全的特征的dataset
                 xr_filter = xr_temp.where(xr_temp['status'] >= 0).where(xr_temp['status'] < 1).dropna(dim='trajectory',
-                                                                                  how='any')
+                                                                                                      how='any')
                 # xr_filter = xr_temp.where(xr_temp['status'] >= 0).where(xr_temp['status'] < 1).dropna(dim='trajectory',
                 #                                                                                       how='any')
                 # 当前方法: read_avg_track耗时：3.9484479427337646
@@ -272,7 +298,6 @@ class OilFileReader(IOilReader, IOilScatter):
                                               sea_water_temperature, water_fraction))
 
         return list_avg_models
-
 
     def get_coord(self, dim: str):
         '''
@@ -378,7 +403,9 @@ class OilFileReader(IOilReader, IOilScatter):
         return count
 
 
-class OilDbReader(IOilReader):
+class OilDbReader(OilReaderBase, IOilTrack):
+    # def __init__(self,root_path:str,file_name:str):
+    #     pass
     def read(self):
         pass
 
@@ -393,9 +420,31 @@ class OilDbReader(IOilReader):
             list_avg.sort()
         return list_avg
 
+    @exe_run_time
+    def read_avg_track(self, code):
+        # TODO:[*] 此处有一个问题，若queryset 没有查到值的话直接调用distinct会报错
+        # TypeError distinct() got an unexpected keyword argument 'filed'
+        list_avg = []
+        try:
+            # TODO:[*] 20-02-06 注意此处使用 .distinct获取的是该字段的所有不重复的集合！
+            list_avg = OilspillingAvgModel.objects(code=code)
+            # list_avg = OilspillingAvgModel.objects(code=code).distinct(field='time')
+            # list_avg = list(set(list_avg))
+            # list_avg = list(set(list_avg))
+            #             # list_avg.sort()
+        except Exception as e:
+            print(e)
+            pass
+        return list_avg
+
+        pass
+
 
 def create_reader(type: str):
     if type == 'db':
+        # OilDbReader()
         return OilDbReader
     elif type == 'file':
+        # OilFileReader()
+        # OilDbReader()
         return OilFileReader

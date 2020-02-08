@@ -2,8 +2,8 @@
 from datetime import datetime
 import os
 # from apps.user.models import AuthUserDir, CaseInfo
-
-ROOT_PATH = r'D:\03data\search'
+from Search_Rescue.settings import _ROOT_DIR
+ROOT_PATH = _ROOT_DIR
 
 
 def get_path(temp: str, dt: datetime):

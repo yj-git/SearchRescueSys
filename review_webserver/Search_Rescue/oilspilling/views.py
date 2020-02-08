@@ -104,16 +104,26 @@ class OilSpillingTrackAvgView(APIView):
             try:
                 # track_list = OilspillingAvgModel.objects(code=code)
                 # TODO:[*] 20-02-03 此处需要修改当请求进来
-                reader_func = create_reader('file')
-                reader = reader_func(_ROOT_DIR, _RESULT_FILE)
-                track_list = reader.read_avg_track('test')
+                reader_cls = create_reader('db')
+                # 实例化
+                reader = reader_cls(_ROOT_DIR, _RESULT_FILE)
+                # TODO:[-] 20-02-06 注意此处传入的code为 mongo中的code(实际db中对应的job_name)
+                track_list = reader.read_avg_track(code)
             except KeyError:
                 msg = '不存在的key索引/时间超出范围'
-            except:
-                msg = '其他错误'
+            except Exception as e:
+                msg = f'其他错误:{e}'
+
         # TODO:[*] 20-01-17 此处注意一下，由于重新修改了序列化的原始data model 改为了mid model，mid model中缺少部分需要序列化的字段，序列化时会提示有错误，注意！
         json_data = OilspillingAvgModelSerializer(track_list, many=True).data
         return Response(json_data)
+
+    def get_track_db(self, request):
+        '''
+            通过读取db的方式读取平均溢油轨迹
+        :param request:
+        :return:
+        '''
 
 
 class OilSpillingTrackView(APIView):
@@ -314,8 +324,10 @@ class TestViewset(drf_viewsets.ModelViewSet):
     # def test(self, request):
     # return Response(OilSpillingModelSerializer(self.queryset).data)
 
+
 class DoPyJobView(APIView):
-    def get(self,request):
+    def get(self, request):
         # 直接调用tasks
+        # TODO:[*] 20-02-06 此处只是执行提交操作，读取不在此处处理
         do_job()
         return Response('写入成功')

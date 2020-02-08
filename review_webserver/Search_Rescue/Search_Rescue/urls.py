@@ -34,4 +34,6 @@ urlpatterns = [
     url('^rescue/', include(('rescue.urls', "rescue"), namespace="rescue")),
     url('^oilspilling/', include(('oilspilling.urls', "oilspilling"), namespace="oilspilling")),
     url('^users/', include(('users.urls', "auth"), namespace="user")),
+    # 是使用rest_auth的话会提示 ModuleNotFoundError: No module named 'rest_auth' 暂时不使用rest_auth使用jwt的方式进行认证
+    # url(r'^auth/', include('rest_auth.urls')),
 ]

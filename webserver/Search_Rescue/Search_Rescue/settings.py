@@ -106,6 +106,7 @@ DATABASES = {
         'PASSWORD': 'admin123',
         # 5820
         # 5510
+        #  p52s
         # 'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号

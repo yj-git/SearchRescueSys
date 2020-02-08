@@ -69,6 +69,7 @@ module.exports = {
         // TODO:[*]这个规则是干嘛的
         'prettier/prettier': ['error', { endOfLine: 'auto' }],
 
-        'vue/html-self-closing': 'off'
+        'vue/html-self-closing': 'off',
+        '@typescript-eslint/no-explicit-any': 'warn'
     }
 }

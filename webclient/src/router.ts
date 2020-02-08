@@ -7,7 +7,8 @@ import RescueMap from './views/content/rescue/rescueContent.vue'
 import OilMap from './views/content/oilspilling/oilSpillingMap.vue'
 import OilMapNew from './views/content/oilspilling/oilSpillingMap2.vue'
 import OilMapMerge from './views/content/oilspilling/oilSpillingMap3.vue'
-import Login from './views/content/login/login.vue'
+import Login from './views/home/login.vue'
+import Content from './views/home/content.vue'
 // import Home from "./views/Home.vue";
 
 Vue.use(Router)
@@ -17,39 +18,47 @@ export default new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/caselist',
-            name: 'caselist',
-            component: CaseListContent
-        },
-        {
-            path: '/windmap',
-            name: 'windmap',
-            component: WindMap
-        },
-        {
-            path: '/currentmap',
-            name: 'currentmap',
-            component: CurrentMap
-        },
-        {
-            path: '/rescuemap',
-            name: 'rescuemap',
-            component: RescueMap
-        },
-        {
-            path: '/oilmap',
-            name: 'oilmap',
-            component: OilMap
-        },
-        {
-            path: '/newoilmap',
-            name: 'newoilmap',
-            component: OilMapNew
-        },
-        {
-            path: '/mergeoilmap',
-            name: 'mergeoilmap',
-            component: OilMapMerge
+            // 注意以/ 开头的嵌套路径会被当做根路径
+            path: '/content',
+            component: Content,
+            children: [
+                {
+                    // 嵌套路径需要去掉 / (不然会被当做根路径)
+                    path: 'caselist',
+                    name: 'caselist',
+                    component: CaseListContent
+                },
+                {
+                    path: 'windmap',
+                    name: 'windmap',
+                    component: WindMap
+                },
+                {
+                    path: 'currentmap',
+                    name: 'currentmap',
+                    component: CurrentMap
+                },
+                {
+                    path: 'rescuemap',
+                    name: 'rescuemap',
+                    component: RescueMap
+                },
+                {
+                    path: 'oilmap',
+                    name: 'oilmap',
+                    component: OilMap
+                },
+                {
+                    path: 'newoilmap',
+                    name: 'newoilmap',
+                    component: OilMapNew
+                },
+                {
+                    path: 'mergeoilmap',
+                    name: 'mergeoilmap',
+                    component: OilMapMerge
+                }
+            ]
         },
         {
             path: '/login',

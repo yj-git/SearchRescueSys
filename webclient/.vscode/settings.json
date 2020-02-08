@@ -22,23 +22,23 @@
         "typescript",
         "vue",
         "html"
-        // {
-        //     "language": "vue",
-        //     "autoFix": true
-        // },
-        // {
-        //     "language": "typescript",
-        //     "autoFix": true
-        // },
-        // {
-        //     "language": "typescriptreact",
-        //     "autoFix": true
-        // }
-        // { "language": "vue", "autoFix": true },
-        // {
-        //     "language": "typescript",
-        //     "autoFix": true
-        // }
+        {
+            "language": "vue",
+            "autoFix": true
+        },
+        {
+            "language": "typescript",
+            "autoFix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autoFix": true
+        }
+        { "language": "vue", "autoFix": true },
+        {
+            "language": "typescript",
+            "autoFix": true
+        }
     ],
     // "prettier.eslintIntegration": true,
     "typescript.tsdk": "node_modules/typescript/lib",

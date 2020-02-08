@@ -1,7 +1,7 @@
 import axios from 'axios'
-
+import { host } from './common'
 // 后端的请求地址及端口
-export const host = 'http://127.0.0.1:8000'
+// export const host = host
 axios.defaults.withCredentials = true
 axios.defaults.headers = {}
 /**

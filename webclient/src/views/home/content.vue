@@ -1,9 +1,10 @@
 <template>
     <div id="app">
-        <router-view> </router-view>
-        <!-- <Header></Header>
+        <!-- <router-view> </router-view> -->
+        <div>测试测试</div>
+        <Header></Header>
         <Center></Center>
-        <Footer></Footer> -->
+        <Footer></Footer>
     </div>
 </template>
 
@@ -19,7 +20,7 @@ import Center from '@/views/center/center.vue'
         Center
     }
 })
-export default class App extends Vue {}
+export default class Content extends Vue {}
 </script>
 
 <style lang="scss">

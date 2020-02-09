@@ -11,7 +11,7 @@
                                 <label for="exampleInputName2">用户名</label>
                                 <input
                                     type="text"
-                                    v-model="inputs.userName"
+                                    v-model="inputs.username"
                                     class="form-control"
                                     placeholder="用户名"
                                 />
@@ -55,6 +55,9 @@ export default class Login extends Vue {
     inputs: {
         username: string
         password: string
+    } = {
+        username: 'admin',
+        password: '123456'
     }
     // userName = 'admin'
     // pwd = '123456'
@@ -65,8 +68,11 @@ export default class Login extends Vue {
         //     console.log(res)
         // })
         // 测试
-        let that = this
-        this.$store.dispatch('auth/login',that.inputs)
+        const that = this
+
+        this.$store.dispatch('auth/login', that.inputs).then((res) => {
+            console.log(res)
+        })
     }
     get computedTest() {
         return null

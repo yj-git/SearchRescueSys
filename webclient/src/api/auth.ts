@@ -11,5 +11,10 @@ const authLogin = (username: string, password: string) => {
     return session.post(authLoginUrl, { username, password })
 }
 
+const authLoginTest = (username: string, password: string) => {
+    const trackAvglistUrl = `${host}/api-token-auth/`
+    return axios.post(trackAvglistUrl, { username, password })
+}
+
 // 使用default导出，在引用时可以使用别名
-export default { authLogin }
+export default { authLogin, authLoginTest }

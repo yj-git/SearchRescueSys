@@ -27,11 +27,28 @@ const actions = {
     //         .catch(() => commit(LOGIN_FAILURE))
     // }
     login({ commit }, { username, password }) {
+        // .then(({ data }) => commit(SET_TOKEN, data.token))
+
+        // 此种方法可行，但是会引发一个错误，就是只能执行第一个then，之后的就不是promise了
+        // var func1 = auth.authLogin(username, password).then((res) => {
+        //     commit(SET_TOKEN, res.data['token'])
+        //         .catch(() => commit(LOGIN_FAILURE))
+        // })
         return auth
             .authLogin(username, password)
-            .then(({ data }) => commit(SET_TOKEN, data.token))
-            .then(() => commit(LOGIN_SUCCESS))
-            .catch(() => commit(LOGIN_FAILURE))
+            .then((res) => {
+                commit(SET_TOKEN, res.data['token'])
+            })
+            .then(() => console.log('执行login_success操作'))
+            .catch(() => console.log('出现异常回滚'))
+
+        // auth.authLogin(username, password)
+        //     .then(({ data }) => commit(SET_TOKEN, data.token))
+        //     .then((res) => {
+        //         commit(LOGIN_SUCCESS)
+        //         console.log(res)
+        //     })
+        //     .catch(() => commit(LOGIN_FAILURE))
     }
 }
 

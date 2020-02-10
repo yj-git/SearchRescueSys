@@ -279,7 +279,7 @@ class CreateOilSpillingView(APIView):
 # TODO:[*] 20-01-09 此处注释一下，不使用视图集，而使用APIView(个人觉得APIView对于请求的整个流程更好控制，Viewset还是不太熟悉)
 class TokenTestView(APIView):
     authentication_classes = (JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         return Response("请求成功")

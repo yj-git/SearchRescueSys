@@ -1,6 +1,7 @@
 import auth from '../../api/auth'
 import session from '../../api/session'
-import { LOGIN_FAILURE, LOGIN_SUCCESS, SET_TOKEN, LOGIN_BEGIN } from '../types'
+import { LOGIN_FAILURE, LOGIN_SUCCESS, SET_TOKEN, LOGIN_BEGIN, REMOVE_TOKEN } from '../types'
+import { TOKEN_STORAGE_KEY } from '../constant'
 
 const state: {
     authenticating: boolean
@@ -26,6 +27,7 @@ const actions = {
     //         .then(() => commit(LOGIN_SUCCESS))
     //         .catch(() => commit(LOGIN_FAILURE))
     // }
+    // 登录操作，根据 username 与 pwd 获取后台返回的jwt token
     login({ commit }, { username, password }) {
         // .then(({ data }) => commit(SET_TOKEN, data.token))
 
@@ -37,6 +39,7 @@ const actions = {
         return auth
             .authLogin(username, password)
             .then((res) => {
+                // 登录成功，将token写入 localStorge
                 commit(SET_TOKEN, res.data['token'])
             })
             .then(() => console.log('执行login_success操作'))
@@ -49,6 +52,18 @@ const actions = {
         //         console.log(res)
         //     })
         //     .catch(() => commit(LOGIN_FAILURE))
+    },
+
+    // 进行初始化，若当前的localStorage中存在 token，则先删除，再重新赋值
+    initialize({ commit }) {
+        const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+
+        if (token) {
+            commit(REMOVE_TOKEN)
+        }
+        if (token) {
+            commit(SET_TOKEN, token)
+        }
     }
 }
 
@@ -60,6 +75,17 @@ const mutations = {
     [LOGIN_FAILURE](state): void {
         state.authenticating = false
         state.error = false
+    },
+    // 为 localStorage赋值token
+    [SET_TOKEN](state, token): void {
+        localStorage.setItem(TOKEN_STORAGE_KEY, token)
+        session.defaults.headers.Authorization = `Token ${token}`
+        state.token = token
+    },
+    [REMOVE_TOKEN](state): void {
+        localStorage.removeItem(TOKEN_STORAGE_KEY)
+        delete session.defaults.headers.Authorization
+        state.token = null
     }
 }
 export default {

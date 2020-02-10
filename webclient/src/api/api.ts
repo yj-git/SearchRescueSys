@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { host } from './common'
+import authHeader from './auth-header'
 // 后端的请求地址及端口
 // export const host = host
 axios.defaults.withCredentials = true
@@ -144,6 +145,11 @@ const getTargetCodeDateRange = (code: string) => {
     })
 }
 
+const getAuthTest = () => {
+    const testUrl = `${host}/oilspilling/testtoken/`
+    const authContent = authHeader()
+    return axios.get(testUrl, { headers: authHeader() })
+}
 // const loadOilAvgTargetDateRealData=(code:string,targe)
 
 export {
@@ -155,5 +161,6 @@ export {
     loadOilSpillingAvgRealData,
     getTargetCodeDateRange,
     getTargetTimeTrackCount,
-    loadOilScatterTrackListPage
+    loadOilScatterTrackListPage,
+    getAuthTest
 }

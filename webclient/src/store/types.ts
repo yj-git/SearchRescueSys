@@ -23,4 +23,5 @@ export const REGISTRATION_SUCCESS = 'REGISTRATION_SUCCESS'
 // export const SET_TOKEN = 'SET_TOKEN'
 // TODO:[-] 20-02-07 jwt返回的token的key为 'token'
 export const SET_TOKEN = 'token'
+// 移除jwt的token,在localStorage中保存的token
 export const REMOVE_TOKEN = 'REMOVE_TOKEN'

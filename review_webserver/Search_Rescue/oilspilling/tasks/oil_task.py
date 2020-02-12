@@ -15,7 +15,7 @@ from util.common import get_path
 from util.reader import OilFileReader, create_reader
 # TODO:[*] 20-02-05 引发了一个错误，暂时去掉
 # from apps.user.models import AuthUserDir,CaseInfo,JobInfo
-from users.models import AuthUserDir, CaseInfo, JobInfo
+from users.models import AuthOilRela, CaseOilInfo, JobInfo
 from Search_Rescue.settings import NC_OPTIONS
 # from apps.users.common import check_case_name
 from django.contrib.auth.models import User

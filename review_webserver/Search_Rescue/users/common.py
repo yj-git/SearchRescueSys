@@ -1,7 +1,7 @@
 # 此模块放置一下供其他app调用的接口方法
 from django.contrib.auth.models import User
 # TODO:[*] 20-02-04 使用此处方式会出错？？
-from .models import AuthUserDir,CaseInfo
+from .models import AuthOilRela, CaseOilInfo
 # 尝试引入类型约束
 from typing import List
 
@@ -17,11 +17,11 @@ def check_case_name(user_id: str, case_name: str) -> bool:
     users = User.objects.filter(id=user_id)
     if len(users) > 0:
         # 获取该用户的全部的case
-        rela_user_case: List[AuthUserDir] = AuthUserDir.objects.filter(uid=users[0].id)
+        rela_user_case: List[AuthOilRela] = AuthOilRela.objects.filter(uid=users[0].id)
         case_names: List[str] = []
         if len(rela_user_case) > 0:
             # 获取所有的CaseInfo
-            case_names = [CaseInfo.objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
+            case_names = [CaseOilInfo.objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
         # 判断传入的case_name 是否存在在user的关系中
         if case_name in case_names:
             return True

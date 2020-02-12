@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { host } from './common'
 import authHeader from './auth-header'
+import { loadCaseListByUser } from './case'
 // 后端的请求地址及端口
 // export const host = host
 axios.defaults.withCredentials = true
@@ -162,5 +163,6 @@ export {
     getTargetCodeDateRange,
     getTargetTimeTrackCount,
     loadOilScatterTrackListPage,
-    getAuthTest
+    getAuthTest,
+    loadCaseListByUser
 }

@@ -3,7 +3,7 @@ import session from '../../api/session'
 import { LOGIN_FAILURE, LOGIN_SUCCESS, SET_TOKEN, LOGIN_BEGIN, REMOVE_TOKEN } from '../types'
 import { TOKEN_STORAGE_KEY } from '../constant'
 
-const state: {
+const initialState: {
     authenticating: boolean
     error: boolean
     // Unexpected any. Specify a different type.eslint(@typescript-eslint/no-explicit-any)
@@ -14,6 +14,7 @@ const state: {
     token: ''
 }
 
+// 新定义的getter
 const getters = {
     // 是否登录
     isAuthenticated: (state): boolean => !!state.token
@@ -36,14 +37,23 @@ const actions = {
         //     commit(SET_TOKEN, res.data['token'])
         //         .catch(() => commit(LOGIN_FAILURE))
         // })
+
+        // TODO:[*] 20-02-11 注意若验证未通过，则会触发错误
+        // non_field_errors: ["Unable to log in with provided credentials."]
         return auth
             .authLogin(username, password)
             .then((res) => {
                 // 登录成功，将token写入 localStorge
                 commit(SET_TOKEN, res.data['token'])
             })
-            .then(() => console.log('执行login_success操作'))
-            .catch(() => console.log('出现异常回滚'))
+            .then(() => {
+                console.log('执行login_success操作')
+                commit(LOGIN_SUCCESS)
+            })
+            .catch(() => {
+                console.log('出现异常回滚')
+                commit(LOGIN_FAILURE)
+            })
 
         // auth.authLogin(username, password)
         //     .then(({ data }) => commit(SET_TOKEN, data.token))
@@ -79,19 +89,27 @@ const mutations = {
     // 为 localStorage赋值token
     [SET_TOKEN](state, token): void {
         localStorage.setItem(TOKEN_STORAGE_KEY, token)
-        session.defaults.headers.Authorization = `Token ${token}`
+        session.defaults.headers.Authorization = `JWT ${token}`
         state.token = token
     },
     [REMOVE_TOKEN](state): void {
         localStorage.removeItem(TOKEN_STORAGE_KEY)
         delete session.defaults.headers.Authorization
         state.token = null
+    },
+    [LOGIN_SUCCESS](state): void {
+        state.authenticating = false
+        state.error = false
+    },
+    [LOGIN_FAILURE](state): void {
+        state.authenticating = false
+        state.error = true
     }
 }
 export default {
     // TODO [*] 19-03-21 暂时取消namespaced，先实现功能
     namespaced: true,
-    state,
+    state: initialState,
     mutations,
     actions,
     getters

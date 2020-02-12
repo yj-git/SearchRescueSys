@@ -167,7 +167,8 @@ import CaseHistoryChart from '@/views/members/charts/CaseHistoryCharts.vue'
 import CaseHistoryForm from '@/views/members/form/CaseHistoryForm.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import CreatedCaseForm from '@/views/members/form/CreateCaseForm.vue'
-import { getAuthTest } from '@/api/api'
+import { getAuthTest, loadCaseListByUser } from '@/api/api'
+import { AxiosResponse } from 'axios'
 @Component({
     components: {
         InfoBox,
@@ -183,11 +184,10 @@ import { getAuthTest } from '@/api/api'
 })
 export default class CaseListView extends Vue {
     mydata: any = null
-    tableData: any = [
+    tableData: Array<{ date: string; name: string; state: string; tag: string; area: string }> = [
         {
             date: '2016-05-02',
             name: 'case_a',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '作业中',
             tag: 'doing',
             area: 'ind'
@@ -195,7 +195,6 @@ export default class CaseListView extends Vue {
         {
             date: '2016-05-04',
             name: 'case_b',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '排队中',
             tag: 'wait',
             area: 'scs'
@@ -203,7 +202,6 @@ export default class CaseListView extends Vue {
         {
             date: '2016-05-01',
             name: 'case_c',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '已结束',
             tag: 'finish',
             area: 'bhs'
@@ -211,7 +209,6 @@ export default class CaseListView extends Vue {
         {
             date: '2016-05-03',
             name: 'case_d',
-            address: '上海市普陀区金沙江路 1518 弄',
             state: '排队中',
             tag: 'wait',
             area: 'ecs'
@@ -219,15 +216,32 @@ export default class CaseListView extends Vue {
     ]
     dialogVisible = false
     showDialog() {
-        console.log('在组件外部触发点击事件')
+        // console.log('在组件外部触发点击事件')
         this.dialogVisible = true
     }
     // 关闭窗口时触发
     handleClose() {}
     mounted() {
         // TODO:[*] 20-02-10 测试jwt验证
-        getAuthTest().then((res) => {
-            console.log(res)
+        // getAuthTest().then((res) => {
+        //     console.log(res)
+        // })
+        this.loadCaseList()
+    }
+    // 根据当前的user 获取当前user的case list
+    loadCaseList(): void {
+        loadCaseListByUser().then((res: AxiosResponse): void => {
+            // console.log(res)
+            if (res.status === 200) {
+                // 获取返回的case list
+                const caseList: Array<{
+                    case_name: string
+                    case_code: string
+                    case_desc: string
+                    create_date: Date
+                    forecast_date: Date
+                }> = res.data
+            }
         })
     }
     get computedTest() {

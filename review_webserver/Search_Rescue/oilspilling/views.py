@@ -280,6 +280,7 @@ class CreateOilSpillingView(APIView):
 class TokenTestView(APIView):
     authentication_classes = (JSONWebTokenAuthentication,)
     # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         return Response("请求成功")

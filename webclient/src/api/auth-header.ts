@@ -8,7 +8,7 @@ export default function authHeader(): {} {
     //     // return { 'x-access-token': user.accessToken };       // for Node.js Express back-end
     // }
     if (token) {
-        return { Authorization: 'Bearer ' + token }
+        return { Authorization: 'JWT ' + token }
     } else {
         return {}
     }

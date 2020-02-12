@@ -21,7 +21,7 @@
                                 <label for="exampleInputName2">密码</label>
                                 <input
                                     type="password"
-                                    v-model="inputs.parseWord"
+                                    v-model="inputs.password"
                                     class="form-control"
                                     placeholder="密码"
                                 />
@@ -70,8 +70,10 @@ export default class Login extends Vue {
         // 测试
         const that = this
 
-        this.$store.dispatch('auth/login', that.inputs).then((res) => {
-            console.log(res)
+        this.$store.dispatch('auth/login', that.inputs).then(() => {
+            // console.log(res)
+            // 登录成功之后跳转至home页面
+            this.$router.push('/')
         })
     }
     get computedTest() {

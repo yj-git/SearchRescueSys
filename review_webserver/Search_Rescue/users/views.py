@@ -1,11 +1,13 @@
-from rest_framework.decorators import APIView
+from rest_framework.decorators import APIView, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth.models import User
+# from typing import List
 
 # 本项目的模块
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, CaseSerializer
+from users.models import AuthOilRela, CaseOilInfo
 # from apps.user.common import check_case_name
 
 # 引入task中的任务
@@ -18,8 +20,10 @@ from users.serializers import UserSerializer
 # 尝试引入类型约束
 from typing import List
 # from apps.user.models import AuthUserDir, CaseInfo
-from .models import AuthUserDir, CaseInfo
+from .models import AuthOilRela, CaseOilInfo
 from .common import check_case_name
+
+
 # from apps.oilspilling.models import CurrentModel
 
 
@@ -51,3 +55,27 @@ class UserDoJobListView(APIView):
         # do_job()
         is_match = check_case_name(user_id, case_name)
         # return Response(is_match)
+
+
+@authentication_classes(['JSONWebTokenAuthentication'])
+@permission_classes(['IsAuthenticated'])
+@api_view(['GET'])
+def getCaseList(request):
+    '''
+        获取指定用户的case list
+    :param request:
+    :return:
+    '''
+    # 此处暂时不需要加别的验证，已经加入了权限验证的功能，暂时不需要别的验证
+    uid = request.user.id
+    if uid is not None:
+        pass
+    rela_user_case: List[AuthOilRela] = AuthOilRela.objects.filter(uid_id=uid)
+    case_list: List[CaseOilInfo] = []
+    if len(rela_user_case) > 0:
+        # 若存在关联的case
+        case_list = [temp.did for temp in rela_user_case]
+    json_data = CaseSerializer(case_list, many=True).data
+    return Response(json_data)
+# authentication_classes = (JSONWebTokenAuthentication,)
+# permission_classes = (IsAuthenticated,)

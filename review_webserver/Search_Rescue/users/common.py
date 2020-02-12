@@ -21,7 +21,7 @@ def check_case_name(user_id: str, case_name: str) -> bool:
         case_names: List[str] = []
         if len(rela_user_case) > 0:
             # 获取所有的CaseInfo
-            case_names = [CaseOilInfo.objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
+            case_names = [IICaseOilInfo.objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
         # 判断传入的case_name 是否存在在user的关系中
         if case_name in case_names:
             return True

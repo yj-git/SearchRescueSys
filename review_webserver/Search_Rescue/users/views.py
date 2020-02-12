@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 
 # 本项目的模块
 from users.serializers import UserSerializer, CaseSerializer
-from users.models import AuthOilRela, CaseOilInfo
+from users.models import AuthOilRela, AuthRescueRela, CaseOilInfo, CaseRescueInfo, ICaseBaseModel,JobInfo
+from users.middle_model import JobInfoMidModel
 # from apps.user.common import check_case_name
 
 # 引入task中的任务
@@ -77,5 +78,42 @@ def getCaseList(request):
         case_list = [temp.did for temp in rela_user_case]
     json_data = CaseSerializer(case_list, many=True).data
     return Response(json_data)
+
+
+CHOICE_TYPE = {
+    0: 'CaseOilInfo',
+    1: 'CaseRescueInfo'
+}
+
+
+# TODO:[*] 20-02-12 此处还是准备使用类视图的方式，有部分方法需要重用
+class CaseListView(APIView):
+    def get_casecode(self, uid: str, type: CHOICE_TYPE) -> List[str]:
+        '''
+            根据uid获取 case_oil_info表中的所有的case_code
+        :param uid:
+        :return:
+        '''
+        if type == '0':
+            model = AuthOilRela
+        else:
+            model = AuthRescueRela
+        rela = model.objects.filter(uid_id=uid)
+        dids: List[ICaseBaseModel] = [temp_rela.did for temp_rela in rela]
+        codes = [temp.case_code for temp in dids]
+        return codes
+
+    def get(self, request):
+        uid = request.GET.get('uid', None)
+        type_case = request.GET.get('type', None)
+        # 符合条件的 case_code 集合
+        case_codes: List[str] = []
+        if any([uid, type_case]) is not None:
+            case_codes = self.get_casecode(uid, type_case)
+            if len(case_codes)>0:
+                # 继续根据 code 从 user_jobinfo 中获取符合条件的jobinfo
+                JobInfo.objects.filter()
+        return Response(case_codes)
+
 # authentication_classes = (JSONWebTokenAuthentication,)
 # permission_classes = (IsAuthenticated,)

@@ -4,7 +4,15 @@ from django.utils.timezone import now
 
 
 # Create your models here.
-class CaseBaseStore(models.Model):
+# TODO:[-] 20-02-12 注意所有的抽象model命名时加上I(参考c#的接口命名规范)
+class IIsDelModel(models.Model):
+    is_del = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+
+class ICaseBaseStore(models.Model):
     '''
         与存储相关的 抽象model
     '''
@@ -13,15 +21,15 @@ class CaseBaseStore(models.Model):
     # 创建的case目录
     case_path = models.CharField(max_length=100)
     # case创建时间
-    create_date = models.DateTimeField()
+    create_date = models.DateTimeField(editable=False, auto_now_add=True)
     # 预报的时间
-    forecast_date = models.DateTimeField(default=now)
+    forecast_date = models.DateTimeField(default=now, editable=False)
 
     class Meta:
         abstract = True
 
 
-class CaseBaseModel(models.Model):
+class ICaseBaseModel(models.Model):
     '''
         case 的信息参数 抽象model
     '''
@@ -29,16 +37,30 @@ class CaseBaseModel(models.Model):
     case_name = models.CharField(max_length=50)
     case_desc = models.CharField(max_length=500)
     # case 的code
-    case_code = models.CharField(max_length=50, editable=False)
+    case_code = models.CharField(max_length=50, editable=False, unique=True)
 
     class Meta:
         abstract = True
 
 
-class CaseGeoBaseInfo(models.Model):
+class IArea(models.Model):
+    CHOISE_TYPE = (
+        (-1, 'NULL'),
+        (0, 'NORTHWEST'),
+        (1, 'CHINASEA'),
+        (2, 'EASTCHINASEA'),
+    )
+    area = models.IntegerField(choices=CHOISE_TYPE, default=-1)
+
+    class Meta:
+        abstract = True
+
+
+class ICaseGeoBaseInfo(models.Model):
     '''
         空间信息(经纬度)相关的 base model 抽象model
     '''
+
     lat = models.FloatField(null=True, verbose_name="经度")
     lon = models.FloatField(null=True, verbose_name="纬度")
 
@@ -46,7 +68,7 @@ class CaseGeoBaseInfo(models.Model):
         abstract = True
 
 
-class CaseBaseInfo(models.Model):
+class ICaseBaseInfo(models.Model):
     '''
         case的 模型参数 抽象model
     '''
@@ -68,25 +90,10 @@ class CaseBaseInfo(models.Model):
         abstract = True
 
 
-class CaseOilInfo(CaseBaseStore, CaseBaseModel, CaseGeoBaseInfo, CaseBaseInfo):
+class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInfo, IIsDelModel, IArea):
     '''
         case
     '''
-    # # 根目录
-    # root_path = models.CharField(max_length=100)
-    # # 创建的case目录
-    # case_path = models.CharField(max_length=100)
-    # # case创建时间
-    # create_date = models.DateTimeField()
-    # # 预报的时间
-    # forecast_date = models.DateTimeField(default=now)
-    # # 保存case的部分提交的参数
-    # case_name = models.CharField(max_length=50)
-    # case_desc = models.CharField(max_length=500)
-    # # case 的code
-    # case_code = models.CharField(max_length=50, editable=False)
-    # lat = models.FloatField(null=True, verbose_name="经度")
-    # lon = models.FloatField(null=True, verbose_name="纬度")
     wind_coefficient = models.FloatField(null=True, verbose_name="风偏系数")
     wind_dir = models.FloatField(null=True, verbose_name="风偏角度")
 
@@ -94,11 +101,9 @@ class CaseOilInfo(CaseBaseStore, CaseBaseModel, CaseGeoBaseInfo, CaseBaseInfo):
 
     class Meta:
         db_table = 'user_caseoilinfo'
-    # class Meta:
-    #     app_label='users.models.CaseInfo'
 
 
-class CaseRescueInfo(CaseBaseStore, CaseBaseModel, CaseGeoBaseInfo, CaseBaseInfo):
+class CaseRescueInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInfo, IIsDelModel, IArea):
     # TODO:[-] 20-02-11 有40多种，等待yyq确认
     goods_type = models.IntegerField(null=True, verbose_name="失事物类型")
 
@@ -124,21 +129,33 @@ class AuthRescueRela(models.Model):
         db_table = 'user_authrescue_rela'
 
 
-class JobInfo(models.Model):
+class IJobBaseInfo(models.Model):
+    CHOISE_TYPE = (
+        (0, 'oil'),
+        (1, 'rescue'),
+    )
+    id = models.AutoField(primary_key=True)
+    # user_caseinfo的id
+    cid = models.IntegerField()
+    # celery中保存的id
+    job_celery_id = models.CharField(max_length=200)
+    # case 的code,注意code不允许重复
+    case_code = models.CharField(max_length=50, editable=False, unique=True)
+    gmt_create = models.DateTimeField(editable=False, auto_now_add=True)
+    gmt_modified = models.DateTimeField(auto_now=True)
+    # job的种类(根据创建的作业的种类划分的)
+    type = models.IntegerField(default=0, choices=CHOISE_TYPE)
+
+    class Meta:
+        abstract = True
+
+
+class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
     '''
         作业model
             提交的没一个case对应的job
 
     '''
-    id = models.AutoField(primary_key=True)
-    # user_caseinfo的id
-    cid = models.IntegerField()
-    # celery中保存的id
-    job_id = models.CharField(max_length=200)
-    # case 的code
-    case_code = models.CharField(max_length=50, editable=False)
-    gmt_create = models.DateTimeField(default=now, editable=False)
-    gmt_modified = models.DateTimeField(default=now)
 
     class Meta:
         db_table = 'user_jobinfo'
@@ -163,7 +180,7 @@ class JobUserRate(models.Model):
     # 进度
     rate = models.IntegerField()
     # 状态
-    status = models.IntegerField(choices=CHOICE_STATUS, default=2)
+    state = models.IntegerField(choices=CHOICE_STATUS, default=2)
     # 需要加入一个创建/修改时间
     gmt_create = models.DateTimeField(default=now, editable=False)
     gmt_modified = models.DateTimeField(default=now)

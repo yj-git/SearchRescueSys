@@ -7,6 +7,14 @@
       <OutLiner :count="18" :msg="'waiting'"></OutLiner>-->
             <!-- TODO:[-] 19-11-19 注意此处对组件直接通过@click绑定是无效的，需要通过@click.native进行绑定click事件 -->
             <InfoBox
+                v-for="casetemp in caseIconList"
+                :key="casetemp"
+                :count="casetemp.nums"
+                :msg="casetemp.status | getStatusEnum"
+                :iconstyle="casetemp.icon"
+                :levelstyle="casetemp.style"
+            ></InfoBox>
+            <!-- <InfoBox
                 :count="35"
                 :msg="'created'"
                 :iconstyle="'fa-edit'"
@@ -30,7 +38,7 @@
                 :msg="'waiting'"
                 :iconstyle="'fa-pause-circle'"
                 :levelstyle="'my-warning'"
-            ></InfoBox>
+            ></InfoBox> -->
         </div>
         <div class="case-statistics">
             <!-- 历史case的曲线图 -->
@@ -156,6 +164,7 @@
     </div>
 </template>
 <script lang="ts">
+import moment from 'moment'
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 // 引入outliner
 import OutLiner from '@/views/members/form/Outliner.vue'
@@ -168,6 +177,11 @@ import CaseHistoryForm from '@/views/members/form/CaseHistoryForm.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import CreatedCaseForm from '@/views/members/form/CreateCaseForm.vue'
 import { getAuthTest, loadCaseListByUser } from '@/api/api'
+
+// 引入部分枚举
+import { AreaEnum, getAreaVal } from '@/enum/area'
+import { StatueEnum, getStatueVal } from '@/enum/status'
+import { StatueInfo, IState } from '@/middle_model/case'
 import { AxiosResponse } from 'axios'
 @Component({
     components: {
@@ -180,47 +194,69 @@ import { AxiosResponse } from 'axios'
         CaseHistoryForm,
         JobListUser,
         CreatedCaseForm
+    },
+    // filters: {
+    //     getStatusEnum(case:number):string {
+    //       return ''
+    //     }
+    // }
+    filters: {
+        // TODO 时间格式化
+        getStatusEnum(caseTemp: number): string {
+            const temp = StatueEnum[caseTemp]
+            return temp
+        }
     }
 })
 export default class CaseListView extends Vue {
     mydata: any = null
-    tableData: Array<{ date: string; name: string; state: string; tag: string; area: string }> = [
-        {
-            date: '2016-05-02',
-            name: 'case_a',
-            state: '作业中',
-            tag: 'doing',
-            area: 'ind'
-        },
-        {
-            date: '2016-05-04',
-            name: 'case_b',
-            state: '排队中',
-            tag: 'wait',
-            area: 'scs'
-        },
-        {
-            date: '2016-05-01',
-            name: 'case_c',
-            state: '已结束',
-            tag: 'finish',
-            area: 'bhs'
-        },
-        {
-            date: '2016-05-03',
-            name: 'case_d',
-            state: '排队中',
-            tag: 'wait',
-            area: 'ecs'
-        }
-    ]
+    tableData: Array<{
+        current: string
+        name: string
+        status: StatueEnum
+        tag: string
+        area: AreaEnum
+    }> = []
+    caseIconList: Array<StatueInfo> = []
     dialogVisible = false
     showDialog() {
         // console.log('在组件外部触发点击事件')
         this.dialogVisible = true
     }
+    // 根据当前case list按照状态进行划分，为每个状态组件提供nums
+    diveideCaseListByStatus(
+        listCase: Array<{
+            current: string
+            name: string
+            status: StatueEnum
+            tag: string
+            area: AreaEnum
+        }>
+    ): void {
+        const listStatue: Array<StatueInfo> = []
+        listStatue.push(new StatueInfo(StatueEnum.CREATED, 0, 1))
+        listStatue.push(new StatueInfo(StatueEnum.RUNNING, 0, 2, 'fa-refresh fa-spin', 'my-info'))
+        listStatue.push(new StatueInfo(StatueEnum.COMPLETED, 0, 3, 'fa-stop-circle', 'my-succes'))
+        listStatue.push(new StatueInfo(StatueEnum.WAITTING, 0, 4, 'fa-pause-circle', 'my-warning'))
+        // TODO:[*] 20-02-14 注意此处对ts的枚举进行遍历时，会分别将val和key都遍历出来，暂时放弃此种方式
+        // for (const key in StatueEnum) {
+        //     const tempEnum = StatueEnum.CREATED
+        //     const temp = StatueEnum[key]
+        //     const tempe = StatueEnum[parseInt(key)]
+        //     console.log(`${tempEnum}|${temp}|${tempe}`)
+        //     listStatue.push(new StatueInfo(tempe, 0))
+        // }
+        // 对传入的list进行循环分类
+        listCase.forEach((temp) => {
+            const stateTemp = listStatue.filter((x) => x.status === temp.status)[0]
+            stateTemp.nums++
+        })
+        this.caseIconList = []
+        this.caseIconList = listStatue
+        // return listStatue
+    }
     // 关闭窗口时触发
-    handleClose() {}
+    // handleClose() {}
     mounted() {
         // TODO:[*] 20-02-10 测试jwt验证
         // getAuthTest().then((res) => {
@@ -230,17 +266,30 @@ export default class CaseListView extends Vue {
     }
     // 根据当前的user 获取当前user的case list
     loadCaseList(): void {
-        loadCaseListByUser().then((res: AxiosResponse): void => {
+        const typeProduct: number = this.$store.state.common.productType
+        loadCaseListByUser(typeProduct).then((res: AxiosResponse): void => {
             // console.log(res)
             if (res.status === 200) {
                 // 获取返回的case list
-                const caseList: Array<{
-                    case_name: string
-                    case_code: string
-                    case_desc: string
-                    create_date: Date
-                    forecast_date: Date
-                }> = res.data
+                res.data.forEach(
+                    (temp: {
+                        name: string
+                        state: number
+                        area: number
+                        tag: string
+                        date: Date
+                    }) => {
+                        const dateTemp = moment(temp.date)
+                        const dateTarget = dateTemp.format('YYYY-MM-DD')
+                        this.tableData.push({
+                            ...temp,
+                            current: dateTarget,
+                            area: temp.area, // 注意直接使用enum中的对应的number，赋值给枚举类型的实例
+                            status: temp.state
+                        })
+                    }
+                )
+                this.diveideCaseListByStatus(this.tableData)
             }
         })
     }

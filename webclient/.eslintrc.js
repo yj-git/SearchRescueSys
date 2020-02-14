@@ -70,6 +70,7 @@ module.exports = {
         'prettier/prettier': ['error', { endOfLine: 'auto' }],
 
         'vue/html-self-closing': 'off',
-        '@typescript-eslint/no-explicit-any': 'warn'
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/interface-name-prefix': 'warn'
     }
 }

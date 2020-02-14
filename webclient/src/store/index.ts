@@ -5,6 +5,7 @@ import Vuex from 'vuex'
 import oilStore from '@/store/modules/oil'
 import mapStore from './modules/map'
 import auth from './modules/auth'
+import common from './modules/common'
 
 Vue.use(Vuex)
 
@@ -19,7 +20,8 @@ export default new Vuex.Store({
         // }
         oil: oilStore,
         map: mapStore,
-        auth: auth
+        auth: auth,
+        common: common
         // oilStore
     },
     // TODO:[*] 19-11-08 此部分先注释掉

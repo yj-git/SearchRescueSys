@@ -8,7 +8,9 @@ import OilMap from './views/content/oilspilling/oilSpillingMap.vue'
 import OilMapNew from './views/content/oilspilling/oilSpillingMap2.vue'
 import OilMapMerge from './views/content/oilspilling/oilSpillingMap3.vue'
 import Login from './views/home/login.vue'
+import Logout from './views/home/logout.vue'
 import Content from './views/home/content.vue'
+
 // import Home from "./views/Home.vue";
 // 由于加入了未认证和已认证的方法，需要访问store
 import store from './store/index'
@@ -107,8 +109,17 @@ export default new Router({
             beforeEnter: requireUnauthenticated
         },
         {
+            path: '/logout',
+            name: 'logout',
+            component: Logout
+        },
+        {
             path: '/home',
             redirect: '/content/caselist'
+        },
+        {
+            path: '/',
+            redirect: '/home'
         }
         // {
         //   path: "/about",

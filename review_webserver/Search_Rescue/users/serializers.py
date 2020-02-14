@@ -28,3 +28,17 @@ class CaseSerializer(serializers.Serializer):
     console_step = serializers.FloatField()
     current_nondeterminacy = serializers.FloatField()
     equation = serializers.IntegerField()
+
+
+class JobMidSerializer(serializers.Serializer):
+    date = serializers.DateTimeField()
+    name = serializers.CharField()
+    state = serializers.IntegerField()
+    area = serializers.IntegerField()
+    tag = serializers.CharField()
+    rate = serializers.IntegerField()
+
+
+class CaseNumsMidSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    nums = serializers.IntegerField()

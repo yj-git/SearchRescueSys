@@ -135,6 +135,7 @@ REST_FRAMEWORK = {
 
 # TODO:[-] 20-01-08 加入jwt的设置（主要是过期时间）
 JWT_AUTH = {
+    # TODO:[-] 20-02-13 不再加入token的过期时间，配合前端 验证(暂时不加入过期时间)
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=24 * 60 * 60)
 }
 # Password validation

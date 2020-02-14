@@ -1,6 +1,13 @@
 import auth from '../../api/auth'
 import session from '../../api/session'
-import { LOGIN_FAILURE, LOGIN_SUCCESS, SET_TOKEN, LOGIN_BEGIN, REMOVE_TOKEN } from '../types'
+import {
+    LOGIN_FAILURE,
+    LOGIN_SUCCESS,
+    SET_TOKEN,
+    LOGIN_BEGIN,
+    REMOVE_TOKEN,
+    LOGOUT
+} from '../types'
 import { TOKEN_STORAGE_KEY } from '../constant'
 
 const initialState: {
@@ -17,6 +24,7 @@ const initialState: {
 // 新定义的getter
 const getters = {
     // 是否登录
+    // TODO:[*] 20-02-13 由于后端设置了token的过期时间，所以会存在token过期的问题
     isAuthenticated: (state): boolean => !!state.token
 }
 
@@ -64,6 +72,13 @@ const actions = {
         //     .catch(() => commit(LOGIN_FAILURE))
     },
 
+    // 登出操作，暂时不加入提交后端清除token的操作(请求)
+    logout({ commit }): void {
+        // 注意LOGOUT先设置验证状态为未验证，但还需要清除当前的token
+        commit(LOGOUT)
+        commit(REMOVE_TOKEN)
+    },
+
     // 进行初始化，若当前的localStorage中存在 token，则先删除，再重新赋值
     initialize({ commit }) {
         const token = localStorage.getItem(TOKEN_STORAGE_KEY)
@@ -91,6 +106,11 @@ const mutations = {
         localStorage.setItem(TOKEN_STORAGE_KEY, token)
         session.defaults.headers.Authorization = `JWT ${token}`
         state.token = token
+    },
+    // TODO:[-] 20-02-13 加入了登出的操作，暂时只是清除state中的登录状态以及token清除，而不做后端提交清除的操作
+    [LOGOUT](state): void {
+        state.authenticating = false
+        state.error = false
     },
     [REMOVE_TOKEN](state): void {
         localStorage.removeItem(TOKEN_STORAGE_KEY)

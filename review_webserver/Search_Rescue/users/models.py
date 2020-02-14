@@ -136,7 +136,7 @@ class IJobBaseInfo(models.Model):
     )
     id = models.AutoField(primary_key=True)
     # user_caseinfo的id
-    cid = models.IntegerField()
+    # cid = models.IntegerField()
     # celery中保存的id
     job_celery_id = models.CharField(max_length=200)
     # case 的code,注意code不允许重复
@@ -169,8 +169,8 @@ class JobUserRate(models.Model):
     # 状态共有：1-执行，2-等待，3-结束，4-失败 四种
     CHOICE_STATUS = (
         (1, 'RUNNING'),
-        (2, 'WAITTING'),
-        (3, 'COMPLETED'),
+        (2, 'COMPLETED'),
+        (3, 'WAITTING'),
         (4, 'ERROR'),
         (5, 'UNUSED'),
     )

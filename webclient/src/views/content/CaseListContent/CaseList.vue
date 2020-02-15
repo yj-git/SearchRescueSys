@@ -8,7 +8,7 @@
             <!-- TODO:[-] 19-11-19 注意此处对组件直接通过@click绑定是无效的，需要通过@click.native进行绑定click事件 -->
             <InfoBox
                 v-for="casetemp in caseIconList"
-                :key="casetemp"
+                :key="casetemp.id"
                 :count="casetemp.nums"
                 :msg="casetemp.status | getStatusEnum"
                 :iconstyle="casetemp.icon"
@@ -43,11 +43,11 @@
         <div class="case-statistics">
             <!-- 历史case的曲线图 -->
             <div class="case-history-charts">
-                <CaseHistoryChart></CaseHistoryChart>
+                <CaseHistoryChart :caseDailyList="caseDailyList"></CaseHistoryChart>
             </div>
             <!-- 历史提交的case的摘要信息 -->
             <div class="case-history-form">
-                <CaseHistoryForm></CaseHistoryForm>
+                <CaseHistoryForm :caseDailyList="caseDailyList"></CaseHistoryForm>
             </div>
             <!-- last10提交的case的详细信息 -->
             <div></div>
@@ -176,13 +176,15 @@ import CaseHistoryChart from '@/views/members/charts/CaseHistoryCharts.vue'
 import CaseHistoryForm from '@/views/members/form/CaseHistoryForm.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import CreatedCaseForm from '@/views/members/form/CreateCaseForm.vue'
-import { getAuthTest, loadCaseListByUser } from '@/api/api'
+import { getAuthTest, loadCaseListByUser, loadCaseHistory } from '@/api/api'
 
 // 引入部分枚举
 import { AreaEnum, getAreaVal } from '@/enum/area'
 import { StatueEnum, getStatueVal } from '@/enum/status'
-import { StatueInfo, IState } from '@/middle_model/case'
+import { StatueInfo, IState, IDaily, CaseDailyDetail } from '@/middle_model/case'
 import { AxiosResponse } from 'axios'
+import { ProductType } from '@/store/modules/common'
+import { GET_PRODUCT_TYPE } from '@/store/types'
 @Component({
     components: {
         InfoBox,
@@ -219,6 +221,8 @@ export default class CaseListView extends Vue {
     }> = []
     caseIconList: Array<StatueInfo> = []
     dialogVisible = false
+    productType: ProductType = ProductType.oil
+    caseDailyList: Array<CaseDailyDetail> = []
     showDialog() {
         // console.log('在组件外部触发点击事件')
         this.dialogVisible = true
@@ -256,13 +260,14 @@ export default class CaseListView extends Vue {
         // return listStatue
     }
     // 关闭窗口时触发
-    // handleClose() {}
+    handleClose() {}
     mounted() {
         // TODO:[*] 20-02-10 测试jwt验证
         // getAuthTest().then((res) => {
         //     console.log(res)
         // })
         this.loadCaseList()
+        this.loadCaseHistory()
     }
     // 根据当前的user 获取当前user的case list
     loadCaseList(): void {
@@ -290,6 +295,21 @@ export default class CaseListView extends Vue {
                     }
                 )
                 this.diveideCaseListByStatus(this.tableData)
+            }
+        })
+    }
+    loadCaseHistory(): void {
+        // const type: ProductType = this.$store.commit(GET_PRODUCT_TYPE)
+        const type: ProductType = this.$store.getters['common/productType']
+        this.productType = type
+        // console.log(type)
+        loadCaseHistory(type).then((res) => {
+            if (res.status === 200) {
+                console.log(res.data)
+                res.data.forEach((temp) => {
+                    if ('date' in temp && 'nums' in temp)
+                        this.caseDailyList.push(new CaseDailyDetail(new Date(temp.date), temp.nums))
+                })
             }
         })
     }

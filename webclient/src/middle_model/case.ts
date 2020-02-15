@@ -3,6 +3,10 @@ export interface IState {
     status: StatueEnum
     nums: number
 }
+export interface IDaily {
+    current: Date
+    nums: number
+}
 
 class StatueInfo implements IState {
     status: StatueEnum
@@ -24,5 +28,18 @@ class StatueInfo implements IState {
         this.icon = icon
     }
 }
-
-export { StatueInfo }
+/**
+ * 每日的case 数量
+ *
+ * @class CaseDailyDetail
+ * @implements {IDaily}
+ */
+class CaseDailyDetail implements IDaily {
+    current: Date
+    nums: number
+    constructor(current: Date, nums: number) {
+        this.current = current
+        this.nums = nums
+    }
+}
+export { StatueInfo, CaseDailyDetail }

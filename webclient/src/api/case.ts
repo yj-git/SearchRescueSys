@@ -6,8 +6,10 @@ import authHeader from './auth-header'
 axios.defaults.withCredentials = true
 axios.defaults.headers = {}
 
+const area = '/users'
+
 const loadCaseListByUser = (type: number) => {
-    const url = `${host}/users/case/list/`
+    const url = `${host}${area}/case/list/`
     return axios.get(url, {
         headers: authHeader(),
         params: {
@@ -16,4 +18,14 @@ const loadCaseListByUser = (type: number) => {
     })
 }
 
-export { loadCaseListByUser }
+const loadCaseHistory = (type: number) => {
+    const url = `${host}${area}/case/history/`
+    return axios.get(url, {
+        headers: authHeader(),
+        params: {
+            type: type
+        }
+    })
+}
+
+export { loadCaseListByUser, loadCaseHistory }

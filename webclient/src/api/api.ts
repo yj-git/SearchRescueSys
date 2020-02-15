@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { host } from './common'
 import authHeader from './auth-header'
-import { loadCaseListByUser } from './case'
+// import { loadCaseListByUser } from './case'
 // 后端的请求地址及端口
 // export const host = host
 axios.defaults.withCredentials = true
@@ -163,6 +163,8 @@ export {
     getTargetCodeDateRange,
     getTargetTimeTrackCount,
     loadOilScatterTrackListPage,
-    getAuthTest,
-    loadCaseListByUser
+    getAuthTest
+    // loadCaseListByUser
 }
+// TODO:[*] 20-02-14 使用此种方式导出 ./case.ts 中的所有可以导出的模块
+export * from './case'

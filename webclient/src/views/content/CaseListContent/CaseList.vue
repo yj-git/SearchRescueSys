@@ -13,6 +13,7 @@
                 :msg="casetemp.status | getStatusEnum"
                 :iconstyle="casetemp.icon"
                 :levelstyle="casetemp.style"
+                @click.native="showDialog"
             ></InfoBox>
             <!-- <InfoBox
                 :count="35"
@@ -155,10 +156,11 @@
             width="45%"
             :before-close="handleClose"
         >
-            <CreatedCaseForm></CreatedCaseForm>
+            <CreatedCaseForm ref="caseForm"></CreatedCaseForm>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <!-- <el-button type="primary" @click="dialogVisible = false">确 定</el-button> -->
+                <el-button type="primary" @click="submitCaseModel">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -175,7 +177,7 @@ import InfoBox from '@/views/members/form/InfoBox.vue'
 import CaseHistoryChart from '@/views/members/charts/CaseHistoryCharts.vue'
 import CaseHistoryForm from '@/views/members/form/CaseHistoryForm.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
-import CreatedCaseForm from '@/views/members/form/CreateCaseForm.vue'
+import CreatedCaseForm from '@/views/members/form/create_case/CreateCaseForm.vue'
 import { getAuthTest, loadCaseListByUser, loadCaseHistory } from '@/api/api'
 
 // 引入部分枚举
@@ -238,7 +240,9 @@ export default class CaseListView extends Vue {
         }>
     ): void {
         const listStatue: Array<StatueInfo> = []
-        listStatue.push(new StatueInfo(StatueEnum.CREATED, 0, 1))
+        listStatue.push(
+            new StatueInfo(StatueEnum.CREATED, 0, 1, 'fa-edit', 'my-default', 'showDialog')
+        )
         listStatue.push(new StatueInfo(StatueEnum.RUNNING, 0, 2, 'fa-refresh fa-spin', 'my-info'))
         listStatue.push(new StatueInfo(StatueEnum.COMPLETED, 0, 3, 'fa-stop-circle', 'my-succes'))
         listStatue.push(new StatueInfo(StatueEnum.WAITTING, 0, 4, 'fa-pause-circle', 'my-warning'))
@@ -312,6 +316,17 @@ export default class CaseListView extends Vue {
                 })
             }
         })
+    }
+
+    // 在父组件中进行提交操作
+    // TODO:[-] 20-02-16 获取嵌套的子组件中绑定的data
+    submitCaseModel(): void {
+        // TODO:[-] 20-02-16 获取嵌套组件中的data
+        const formInfo: any = this.$refs.caseForm.$refs.oil.$refs.infoForm.form
+        const formModel: any = this.$refs.caseForm.$refs.oil.$refs.modelForm.form
+        const submitForm = { ...formInfo, ...formModel }
+        console.log(submitForm)
+        // TODO:[*] 20-02-17 完成提交操作
     }
     get computedTest() {
         return null

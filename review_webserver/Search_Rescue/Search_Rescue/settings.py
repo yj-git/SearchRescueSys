@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     # django.core.exceptions.ImproperlyConfigured: Application labels aren't unique, duplicates: user
     # 'user',
     'users',
+    # TODO:[-] 20-02-15 加入了数据字典app
+    'common'
     # 'apps.user',
     # 'common'
 ]

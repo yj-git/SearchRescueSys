@@ -14,18 +14,21 @@ class StatueInfo implements IState {
     sort: number
     style: string
     icon: string
+    onclick: string
     constructor(
         status: StatueEnum,
         nums: number,
         sort: number,
         icon = 'fa-edit',
-        style = 'my-default'
+        style = 'my-default',
+        onclick = 'onClickDefalut'
     ) {
         this.status = status
         this.nums = nums
         this.sort = sort
         this.style = style
         this.icon = icon
+        this.onclick = onclick
     }
 }
 /**

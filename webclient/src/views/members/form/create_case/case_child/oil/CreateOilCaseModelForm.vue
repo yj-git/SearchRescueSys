@@ -3,11 +3,11 @@
         <el-form label-width="120px" :label-position="labelPosition">
             <el-form-item label="模拟步长">
                 <span class="demonstration">{{ form.simulationStep }}</span>
-                <el-slider v-model="simulationStep"></el-slider>
+                <el-slider v-model="form.simulationStep"></el-slider>
             </el-form-item>
             <el-form-item label="输出步长">
                 <span class="demonstration">{{ form.consoleStep }}</span>
-                <el-slider v-model="consoleStep"></el-slider>
+                <el-slider v-model="form.consoleStep"></el-slider>
             </el-form-item>
             <el-form-item label="风场不确定性">
                 <!-- <span class="demonstration">{{ windNon }}</span> -->

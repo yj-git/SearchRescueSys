@@ -179,13 +179,15 @@ import CaseHistoryForm from '@/views/members/form/CaseHistoryForm.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import CreatedCaseForm from '@/views/members/form/create_case/CreateCaseForm.vue'
 import { getAuthTest, loadCaseListByUser, loadCaseHistory } from '@/api/api'
-
+import { createCaseInfo } from '@/api/case'
 // 引入部分枚举
 import { AreaEnum, getAreaVal } from '@/enum/area'
 import { StatueEnum, getStatueVal } from '@/enum/status'
 import { StatueInfo, IState, IDaily, CaseDailyDetail } from '@/middle_model/case'
 import { AxiosResponse } from 'axios'
-import { ProductType } from '@/store/modules/common'
+// TODO:[*] 20-02-17 注意此处已经将该枚举放在了统一的enum路径下，以下枚举不再使用
+import { CaseTypeEnum } from '@/enum/case'
+// import { ProductType } from '@/store/modules/common'
 import { GET_PRODUCT_TYPE } from '@/store/types'
 @Component({
     components: {
@@ -223,7 +225,7 @@ export default class CaseListView extends Vue {
     }> = []
     caseIconList: Array<StatueInfo> = []
     dialogVisible = false
-    productType: ProductType = ProductType.oil
+    productType: CaseTypeEnum = CaseTypeEnum.OIL
     caseDailyList: Array<CaseDailyDetail> = []
     showDialog() {
         // console.log('在组件外部触发点击事件')
@@ -304,7 +306,7 @@ export default class CaseListView extends Vue {
     }
     loadCaseHistory(): void {
         // const type: ProductType = this.$store.commit(GET_PRODUCT_TYPE)
-        const type: ProductType = this.$store.getters['common/productType']
+        const type: CaseTypeEnum = this.$store.getters['common/productType']
         this.productType = type
         // console.log(type)
         loadCaseHistory(type).then((res) => {
@@ -326,6 +328,7 @@ export default class CaseListView extends Vue {
         const formModel: any = this.$refs.caseForm.$refs.oil.$refs.modelForm.form
         const submitForm = { ...formInfo, ...formModel }
         console.log(submitForm)
+        // createCaseInfo(,submitForm)
         // TODO:[*] 20-02-17 完成提交操作
     }
     get computedTest() {

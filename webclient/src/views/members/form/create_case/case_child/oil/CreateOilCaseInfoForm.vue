@@ -89,9 +89,9 @@ import {
 export default class OilCaseInfoForm extends Vue {
     mydata: any = null
     form: IFormOilCaseInfo = {
-        caseName: '',
+        caseName: 'default_case',
         //     caseName='',
-        caseDesc: '',
+        caseDesc: 'default_case',
         lat: 12,
         lon: 12,
         forecastdate: new Date(),

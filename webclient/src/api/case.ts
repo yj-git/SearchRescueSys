@@ -1,12 +1,26 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { host } from './common'
 import authHeader from './auth-header'
+// 引入 views/members/form/create_case/case_child/oil/select.ts
+import {
+    IFormOilCaseInfo,
+    IFormOilCaseModel
+} from '@/views/members/form/create_case/case_child/oil/select'
+
 // 后端的请求地址及端口
 // export const host = host
 axios.defaults.withCredentials = true
 axios.defaults.headers = {}
 
 const area = '/users'
+/**
+ * 需要提交的CaseModel
+ *
+ * @interface IMerageOilCase
+ * @extends {IFormOilCaseInfo}
+ * @extends {IFormOilCaseModel}
+ */
+interface IMerageOilCase extends IFormOilCaseInfo, IFormOilCaseModel {}
 
 const loadCaseListByUser = (type: number) => {
     const url = `${host}${area}/case/list/`
@@ -28,4 +42,22 @@ const loadCaseHistory = (type: number) => {
     })
 }
 
-export { loadCaseListByUser, loadCaseHistory }
+/**
+ * 创建 case
+ *
+ * @param {number} type
+ * @param {IMerageOilCase} oilModel
+ * @returns
+ */
+const createCaseInfo = (type: number, oilModel: IMerageOilCase): Promise<AxiosResponse<any>> => {
+    const url = `${host}${area}/case/create/`
+    return axios.get(url, {
+        headers: authHeader(),
+        params: {
+            type: type,
+            case: oilModel
+        }
+    })
+}
+
+export { loadCaseListByUser, loadCaseHistory, createCaseInfo }

@@ -37,6 +37,7 @@ class JobMidSerializer(serializers.Serializer):
     area = serializers.IntegerField()
     tag = serializers.CharField()
     rate = serializers.IntegerField()
+    code = serializers.CharField()
 
 
 class CaseNumsMidSerializer(serializers.Serializer):

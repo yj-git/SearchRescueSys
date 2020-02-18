@@ -125,12 +125,13 @@ import { Oil, IOptions } from './oil'
 
 import { OilPointRealDataMidModel } from '@/middle_model/rescue'
 import { OilMidModel } from '@/middle_model/oil'
-
+import { ICaseMin, CaseMinInfo } from '@/middle_model/case'
 import { getDaysNum } from '@/common/date'
 
 // 引入常量
 import { optionsFactors, optionsShowTypes } from '@/const/Oil'
 import { OilFactor, ShowType } from '@/enum/OilSelect'
+import { Case } from '@/views/content/oilspilling/case'
 @Component({
     components: {
         'l-marker': LMarker,
@@ -191,6 +192,7 @@ export default class OilSpillingMap extends Vue {
         rate: 0,
         num: { current: 0, sum: 0 }
     }
+    caseList: CaseMinInfo[] = []
     created() {
         this.startDate = new Date()
         this.targetDate = new Date()
@@ -207,6 +209,22 @@ export default class OilSpillingMap extends Vue {
         // this.startDate = new Date(2018, 0, 14, 22, 20);
         // // TODO:[*] 19-11-05:页面加载时需要获取当前code对应的旗帜时间
         // this.loadDateRange();
+        // TODO:[-] 20-02-18 页面加载完成先加载历史case list
+        // console.log(caseList)
+        this.loadCaseList()
+    }
+    loadCaseList() {
+        this.clearCaseList()
+        const productType = this.$store.getters['common/productType']
+        const caseList: CaseMinInfo[] = []
+        const caseFactory = new Case(productType)
+        caseFactory.getCaseListByUser().then((res) => {
+            console.log(`获取到上面的promise传给的 CaseMinInfo[]:${res}`)
+            this.caseList = res
+        })
+    }
+    clearCaseList() {
+        this.caseList = []
     }
     // 加载指定code的平均轨迹
     loadTrackAvgList(): void {
@@ -504,6 +522,12 @@ export default class OilSpillingMap extends Vue {
                 oilCls.intervalLoadTracks(count, this.loadTrackHeatmap, this.processOptions)
                 break
         }
+    }
+
+    @Getter('casecode', { namespace: 'case' }) casecode: string
+    @Watch('casecode')
+    onCaseCode(val: string) {
+        console.log(`监听到store中的case code 变化 :${val}`)
     }
 
     @Getter('getShowType', { namespace: 'oil' }) getShowType: number

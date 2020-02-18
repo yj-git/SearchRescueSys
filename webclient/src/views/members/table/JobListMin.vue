@@ -9,7 +9,7 @@
                     :key="index"
                     @click="onClick(item)"
                 >
-                    {{ item.date }}|{{ item.name }}
+                    {{ item.convertDate() }}|{{ item.name }}
                 </li>
             </ul>
         </div>
@@ -17,59 +17,31 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { ICaseMin, CaseMinInfo } from '@/middle_model/case'
+import { AreaEnum, getAreaVal } from '@/enum/area'
+import { StatueEnum } from '@/enum/status'
+import { loadCaseListByUser, loadCaseHistory } from '@/api/api'
 @Component({
     filters: {
         getStatusLevel(val: number) {}
     }
 })
 export default class JobListUser extends Vue {
-    tableData: {
-        id: string
-        date: string
-        name: string
-        state: string
-        tag: string
-        area: string
-        percent: number
-    }[] = [
-        {
-            id: '001',
-            date: '2016-05-02',
-            name: 'case_a',
-            state: '作业中',
-            tag: 'doing',
-            area: 'ind',
-            percent: 56
-        },
-        {
-            id: '001',
-            date: '2016-05-04',
-            name: 'case_b',
-            state: '排队中',
-            tag: 'wait',
-            area: 'scs',
-            percent: 0
-        },
-        {
-            id: '001',
-            date: '2016-05-01',
-            name: 'case_c',
-            state: '已结束',
-            tag: 'finish',
-            area: 'bhs',
-            percent: 100
-        },
-        {
-            id: '001',
-            date: '2016-05-03',
-            name: 'case_d',
-            state: '作业中',
-            tag: 'doing',
-            area: 'ecs',
-            percent: 42
-        }
+    tableData: CaseMinInfo[] = [
+        // {
+        //     // id: '001',
+        //     current: new Date(),
+        //     name: 'case_a',
+        //     status: StatueEnum.RUNNING,
+        //     tag: 'doing',
+        //     area: AreaEnum.NORTHWEST,
+        //     rate: 56,
+        //     code: 'case_a'
+        // }
     ]
-    mounted() {}
+    mounted() {
+        this.loadCaseList()
+    }
     getStatusLevel(val: number): string {
         let level = ''
         if (val < 50) {
@@ -86,19 +58,54 @@ export default class JobListUser extends Vue {
     @Prop({ default: false })
     isMin!: boolean
 
-    onClick(item: {
-        id: string
-        date: string
-        name: string
-        state: string
-        tag: string
-        area: string
-        percent: number
-    }): void {
+    // TODO:[-] 20-02-18 不要放在此处，放在oil map 中
+    loadCaseList(): void {
+        const typeProduct: number = this.$store.state.common.productType
+        loadCaseListByUser(typeProduct).then((res) => {
+            if (res.status === 200) {
+                res.data.forEach(
+                    (temp: {
+                        rate: number
+                        date: string
+                        name: string
+                        state: StatueEnum
+                        tag: string
+                        area: AreaEnum
+                        code: string
+                    }) => {
+                        // const caseTemp: CaseMinInfo = new CaseMinInfo()
+                        // Object.assign()
+                        const tempData = new CaseMinInfo(
+                            new Date(temp.date),
+                            temp.name,
+                            temp.code,
+                            temp.state,
+                            temp.tag,
+                            temp.rate,
+                            temp.area
+                        )
+                        // TODO:[*] 20-02-18 注意由后台返回的data建议使用接口声明，然后需要new成实现对象
+                        this.tableData.push(tempData)
+                    }
+                )
+            }
+        })
+    }
+
+    onClick(item: CaseMinInfo): void {
         // 获取到选定的item的id传给后台即可
-        console.log(item.id)
+        console.log(item.code)
         // 根据指定的case的id以及user id获取模型信息
         // 加载指定模型的平均轨迹
+        //
+        this.$store
+            .dispatch('case/setCaseCode', item.code)
+            .then(() => {
+                console.log(`存入${item.code}`)
+            })
+            .catch((err) => {
+                console.log(`出现错误:${err}`)
+            })
     }
 
     get computedTest() {

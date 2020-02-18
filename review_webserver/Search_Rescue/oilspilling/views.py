@@ -196,8 +196,9 @@ class TargetDateRealDataView(APIView):
                 json_data = OilspillingAvgModelSerializer(real_data[0]).data
             except KeyError:
                 msg = '不存在的key索引/时间超出范围'
-            except:
+            except Exception as e:
                 msg = '其他错误'
+                print(e)
 
         return Response(msg if json_data is None else json_data)
 

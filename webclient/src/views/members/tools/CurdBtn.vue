@@ -1,10 +1,6 @@
 <template>
     <div id="user-case">
         <div class="user-statistics">
-            <!-- <OutLiner :count="35" :msg="'created'"></OutLiner>
-      <OutLiner :count="2" :msg="'running'"></OutLiner>
-      <OutLiner :count="15" :msg="'completed'"></OutLiner>
-      <OutLiner :count="18" :msg="'waiting'"></OutLiner>-->
             <!-- TODO:[-] 19-11-19 注意此处对组件直接通过@click绑定是无效的，需要通过@click.native进行绑定click事件 -->
             <InfoBox
                 :msg="'创建case'"
@@ -12,12 +8,6 @@
                 :levelstyle="'my-default'"
                 :showsize="'small'"
             ></InfoBox>
-            <!-- <InfoBox
-        :count="2"
-        :msg="'running'"
-        :iconstyle="'fa-refresh fa-spin'"
-        :levelstyle="'my-info'"
-      ></InfoBox> -->
             <InfoBox
                 :msg="'历史查询'"
                 :iconstyle="'fa-stop-circle'"
@@ -25,16 +15,9 @@
                 :showsize="'small'"
                 @click.native="onClick"
             ></InfoBox>
-            <!-- <InfoBox
-        :count="18"
-        :msg="'waiting'"
-        :iconstyle="'fa-pause-circle'"
-        :levelstyle="'my-warning'"
-      ></InfoBox> -->
         </div>
         <transition name="fade">
             <div class="user-caselist" v-show="isShowByList">
-                <!-- <JobListUser :isMin="true"></JobListUser> -->
                 <JobList></JobList>
             </div>
         </transition>
@@ -54,7 +37,7 @@ export default class CurdBtn extends Vue {
     mounted() {}
     onClick() {
         this.isShowByList = !this.isShowByList
-        console.log('被点击了')
+        // console.log('被点击了')
     }
 }
 </script>

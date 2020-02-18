@@ -158,7 +158,7 @@ class CaseListView(APIView):
                                         job_mid = JobInfoMidModel(job_temp.gmt_create, case_temp.case_name,
                                                                   rate_temp.state,
                                                                   job_temp.area, 'doing',
-                                                                  rate_temp.rate)
+                                                                  rate_temp.rate, job_temp.case_code)
                                         jobs_mid.append(job_mid)
 
                     except:

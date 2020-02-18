@@ -15,6 +15,7 @@ axios.defaults.headers = {}
 const loadTrackList = (code: string, targetDate: Date) => {
     const trackAvglistUrl = `${host}/rescue/track/`
     return axios.get(trackAvglistUrl, {
+        headers: authHeader(),
         params: {
             code: code,
             date: targetDate
@@ -25,6 +26,7 @@ const loadTrackList = (code: string, targetDate: Date) => {
 const loadTrackAvgList = (code: string) => {
     const trackAvglistUrl = `${host}/rescue/track/avg/`
     return axios.get(trackAvglistUrl, {
+        headers: authHeader(),
         params: {
             code: code
         }
@@ -34,6 +36,7 @@ const loadTrackAvgList = (code: string) => {
 const getTargetTimeTrackCount = (code: string, dt: Date) => {
     const countUrl = `${host}/oilspilling/times/count/`
     return axios.get(countUrl, {
+        headers: authHeader(),
         params: {
             code: code,
             date: dt
@@ -51,6 +54,7 @@ const getTargetTimeTrackCount = (code: string, dt: Date) => {
 const loadOilSpillingAvgRealData = (code: string, targetDate: Date) => {
     const url = `${host}/oilspilling/realdata/target/`
     return axios.get(url, {
+        headers: authHeader(),
         params: {
             code: code,
             date: targetDate
@@ -67,6 +71,7 @@ const loadOilSpillingAvgRealData = (code: string, targetDate: Date) => {
 const loadOilSpillingAvgTrackList = (code: string) => {
     const url = `${host}/oilspilling/track/avg/`
     return axios.get(url, {
+        headers: authHeader(),
         params: {
             code: code
         }
@@ -82,6 +87,7 @@ const loadOilSpillingAvgTrackList = (code: string) => {
 const loadOilScatterTrackList = (code: string, targetDate: Date) => {
     const trackAvglistUrl = `${host}/oilspilling/track/`
     return axios.get(trackAvglistUrl, {
+        headers: authHeader(),
         params: {
             code: code,
             date: targetDate
@@ -106,6 +112,7 @@ const loadOilScatterTrackListPage = (
 ) => {
     const trackAvglistUrl = `${host}/oilspilling/track/`
     return axios.get(trackAvglistUrl, {
+        headers: authHeader(),
         params: {
             code: code,
             date: targetDate,
@@ -124,6 +131,7 @@ const loadOilScatterTrackListPage = (
 const loadOilRealData = (code: string, targetDate: Date) => {
     const oilRealDataUrl = `${host}/oilspilling/realdata/avg/`
     return axios.get(oilRealDataUrl, {
+        headers: authHeader(),
         params: {
             code: code,
             date: targetDate
@@ -140,6 +148,7 @@ const loadOilRealData = (code: string, targetDate: Date) => {
 const getTargetCodeDateRange = (code: string) => {
     const tempUrl = `${host}/oilspilling/track/date/range/`
     return axios.get(tempUrl, {
+        headers: authHeader(),
         params: {
             code: code
         }

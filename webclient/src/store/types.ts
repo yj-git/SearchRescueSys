@@ -28,3 +28,7 @@ export const REMOVE_TOKEN = 'REMOVE_TOKEN'
 // 产品的种类(主要是oil还是rescue)
 export const SET_PRODUCT_TYPE = 'SET_PRODUCT_TYPE'
 export const GET_PRODUCT_TYPE = 'GET_PRODUCT_TYPE'
+
+// case 相关
+export const SET_CASE_CODE = 'SET_CASE_CODE'
+export const GET_CASE_CODE = 'GET_CASE_CODE'

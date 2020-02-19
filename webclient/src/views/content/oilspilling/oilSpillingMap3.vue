@@ -69,7 +69,7 @@
 
         <div class="left_select">
             <OilFactorSelect></OilFactorSelect>
-            <CurdBtn></CurdBtn>
+            <CurdBtn :caseList="caseList"></CurdBtn>
         </div>
         <!-- TODO:[-] 20-01-27 在地图页面加入创建等的btn -->
         <div id="toolbar_btns">

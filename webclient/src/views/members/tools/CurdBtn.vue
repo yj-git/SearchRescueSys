@@ -18,7 +18,7 @@
         </div>
         <transition name="fade">
             <div class="user-caselist" v-show="isShowByList">
-                <JobList></JobList>
+                <JobList :caseList="caseList"></JobList>
             </div>
         </transition>
     </div>
@@ -28,12 +28,16 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import InfoBox from '@/views/members/form/InfoBox.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import JobList from '@/views/members/table/JobListMin.vue'
+import { ICaseMin, CaseMinInfo } from '@/middle_model/case'
 @Component({
     components: { InfoBox, JobListUser, JobList }
 })
 export default class CurdBtn extends Vue {
     mydata: any = null
     isShowByList = false
+    @Prop()
+    caseList: CaseMinInfo[]
+
     mounted() {}
     onClick() {
         this.isShowByList = !this.isShowByList

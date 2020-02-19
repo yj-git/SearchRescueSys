@@ -5,7 +5,7 @@
             <ul class="list-group">
                 <li
                     class="list-group-item list-my-group-item"
-                    v-for="(item, index) in tableData"
+                    v-for="(item, index) in caseList"
                     :key="index"
                     @click="onClick(item)"
                 >
@@ -40,7 +40,7 @@ export default class JobListUser extends Vue {
         // }
     ]
     mounted() {
-        this.loadCaseList()
+        // this.loadCaseList()
     }
     getStatusLevel(val: number): string {
         let level = ''
@@ -57,6 +57,9 @@ export default class JobListUser extends Vue {
     // 是否为缩小版
     @Prop({ default: false })
     isMin!: boolean
+
+    @Prop()
+    caseList: CaseMinInfo[]
 
     // TODO:[-] 20-02-18 不要放在此处，放在oil map 中
     loadCaseList(): void {

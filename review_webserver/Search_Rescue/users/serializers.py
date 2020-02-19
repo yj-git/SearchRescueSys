@@ -25,9 +25,13 @@ class CaseSerializer(serializers.Serializer):
     wind_coefficient = serializers.FloatField()
     wind_dir = serializers.FloatField()
     simulation_step = serializers.FloatField()
+    simulation_duration=serializers.FloatField()
     console_step = serializers.FloatField()
     current_nondeterminacy = serializers.FloatField()
     equation = serializers.IntegerField()
+    radius = serializers.FloatField()
+    nums = serializers.IntegerField()
+    area = serializers.IntegerField()
 
 
 class JobMidSerializer(serializers.Serializer):

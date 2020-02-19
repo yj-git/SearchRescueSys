@@ -1,10 +1,11 @@
-import { loadCaseListByUser, loadCaseHistory } from '@/api/api'
+import { loadCaseListByUser, loadCaseHistory, loadCaseModelInfo } from '@/api/api'
 import { AreaEnum, getAreaVal } from '@/enum/area'
 import { StatueEnum } from '@/enum/status'
-import { ICaseMin, CaseMinInfo } from '@/middle_model/case'
+import { ICaseMin, CaseMinInfo, CaseOilModel } from '@/middle_model/case'
 
 export class Case {
     private typeProduct: number
+
     // private caseList: CaseMinInfo[]
     constructor(type: number) {
         this.typeProduct = type
@@ -60,5 +61,50 @@ export class Case {
         // .finally(() => {
         //     return []
         // })
+    }
+}
+
+export class CaseModelInfo {
+    public code: string
+    constructor(code: string) {
+        this.code = code
+    }
+
+    /**
+     * 根据指定code获取对应的 case model
+     *
+     * @param {string} code
+     * @returns {Promise<CaseOilModel>}
+     * @memberof CaseModelInfo
+     */
+    getCaseModelInfo(code: string): Promise<CaseOilModel> {
+        let caseModel: CaseOilModel
+        return loadCaseModelInfo(code).then((res) => {
+            if (res.status === 200) {
+                if (res.data) {
+                    caseModel = new CaseOilModel(
+                        res.data.case_name,
+                        res.data.case_desc,
+                        res.data.case_code,
+                        res.data.root_path,
+                        res.data.case_path,
+                        res.data.create_date,
+                        res.data.forecast_date,
+                        res.data.area,
+                        res.data.lat,
+                        res.data.long,
+                        res.data.radius,
+                        res.data.nums,
+                        res.data.simulation_duration,
+                        res.data.simulation_step,
+                        res.data.console_step,
+                        res.data.current_nondeterminacy,
+                        res.data.wind_coefficient,
+                        res.data.equation
+                    )
+                }
+            }
+            return caseModel
+        })
     }
 }

@@ -84,6 +84,7 @@ class ICaseBaseInfo(models.Model):
     simulation_step = models.FloatField(null=True, verbose_name="模拟步长")
     console_step = models.FloatField(null=True, verbose_name="输出步长")
     current_nondeterminacy = models.FloatField(null=True, verbose_name="流场不确定性")
+    wind_nondeterminacy = models.FloatField(null=True, verbose_name="风场不确定性",default=0)
     equation = models.IntegerField(null=True, verbose_name="求解方法", choices=CHOISE_TYPE)
 
     class Meta:

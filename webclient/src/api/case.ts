@@ -60,4 +60,14 @@ const createCaseInfo = (type: number, oilModel: IMerageOilCase): Promise<AxiosRe
     })
 }
 
-export { loadCaseListByUser, loadCaseHistory, createCaseInfo }
+const loadCaseModelInfo = (code: string) => {
+    const url = `${host}${area}/case/model/`
+    return axios.get(url, {
+        headers: authHeader(),
+        params: {
+            casecode: code
+        }
+    })
+}
+
+export { loadCaseListByUser, loadCaseHistory, createCaseInfo, loadCaseModelInfo }

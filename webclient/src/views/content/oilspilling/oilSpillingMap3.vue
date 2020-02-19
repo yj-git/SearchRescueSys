@@ -125,13 +125,13 @@ import { Oil, IOptions } from './oil'
 
 import { OilPointRealDataMidModel } from '@/middle_model/rescue'
 import { OilMidModel } from '@/middle_model/oil'
-import { ICaseMin, CaseMinInfo } from '@/middle_model/case'
+import { ICaseMin, CaseMinInfo, CaseOilModel } from '@/middle_model/case'
 import { getDaysNum } from '@/common/date'
 
 // 引入常量
 import { optionsFactors, optionsShowTypes } from '@/const/Oil'
 import { OilFactor, ShowType } from '@/enum/OilSelect'
-import { Case } from '@/views/content/oilspilling/case'
+import { Case, CaseModelInfo } from '@/views/content/oilspilling/case'
 @Component({
     components: {
         'l-marker': LMarker,
@@ -166,13 +166,19 @@ export default class OilSpillingMap extends Vue {
     oilScatterPointList: Array<number[]> = []
     oilScatterCircleList: Array<any> = []
     oilHeatmapList: Array<any> = []
-    polyline: any = {
+    polyline: {
+        latlngs: []
+        color: string
+    } = {
         latlngs: [],
         color: 'yellow'
     }
 
     // TODO:[*] 19-11-04 heatLayer 当前的热图layer
     tempHeatLayer: any = null
+
+    // 当前选定的 case model 信息
+    tempCaseModel: CaseOilModel
     // timebar的起始时间
     // TODO:[*] 19-11-07 去掉默认的起始时间
     startDate: Date = new Date()
@@ -244,7 +250,6 @@ export default class OilSpillingMap extends Vue {
                     ])
                 })
             }
-            // console.log(res.data);
         })
     }
     // 根据当前选中的时间加载该时间的全部溢油 散点轨迹
@@ -348,7 +353,15 @@ export default class OilSpillingMap extends Vue {
         })
     }
 
+    loadTargetCaseModel(code: string) {
+        const tempCase: CaseModelInfo = new CaseModelInfo(code)
+        tempCase.getCaseModelInfo(code).then((res) => {
+            console.log(res)
+        })
+    }
     clearAllLayer(): void {
+        this.clearOilAvgPolyLine()
+        this.clearOilAvgPointList()
         this.clearScatterPoint()
         this.clearHeatLayer()
     }
@@ -367,6 +380,13 @@ export default class OilSpillingMap extends Vue {
         if (this.tempHeatLayer != null) {
             mymap.removeLayer(this.tempHeatLayer)
         }
+    }
+    // 清除与point与poly相关
+    clearOilAvgPointList(): void {
+        this.oilAvgPointList = []
+    }
+    clearOilAvgPolyLine(): void {
+        this.polyline.latlngs = []
     }
 
     testOnOver(temp: OilPointRealDataMidModel): void {
@@ -526,8 +546,13 @@ export default class OilSpillingMap extends Vue {
 
     @Getter('casecode', { namespace: 'case' }) casecode: string
     @Watch('casecode')
-    onCaseCode(val: string) {
+    onCaseCode(val: string): void {
         console.log(`监听到store中的case code 变化 :${val}`)
+        this.code = val
+        // 清除当前的散点
+        this.clearAllLayer()
+        // 调用加载指定code的平均轨迹的方法
+        this.loadTrackAvgList()
     }
 
     @Getter('getShowType', { namespace: 'oil' }) getShowType: number
@@ -549,7 +574,7 @@ export default class OilSpillingMap extends Vue {
 
     @Getter('getCurrent', { namespace: 'map' }) getcurrent
     @Watch('current')
-    onCurrent(val: Date) {
+    onCurrent(val: Date): void {
         const myself = this
         this.targetDate = new Date(val)
         // TODO:[*] 20-01-23 选定时间更新后先获取当前时间的散点总数

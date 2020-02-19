@@ -27,6 +27,7 @@ from typing import List
 from .models import AuthOilRela, CaseOilInfo
 from .common import check_case_name
 from users.serializers import JobMidSerializer
+from users.view_base import CaseBaseView
 
 
 # 本app用来处理 和用户操作相关的查询逻辑
@@ -197,5 +198,18 @@ class CaseHistoryListView(CaseListView):
         json_data = CaseNumsMidSerializer(list_history, many=True)
         return Response(json_data.data)
 
+
 # authentication_classes = (JSONWebTokenAuthentication,)
 # permission_classes = (IsAuthenticated,)
+
+class CaseModelView(CaseBaseView):
+    def get(self, request):
+        user = self.get_user(request)
+        type = request.GET.get('type', None)
+        code = request.GET.get('casecode', None)
+        if code and type:
+            cases = CaseOilInfo.objects.filter(case_code=code)
+            if len(cases) > 0:
+                case_temp = cases[0]
+        json_data = CaseSerializer(case_temp, many=False).data
+        return Response(json_data)

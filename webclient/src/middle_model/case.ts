@@ -1,5 +1,6 @@
 import { StatueEnum } from '../enum/status'
 import { AreaEnum, getAreaVal } from '@/enum/area'
+import { OilEquation } from '@/enum/Equation'
 import moment from 'moment'
 export interface IState {
     status: StatueEnum
@@ -141,6 +142,51 @@ export interface ICaseBaseModel {
      */
     equation: number
 }
+export interface ICaseOilModel {
+    /**
+     *风偏系数
+     *
+     * @type {number}
+     * @memberof ICaseOilModel
+     */
+    windCoefficient: number
+
+    /**
+     *风偏角度
+     *
+     * @type {number}
+     * @memberof ICaseOilModel
+     */
+    windDir: number
+}
+export interface ICaseOilModelOptions
+    extends ICaseBaseDescModel,
+        ICaseBaseStoreModel,
+        ICaseBaseAreaModel,
+        ICaseBaseGeoModel,
+        ICaseBaseModel,
+        ICaseOilModel {
+    caseName: string
+    caseDesc: string
+    caseCode: string
+    rootPath: string
+    casePath: string
+    createDate: Date
+    forecastDate: Date
+    area: string
+    lat: number
+    lon: number
+    radius: number
+    nums: number
+    simulationDuration: number
+    simulationStep: number
+    consoleStep: number
+    currentNondeterminacy: number
+    windNondeterminacy: number
+    equation: OilEquation
+    windCoefficient: number
+    windDir: number
+}
 
 /**
  * 搜救模型 实体
@@ -158,7 +204,10 @@ class CaseOilModel
         ICaseBaseStoreModel,
         ICaseBaseAreaModel,
         ICaseBaseGeoModel,
-        ICaseBaseModel {
+        ICaseBaseModel,
+        ICaseOilModel {
+    windCoefficient: number
+    windDir: number
     caseName: string
     caseDesc: string
     caseCode: string
@@ -177,44 +226,91 @@ class CaseOilModel
     currentNondeterminacy: number
     windNondeterminacy: number
     equation: number
-    constructor(
-        caseName: string,
-        caseDesc: string,
-        caseCode: string,
-        rootPath: string,
-        casePath: string,
-        createDate: Date,
-        forecastDate: Date,
-        area: string,
-        lat: number,
-        lon: number,
-        radius: number,
-        nums: number,
-        simulationDuration: number,
-        simulationStep: number,
-        consoleStep: number,
-        currentNondeterminacy: number,
-        windNondeterminacy: number,
-        equation: number
-    ) {
-        this.caseName = caseName
-        this.caseDesc = caseDesc
-        this.caseCode = caseCode
-        this.rootPath = rootPath
-        this.casePath = casePath
-        this.createDate = createDate
-        this.forecastDate = forecastDate
-        this.area = area
-        this.lat = lat
-        this.lon = lon
-        this.radius = radius
-        this.nums = nums
-        this.simulationDuration = simulationDuration
-        this.simulationStep = simulationStep
-        this.consoleStep = consoleStep
-        this.currentNondeterminacy = currentNondeterminacy
-        this.windNondeterminacy = windNondeterminacy
-        this.equation = equation
+    // TODO:[-] 20-02-20 定义一个默认值对象
+    private defaults: ICaseOilModelOptions = {
+        caseName: '',
+        caseDesc: '',
+        caseCode: '',
+        rootPath: '',
+        casePath: '',
+        createDate: new Date(),
+        forecastDate: new Date(),
+        area: '',
+        lat: 0.0,
+        lon: 0.0,
+        radius: 0.0,
+        nums: 0,
+        simulationDuration: 0,
+        simulationStep: 0,
+        consoleStep: 0,
+        currentNondeterminacy: 0,
+        windNondeterminacy: 0,
+        equation: OilEquation.Euler,
+        windCoefficient: 0,
+        windDir: 0
+    }
+    // constructor(
+    //     caseName: string,
+    //     caseDesc: string,
+    //     caseCode: string,
+    //     rootPath: string,
+    //     casePath: string,
+    //     createDate: Date,
+    //     forecastDate: Date,
+    //     area: string,
+    //     lat: number,
+    //     lon: number,
+    //     radius: number,
+    //     nums: number,
+    //     simulationDuration: number,
+    //     simulationStep: number,
+    //     consoleStep: number,
+    //     currentNondeterminacy: number,
+    //     windNondeterminacy: number,
+    //     equation: OilEquation
+    // ) {
+    //     this.caseName = caseName
+    //     this.caseDesc = caseDesc
+    //     this.caseCode = caseCode
+    //     this.rootPath = rootPath
+    //     this.casePath = casePath
+    //     this.createDate = createDate
+    //     this.forecastDate = forecastDate
+    //     this.area = area
+    //     this.lat = lat
+    //     this.lon = lon
+    //     this.radius = radius
+    //     this.nums = nums
+    //     this.simulationDuration = simulationDuration
+    //     this.simulationStep = simulationStep
+    //     this.consoleStep = consoleStep
+    //     this.currentNondeterminacy = currentNondeterminacy
+    //     this.windNondeterminacy = windNondeterminacy
+    //     this.equation = equation
+    // }
+    // TODO:[-] 20-02-20 对于需要初始值的对象的构造函数做如下改造
+    constructor(options?: ICaseOilModelOptions) {
+        const opts = Object.assign({}, this.defaults, options)
+        this.caseName = opts.caseName
+        this.caseDesc = opts.caseDesc
+        this.caseCode = opts.caseCode
+        this.rootPath = opts.rootPath
+        this.casePath = opts.casePath
+        this.createDate = opts.createDate
+        this.forecastDate = opts.forecastDate
+        this.area = opts.area
+        this.lat = opts.lat
+        this.lon = opts.lon
+        this.radius = opts.radius
+        this.nums = opts.nums
+        this.simulationDuration = opts.simulationDuration
+        this.simulationStep = opts.simulationStep
+        this.consoleStep = opts.consoleStep
+        this.currentNondeterminacy = opts.currentNondeterminacy
+        this.windNondeterminacy = opts.windNondeterminacy
+        this.equation = opts.equation
+        this.windCoefficient = opts.windCoefficient
+        this.windDir = opts.windDir
     }
 }
 

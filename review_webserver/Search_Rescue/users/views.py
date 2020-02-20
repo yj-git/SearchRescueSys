@@ -207,7 +207,8 @@ class CaseModelView(CaseBaseView):
         user = self.get_user(request)
         type = request.GET.get('type', None)
         code = request.GET.get('casecode', None)
-        if code and type:
+        case_temp: CaseOilInfo = None
+        if code:
             cases = CaseOilInfo.objects.filter(case_code=code)
             if len(cases) > 0:
                 case_temp = cases[0]

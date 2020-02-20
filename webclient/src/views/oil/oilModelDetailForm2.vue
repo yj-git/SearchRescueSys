@@ -6,51 +6,51 @@
                 <div class="cell">
                     <div class="title">时间</div>
                     <div class="content">
-                        2020-01-28 17
+                        {{ oilModelData.forecastDate | fortmatDate }}
                     </div>
                 </div>
                 <div class="cell">
                     <div class="title">中心位置</div>
-                    <div class="content">120, 95</div>
+                    <div class="content">{{ oilModelData.lat }},{{ oilModelData.lon }}</div>
                 </div>
                 <div class="cell">
                     <div class="title">求解方法</div>
-                    <div class="content">1</div>
+                    <div class="content">{{ oilModelData.equation }}</div>
                 </div>
             </div>
             <div class="form">
                 <div class="cell">
                     <div class="title">风偏系数</div>
                     <div class="content my-font-primary">
-                        22
+                        {{ oilModelData.windCoefficient }}
                     </div>
                 </div>
                 <div class="cell">
                     <div class="title">风偏角度</div>
-                    <div class="content my-font-primary">33</div>
+                    <div class="content my-font-primary">{{ oilModelData.equation }}</div>
                 </div>
             </div>
             <div class="form">
                 <div class="cell">
                     <div class="title">模拟步长</div>
-                    <div class="content my-font-primary">120</div>
+                    <div class="content my-font-primary">{{ oilModelData.simulationStep }}</div>
                 </div>
                 <div class="cell">
                     <div class="title">输出步长</div>
-                    <div class="content my-font-primary">130</div>
+                    <div class="content my-font-primary">{{ oilModelData.consoleStep }}</div>
                 </div>
             </div>
             <div class="form">
                 <div class="cell">
                     <div class="title">流畅不确定性</div>
                     <div class="content my-font-primary">
-                        80%
+                        {{ oilModelData.currentNondeterminacy }}
                     </div>
                 </div>
                 <div class="cell">
                     <div class="title">风场不确定性</div>
                     <div class="content my-font-primary">
-                        26%
+                        {{ oilModelData.windNondeterminacy }}
                     </div>
                 </div>
             </div>
@@ -75,8 +75,8 @@ export default class OilModelDetailForm extends Vue {
     }
     public mydata: any = null
 
-    @Prop(Object)
-    private oilModelDetailData!: OilModelDetailMidModel
+    // @Prop(Object)
+    // private oilModelDetailData: OilModelDetailMidModel
 
     @Prop(Object)
     private oilModelData: CaseOilModel

@@ -21,3 +21,17 @@
 /webclient/package-lock.json
 /background/.idea
 /review_webserver/Search_Rescue/.idea
+/review_webserver/Search_Rescue/common/__pycache__
+/review_webserver/Search_Rescue/oilspilling/__pycache__
+/review_webserver/Search_Rescue/rescue/__pycache__
+/review_webserver/Search_Rescue/Search_Rescue/__pycache__
+/review_webserver/Search_Rescue/tasks/__pycache__
+/review_webserver/Search_Rescue/users/__pycache__
+/review_webserver/Search_Rescue/util/__pycache__
+/review_webserver/Search_Rescue/common/migrations/__pycache__
+/review_webserver/Search_Rescue/oilspilling/migrations/__pycache__
+/review_webserver/Search_Rescue/rescue/migrations/__pycache__
+/review_webserver/Search_Rescue/users/migrations/__pycache__
+/background/03oil/.idea
+/background/02rescue/proj/core/__pycache__
+/background/02rescue/proj/.idea

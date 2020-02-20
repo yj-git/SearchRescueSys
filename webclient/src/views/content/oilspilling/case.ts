@@ -1,7 +1,7 @@
 import { loadCaseListByUser, loadCaseHistory, loadCaseModelInfo } from '@/api/api'
 import { AreaEnum, getAreaVal } from '@/enum/area'
 import { StatueEnum } from '@/enum/status'
-import { ICaseMin, CaseMinInfo, CaseOilModel } from '@/middle_model/case'
+import { ICaseMin, CaseMinInfo, CaseOilModel, ICaseOilModelOptions } from '@/middle_model/case'
 
 export class Case {
     private typeProduct: number
@@ -77,31 +77,33 @@ export class CaseModelInfo {
      * @returns {Promise<CaseOilModel>}
      * @memberof CaseModelInfo
      */
-    getCaseModelInfo(code: string): Promise<CaseOilModel> {
+    getCaseModelInfo(code?: string): Promise<CaseOilModel> {
         let caseModel: CaseOilModel
-        return loadCaseModelInfo(code).then((res) => {
+        return loadCaseModelInfo(code ? code : this.code).then((res) => {
             if (res.status === 200) {
                 if (res.data) {
-                    caseModel = new CaseOilModel(
-                        res.data.case_name,
-                        res.data.case_desc,
-                        res.data.case_code,
-                        res.data.root_path,
-                        res.data.case_path,
-                        res.data.create_date,
-                        res.data.forecast_date,
-                        res.data.area,
-                        res.data.lat,
-                        res.data.long,
-                        res.data.radius,
-                        res.data.nums,
-                        res.data.simulation_duration,
-                        res.data.simulation_step,
-                        res.data.console_step,
-                        res.data.current_nondeterminacy,
-                        res.data.wind_coefficient,
-                        res.data.equation
-                    )
+                    caseModel = new CaseOilModel({
+                        caseName: res.data.case_name,
+                        caseDesc: res.data.case_desc,
+                        caseCode: res.data.case_code,
+                        rootPath: res.data.root_path,
+                        casePath: res.data.case_path,
+                        createDate: res.data.create_date,
+                        forecastDate: res.data.forecast_date,
+                        area: res.data.area,
+                        lat: res.data.lat,
+                        lon: res.data.lon,
+                        radius: res.data.radius,
+                        nums: res.data.nums,
+                        simulationDuration: res.data.simulation_duration,
+                        simulationStep: res.data.simulation_step,
+                        consoleStep: res.data.console_step,
+                        currentNondeterminacy: res.data.current_nondeterminacy,
+                        windNondeterminacy: res.data.wind_coefficient,
+                        equation: res.data.equation,
+                        windCoefficient: res.data.wind_coefficient,
+                        windDir: res.data.wind_dir
+                    })
                 }
             }
             return caseModel

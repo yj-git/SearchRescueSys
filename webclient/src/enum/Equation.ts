@@ -1,4 +1,3 @@
-
 /**
  * 溢油求解方法
  *
@@ -8,7 +7,7 @@ enum OilEquation {
     /**
      * 欧拉
      */
-    Euler,
+    Euler = 0,
     /**
      * 龙格库塔法
      */
@@ -16,8 +15,6 @@ enum OilEquation {
     /**
      * 4阶龙格库塔法
      */
-    FourRungeKutta,
+    FourRungeKutta
 }
-export {
-    OilEquation,
-}
+export { OilEquation }

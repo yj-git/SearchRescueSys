@@ -64,6 +64,7 @@
                 :interval="interval"
                 :targetDate="current"
                 :numsData="processOptions.num"
+                :oilModelData="targetOilModelData"
             ></OilRightBar>
         </div>
 
@@ -199,6 +200,8 @@ export default class OilSpillingMap extends Vue {
         num: { current: 0, sum: 0 }
     }
     caseList: CaseMinInfo[] = []
+    // 当前选择的case code对应的 oil 的模型 data
+    targetOilModelData: CaseOilModel = new CaseOilModel()
     created() {
         this.startDate = new Date()
         this.targetDate = new Date()
@@ -352,13 +355,6 @@ export default class OilSpillingMap extends Vue {
             }
         })
     }
-
-    loadTargetCaseModel(code: string) {
-        const tempCase: CaseModelInfo = new CaseModelInfo(code)
-        tempCase.getCaseModelInfo(code).then((res) => {
-            console.log(res)
-        })
-    }
     clearAllLayer(): void {
         this.clearOilAvgPolyLine()
         this.clearOilAvgPointList()
@@ -433,7 +429,10 @@ export default class OilSpillingMap extends Vue {
         // console.log("将divIcon插入map中");
         myself.tempOilDivIcon = oilDivIconTemp
     }
-
+    loadTargetOilModelData(code: string) {
+        const oilModel = new CaseModelInfo(code)
+        oilModel.getCaseModelInfo().then((res) => (this.targetOilModelData = res))
+    }
     loadTargetRealData(code: string, date: Date) {
         const myself = this
         loadOilSpillingAvgRealData(code, date).then((res) => {
@@ -547,12 +546,13 @@ export default class OilSpillingMap extends Vue {
     @Getter('casecode', { namespace: 'case' }) casecode: string
     @Watch('casecode')
     onCaseCode(val: string): void {
-        console.log(`监听到store中的case code 变化 :${val}`)
+        // console.log(`监听到store中的case code 变化 :${val}`)
         this.code = val
         // 清除当前的散点
         this.clearAllLayer()
         // 调用加载指定code的平均轨迹的方法
         this.loadTrackAvgList()
+        this.loadTargetOilModelData(val)
     }
 
     @Getter('getShowType', { namespace: 'oil' }) getShowType: number

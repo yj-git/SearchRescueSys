@@ -133,6 +133,9 @@ import { getDaysNum } from '@/common/date'
 import { optionsFactors, optionsShowTypes } from '@/const/Oil'
 import { OilFactor, ShowType } from '@/enum/OilSelect'
 import { Case, CaseModelInfo } from '@/views/content/oilspilling/case'
+
+// STORE 常量
+import { GET_MAP_NOW } from '@/store/types'
 @Component({
     components: {
         'l-marker': LMarker,
@@ -469,6 +472,8 @@ export default class OilSpillingMap extends Vue {
                 // console.log(res);
                 const daysCount = getDaysNum(start, end)
                 myself.days = daysCount
+                // TODO:[-] 20-02-20 加载其实时间范围时，为current赋值
+                this.$store.dispatch('map/setNow', start)
                 myself.startDate = start
                 myself.finishDate = end
                 // TODO:[*] 19-11-07 此处每次获取完start之后，先赋值给current，之后再由timebar选择之后再更新
@@ -490,18 +495,33 @@ export default class OilSpillingMap extends Vue {
     }
 
     // TODO:[*] 19-11-12 不再使用此种方式，暂时注释掉
-    get current(): Date {
-        // TODO:[*] 19-11-07 注意此处的current为string类型（含时区），需要再转换为date
-        // return ;
-
-        // let currentStr: string = this.$store.state.current;
-        const currentStr: string = this.getcurrent
-
-        let currentDt: Date = new Date()
-        if (currentStr != '') {
-            currentDt = new Date(currentStr)
-        }
-        return currentDt
+    get current(): void {
+        //  注意此处的current为string类型（含时区），需要再转换为date
+        // TODO:[-] 20-02-20 换成 获取 map -> now
+        // const currentStr: string = this.getcurrent
+        // let currentDt: Date = new Date()
+        // if (currentStr != '') {
+        //     currentDt = new Date(currentStr)
+        // }
+        // return currentDt
+        // return this.getcurrent()
+        // const val = this.getcurrent()
+        // this.targetDate = new Date(val)
+        // // TODO:[*] 20-01-23 选定时间更新后先获取当前时间的散点总数
+        // getTargetTimeTrackCount(this.code, val).then((res) => {
+        //     if (res.status === 200) {
+        //         const trackCount = res.data
+        //         // TODO:[-] 20-02-01 将散点的总数赋值给options
+        //         this.processOptions.num.sum = trackCount
+        //         this.loadTrackFactory(trackCount) // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
+        //         // TODO:[*] 20-01-23 根据获取的当前时间的散点的数量，执行分页请求
+        //         // 先加载oil 的realdata，再加载热力图
+        //         this.loadTargetRealData(this.code, this.targetDate)
+        //         // TODO:[*] 19-10-31 此处需要加入一个切换的功能
+        //         // this.loadTrackFactory()
+        //         // this.loadTrackHeatmap();
+        //     }
+        // })
     }
 
     // TODO:[*] 19-11-08 使用vuex-clas的方式监听oil 的两个select
@@ -572,22 +592,27 @@ export default class OilSpillingMap extends Vue {
         console.log(`监听到processOptions发生变化:${rate}`)
     }
 
-    @Getter('getCurrent', { namespace: 'map' }) getcurrent
-    @Watch('current')
+    // @Getter('getNow', { namespace: 'map' }) getcurrent
+
+    // TODO:[*] 20-02-20 监听 store->map->mutations->GET_MAP_NOW
+    // @Mutation(GET_MAP_NOW, { namespace: 'map' }) getcurrent
+
+    @Getter('getNow', { namespace: 'map' }) getcurrent
+    @Watch('getcurrent')
     onCurrent(val: Date): void {
-        const myself = this
+        // const myself = this
         this.targetDate = new Date(val)
         // TODO:[*] 20-01-23 选定时间更新后先获取当前时间的散点总数
         getTargetTimeTrackCount(this.code, val).then((res) => {
             if (res.status === 200) {
                 const trackCount = res.data
                 // TODO:[-] 20-02-01 将散点的总数赋值给options
-                myself.processOptions.num.sum = trackCount
+                this.processOptions.num.sum = trackCount
                 this.loadTrackFactory(trackCount) // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
 
                 // TODO:[*] 20-01-23 根据获取的当前时间的散点的数量，执行分页请求
                 // 先加载oil 的realdata，再加载热力图
-                this.loadTargetRealData(myself.code, myself.targetDate)
+                this.loadTargetRealData(this.code, this.targetDate)
                 // TODO:[*] 19-10-31 此处需要加入一个切换的功能
                 // this.loadTrackFactory()
                 // this.loadTrackHeatmap();

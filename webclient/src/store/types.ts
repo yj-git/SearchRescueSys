@@ -32,3 +32,7 @@ export const GET_PRODUCT_TYPE = 'GET_PRODUCT_TYPE'
 // case 相关
 export const SET_CASE_CODE = 'SET_CASE_CODE'
 export const GET_CASE_CODE = 'GET_CASE_CODE'
+
+// map 相关
+export const SET_MAP_NOW = 'SET_MAP_NOW'
+export const GET_MAP_NOW = 'GET_MAP_NOW'

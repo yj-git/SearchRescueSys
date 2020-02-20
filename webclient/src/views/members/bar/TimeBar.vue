@@ -42,6 +42,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { Mutation, State, namespace } from 'vuex-class'
 
 import { DateModel } from '@/model/bar/timebar'
+import { SET_MAP_NOW } from '@/store/types'
 import moment from 'moment'
 import dateformat from 'dateformat'
 @Component({})
@@ -52,15 +53,15 @@ export default class TimeBar extends Vue {
     datetimelist: Array<Date> = []
     // 选中的时间在datelist中对应的obj
     selectDate: any = null
-    selectHour: String = ''
+    selectHour = ''
     // 滑动时显示的日期label
-    slideDateLabelr: String = ''
+    slideDateLabelr = ''
     // 点击后固定在点击处的日期label
-    staticDateLabel: String = ''
+    staticDateLabel = ''
     hoverCurrentDt: Date = new Date(1970, 1, 1)
     selectedCurrentDt: Date = new Date(1970, 1, 1)
     // TODO:[*] 19-09-12 新加入的复用子组件的需要用到的一些变量
-    lenTimeBar: number = 600
+    lenTimeBar = 600
     // 起始偏移位置
     siteStart: number
     // 每日共划分的间隔
@@ -97,7 +98,7 @@ export default class TimeBar extends Vue {
 
     // 计算：获取分割线数组
     get cuttingLinesIndex(): number[] {
-        var nums: number[] = []
+        const nums: number[] = []
         nums.push(0)
         nums.push(this.startIndex)
         if (this.days > 1) {
@@ -111,7 +112,7 @@ export default class TimeBar extends Vue {
     }
 
     get cuttingLinesWidth(): number[] {
-        var nums: number[] = []
+        const nums: number[] = []
 
         nums.push(this.startIndex)
         if (this.days > 1) {
@@ -127,7 +128,7 @@ export default class TimeBar extends Vue {
         return 24 - this.targetDate.getHours()
     }
 
-    prefixInteger(num: String, length: String): String {
+    prefixInteger(num: string, length: string): string {
         return ('0000000000000000' + num).substr(-length)
     }
 
@@ -149,43 +150,43 @@ export default class TimeBar extends Vue {
     overProgressLineBak(event: any): void {
         // console.log(this);
         // console.log(event);
-        var myself = this
-        var mainDom = document.getElementsByClassName('progress-line')
+        const myself = this
+        const mainDom = document.getElementsByClassName('progress-line')
         // 1 计算整个进度条的长度
-        var lenTotal = event.currentTarget.clientWidth
+        const lenTotal = event.currentTarget.clientWidth
         // 2-1 计算后除以12份（计算72小时的，间隔6小时一个，共12个格子）
         // 2-2计算每一个格子的宽度
         // TODO:[*] 19-09-10 修改格子的间隔为每小时一个格子
         // var cellWidth = lenTotal / 12;
-        var cellWidth = this.lenUnit
+        const cellWidth = this.lenUnit
         // 3 获取鼠标选中的点的位置
-        var lenTarget = event.offsetX
+        const lenTarget = event.offsetX
         // 4 然后获取该位置属于的格子
-        var indexTarget = lenTarget / cellWidth
-        var indexTargetCell = parseInt(indexTarget.toString())
+        const indexTarget = lenTarget / cellWidth
+        const indexTargetCell = parseInt(indexTarget.toString())
 
         // 4-s1 根据格子的位置获取该日的位置
-        var unit = 4
-        var indexDate = parseInt((indexTargetCell / unit).toString())
+        const unit = 4
+        const indexDate = parseInt((indexTargetCell / unit).toString())
         // 5 将进度条中的填色部分宽度改变
-        var playedDom = document.getElementById('played')
+        const playedDom = document.getElementById('played')
         if (playedDom != null) {
             playedDom.style.width = event.offsetX + '.px'
         }
 
         // 6 显示数值
         // 6-s1 根据选中的日期获取该日所在的位置的数值，以及children中的label
-        var dateTemp = myself.datelist[indexTargetCell].children.filter((obj: any) => {
+        const dateTemp = myself.datelist[indexTargetCell].children.filter((obj: any) => {
             return obj.value === indexTargetCell
         })
         // 判断获取的dateTemp是否长度为1
         if (dateTemp.length === 1) {
-            let currentDate = dateTemp[0]
+            const currentDate = dateTemp[0]
             myself.hoverCurrentDt = currentDate.date
             // myself.tempCurrentDt=currentDate.
             myself.slideDateLabelr = currentDate.datetimeStr()
             // myself.selectDate = dateTemp
-            var msg = document.getElementById('msg')
+            const msg = document.getElementById('msg')
             if (msg != null) {
                 msg.style.display = 'block'
                 msg.style.left = event.offsetX + 10 + '.px'
@@ -200,26 +201,26 @@ export default class TimeBar extends Vue {
     }
 
     overProgressLine(event: any): void {
-        var myself = this
-        var mainDom = document.getElementsByClassName('progress-line')
+        const myself = this
+        const mainDom = document.getElementsByClassName('progress-line')
         // 1 计算整个进度条的长度
-        var lenTotal = event.currentTarget.clientWidth
+        const lenTotal = event.currentTarget.clientWidth
         // 2-1 计算后除以12份（计算72小时的，间隔6小时一个，共12个格子）
         // 2-2计算每一个格子的宽度
         // TODO:[*] 19-09-10 修改格子的间隔为每小时一个格子
         // var cellWidth = lenTotal / 12;
-        var cellWidth = this.lenUnit
+        const cellWidth = this.lenUnit
         // 3 获取鼠标选中的点的位置
-        var lenTarget = event.offsetX
+        const lenTarget = event.offsetX
         // 4 然后获取该位置属于的格子
-        var indexTarget = lenTarget / cellWidth
-        var indexTargetCell = parseInt(indexTarget.toString())
+        const indexTarget = lenTarget / cellWidth
+        const indexTargetCell = parseInt(indexTarget.toString())
 
         // 4-s1 根据格子的位置获取该日的位置
-        var unit = 4
-        var indexDate = parseInt((indexTargetCell / unit).toString())
+        const unit = 4
+        const indexDate = parseInt((indexTargetCell / unit).toString())
         // 5 将进度条中的填色部分宽度改变
-        var playedDom = document.getElementById('played')
+        const playedDom = document.getElementById('played')
         if (playedDom != null) {
             playedDom.style.width = event.offsetX + '.px'
         }
@@ -249,14 +250,14 @@ export default class TimeBar extends Vue {
         //   }
         // }
         // TODO:[*] 19-09-12 使用v2方法
-        var dateTemp = this.datetimelist[indexTargetCell]
+        const dateTemp = this.datetimelist[indexTargetCell]
 
-        let currentDate = dateTemp
+        const currentDate = dateTemp
         myself.hoverCurrentDt = currentDate
         // myself.tempCurrentDt=currentDate.
         myself.slideDateLabelr = dateformat(currentDate, 'mm/dd HH:MM')
         // myself.selectDate = dateTemp
-        var msg = document.getElementById('msg')
+        const msg = document.getElementById('msg')
         if (msg != null) {
             msg.style.display = 'block'
             msg.style.left = event.offsetX + 10 + '.px'
@@ -266,7 +267,7 @@ export default class TimeBar extends Vue {
         }
     }
     setTimeBar(event: any): void {
-        console.log('点击事件')
+        // console.log('点击事件')
         // 点击之后更新这个选中的时间
         this.selectedCurrentDt = this.hoverCurrentDt
     }
@@ -275,20 +276,20 @@ export default class TimeBar extends Vue {
         //TODO:[*] 注意new Date时，month为从0开始
         // var currentTemp = new Date(1990, 0, 1, 0, 0);
         // var currentTemp = new Date(2016, 6, 20, 12, 0);
-        var currentTemp = this.targetDate
+        const currentTemp = this.targetDate
         // 转换成时间戳
-        var currentStamp = currentTemp.getTime()
+        const currentStamp = currentTemp.getTime()
 
-        var tempTimeStampInterval: number = this.intervalStamp * 60 * 60 * 1000
-        let countIntervalByDay = this.interval
+        const tempTimeStampInterval: number = this.intervalStamp * 60 * 60 * 1000
+        const countIntervalByDay = this.interval
         // var temp = currentTemp.setHours(currentTemp.getHours() + 6);
         // console.log(temp);
-        for (var i = 0; i < this.days; i++) {
+        for (let i = 0; i < this.days; i++) {
             // 直接加一天
             this.datelist.push(
                 new DateModel(i, new Date(currentStamp + i * 24 * 60 * 60 * 1000), [])
             )
-            for (var j = 0; j < countIntervalByDay; j++) {
+            for (let j = 0; j < countIntervalByDay; j++) {
                 this.datelist[i].children.push(
                     new DateModel(
                         i * countIntervalByDay + j,
@@ -304,10 +305,10 @@ export default class TimeBar extends Vue {
         // 根据 起始时间——targetDate，总共的天数——days，每日的间隔——interval 共同计算
 
         // 每个单元格在时间上的间隔
-        let intervalUnit = 24 / this.interval
-        let startStamp = this.targetDate.getTime()
+        const intervalUnit = 24 / this.interval
+        const startStamp = this.targetDate.getTime()
         // 每个间隔的间隔时间（ms）
-        var tempTimeInterval: number = (24 / this.interval) * 60 * 60 * 1000
+        const tempTimeInterval: number = (24 / this.interval) * 60 * 60 * 1000
         for (let index = 0; index < this.countUnit; index++) {
             this.datetimelist.push(new Date(startStamp + index * tempTimeInterval))
         }
@@ -316,17 +317,17 @@ export default class TimeBar extends Vue {
     // 为时间分割线设置起始位置
     initCuttingLinesClass(): void {
         // 找到日期分个符的外侧div
-        let calendarDom = document.getElementById('calendar')
+        const calendarDom = document.getElementById('calendar')
         if (calendarDom != null) {
             // TODO:[*] 19-09-12 注意此时的calendar dom并没有子节点
             // 找到第一个子div设置left的偏移
-            var child: HTMLElement = calendarDom.childNodes[1] as HTMLElement
+            const child: HTMLElement = calendarDom.childNodes[1] as HTMLElement
             // eg: 第一个为8，8*格子的宽度
             child.style['left'] = this.cuttingLinesIndex[1] * this.lenUnit + 'px'
             if (calendarDom.childNodes.length > 1) {
                 // 其余的子div设置宽度
                 // 从数组中刨除位置为0的
-                var arr = calendarDom.childNodes
+                const arr = calendarDom.childNodes
                 // TODO:[*] 19-09-12 注意此处的arr是NodeList而并不是array！！注意
                 /*
           参考文章：
@@ -336,7 +337,7 @@ export default class TimeBar extends Vue {
           注意此方法不适用于ie
         */
                 let tempArr = Array.from(arr)
-                let lastIndex = tempArr.length - 1
+                const lastIndex = tempArr.length - 1
                 tempArr = tempArr.slice(1, lastIndex)
                 tempArr.forEach((temp: ChildNode) => {
                     ;(temp as HTMLElement).style.width = this.lenUnit * this.interval + 'px'
@@ -358,8 +359,11 @@ export default class TimeBar extends Vue {
 
     @Mutation('setcurrent', { namespace: 'map' }) setCurrent
 
+    // TODO:[-] 20-02-20
+    @Mutation(SET_MAP_NOW, { namespace: 'map' }) setNow
+
     @Watch('selectedCurrentDt')
-    onSelectedCurrentDt(dt: Date) {
+    onSelectedCurrentDt(dt: Date): void {
         // 当修改 当前选中的dt 修改vuex中的对应的值
         // 修改vuex中的 current （注意：current为str类型）
         // TODO:[*] 注意此处
@@ -373,12 +377,13 @@ export default class TimeBar extends Vue {
 
         //TODO:[*] 19-11-12 以vuex-class的方式调用mutation
         // this.$store.commit("current", dt.toISOString());
-        this.setCurrent(dt.toISOString())
+        // this.setCurrent(dt.toISOString())
+        this.setNow(dt)
     }
     @Watch('datelist')
     onDateList(): void {
         // 当监听到datelist发生变化时，等该dom渲染完毕后再执行
-        var myself = this
+        const myself = this
         this.$nextTick(function() {
             // myself.initCuttingLinesClass();
         })

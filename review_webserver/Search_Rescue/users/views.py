@@ -90,7 +90,9 @@ class CaseListView(APIView):
         :param uid:
         :return:
         '''
-        if type == '0':
+        # by cwb 2020-02-20
+        #if type == '0':
+        if type == 0:
             model = AuthOilRela
         else:
             model = AuthRescueRela
@@ -166,6 +168,214 @@ class CaseListView(APIView):
 
         json_data = JobMidSerializer(jobs_mid, many=True)
         return Response(json_data.data)
+
+    def set_caseinfo(self, request, uid: str):
+        '''
+            根据传入的 uid 与 request 添加或更新对应的case
+        :param uid:
+        :param request:
+        :return:
+        '''
+        type = request.GET.get('type', None)
+        if type is not None:
+            type = int(type)
+        root_path = request.GET.get('root_path', None)
+        case_path = request.GET.get('case_path', None)
+        temp_date = request.GET.get('create_date', None)
+        if temp_date is not None:
+            create_date = datetime.strptime(temp_date, '%Y-%m-%d %H:%M:%S')
+        else:
+            create_date = None
+        temp_date = request.GET.get('forecast_date', None)
+        if temp_date is not None:
+            forecast_date = datetime.strptime(temp_date, '%Y-%m-%d %H:%M:%S')
+        else:
+            forecast_date = None
+        case_name = request.GET.get('case_name', None)
+        case_desc = request.GET.get('case_desc', None)
+        case_code = request.GET.get('case_code', None)
+        lat = request.GET.get('lat', None)
+        if lat is not None:
+            lat = float(lat)
+        lon = request.GET.get('lon', None)
+        if lon is not None:
+            lon = float(lon)
+        radius = request.GET.get('radius', None)
+        if radius is not None:
+            radius = float(radius)
+        nums = request.GET.get('nums', None)
+        if nums is not None:
+            nums = int(nums)
+        simulation_duration = request.GET.get('simulation_duration', None)
+        if simulation_duration is not None:
+            simulation_duration = float(simulation_duration)
+        simulation_step = request.GET.get('simulation_step', None)
+        if simulation_step is not None:
+            simulation_step = float(simulation_step)
+        console_step = request.GET.get('console_step', None)
+        if console_step is not None:
+            console_step = float(console_step)
+        current_nondeterminacy = request.GET.get('current_nondeterminacy', None)
+        if current_nondeterminacy is not None:
+            current_nondeterminacy = float(current_nondeterminacy)
+        equation = request.GET.get('equation', None)
+        if equation is not None:
+            equation = int(equation)
+        is_del = request.GET.get('is_del', None)
+        if is_del == '0':
+            is_del = False
+        elif is_del == '1':
+            is_del = True
+        else:
+            is_del = None
+        area = request.GET.get('area', None)
+        wind_coefficient = request.GET.get('wind_coefficient', None)
+        if wind_coefficient is not None:
+            wind_coefficient = float(wind_coefficient)
+        wind_dir = request.GET.get('wind_dir', None)
+        if wind_dir is not None:
+            wind_dir = float(wind_dir)
+        try:
+            if None not in [type, root_path, case_path, create_date, forecast_date, case_name, case_desc, case_code,
+                    lat, lon, radius, nums, simulation_duration, simulation_step, console_step,
+                    current_nondeterminacy, equation, is_del, area, wind_coefficient, wind_dir]:
+                cases = self.get_caseinfo(uid, type)
+                update_num = 0
+                #如果存在相同的case_code的记录，则更新CaseOilInfo相关字段值
+                if len(cases) > 0:
+                    for case_temp in cases:
+                        if case_temp.case_code == case_code:
+                            update_num = CaseOilInfo.objects.filter(id=case_temp.id).update(root_path=root_path, case_path=case_path,
+                                                                     create_date=create_date,
+                                                                     forecast_date=forecast_date,
+                                                                     case_name=case_name, case_desc=case_desc,
+                                                                     case_code=case_code,
+                                                                     lat=lat, lon=lon, radius=radius, nums=nums,
+                                                                     simulation_duration=simulation_duration,
+                                                                     simulation_step=simulation_step,
+                                                                     console_step=console_step,
+                                                                     current_nondeterminacy=current_nondeterminacy,
+                                                                     equation=equation, is_del=is_del,
+                                                                     area=area,
+                                                                     wind_coefficient=wind_coefficient,
+                                                                     wind_dir=wind_dir)
+
+                            break
+                # 如果不存在相同的case_code的记录，则创建CaseOilInfo记录
+                if update_num == 0:
+                    case_result = CaseOilInfo.objects.create(root_path=root_path, case_path=case_path,
+                                                             create_date=create_date,
+                                                             forecast_date=forecast_date,
+                                                             case_name=case_name, case_desc=case_desc,
+                                                             case_code=case_code,
+                                                             lat=lat, lon=lon, radius=radius, nums=nums,
+                                                             simulation_duration=simulation_duration,
+                                                             simulation_step=simulation_step,
+                                                             console_step=console_step,
+                                                             current_nondeterminacy=current_nondeterminacy,
+                                                             equation=equation, is_del=is_del,
+                                                             area=area,
+                                                             wind_coefficient=wind_coefficient,
+                                                             wind_dir=wind_dir)
+
+                    if type == 0:
+                        model = AuthOilRela
+                    else:
+                        model = AuthRescueRela
+                    rela = model.objects.filter(uid_id=uid, did_id=case_result.id)
+                    if len(rela) == 0:
+                        model.objects.create(uid_id=uid, did_id=case_result.id)
+            if case_result is not None:
+                return case_result
+        except:
+            pass
+
+    def set_jobinfo(self, request, uid: str):
+        '''
+            根据传入的 uid 与 request 添加或更新对应的job
+        :param uid:
+        :param request:
+        :return:
+        '''
+        type = int(request.GET.get('type', None))
+        job_celery_id = request.GET.get('job_celery_id', None)
+        case_code = request.GET.get('case_code', None)
+        temp_date = request.GET.get('gmt_create', None)
+        if temp_date is not None:
+            gmt_create = datetime.strptime(temp_date, '%Y-%m-%d %H:%M:%S')
+        else:
+            gmt_create = None
+        temp_date = request.GET.get('gmt_modified', None)
+        if temp_date is not None:
+            gmt_modified = datetime.strptime(temp_date, '%Y-%m-%d %H:%M:%S')
+        else:
+            gmt_modified = None
+        is_del = request.GET.get('is_del', None)
+        if is_del is not None:
+            if is_del == '0':
+                is_del = False
+            elif is_del == '1':
+                is_del = True
+            else:
+                is_del = None
+        area = request.GET.get('area', None)
+        if area is not None:
+            area = int(area)
+
+        rate = request.GET.get('rate', None)
+        if rate is not None:
+            rate = int(rate)
+        state = request.GET.get('state', None)
+        if state is not None:
+            state = int(state)
+        try:
+            if None not in [type, job_celery_id, case_code, gmt_create, gmt_modified, is_del, area]:
+                # 如果存在相同的case_code的记录，则更新JobInfo相关字段值
+                jobinfo_result = JobInfo.objects.filter(case_code=case_code)
+                if len(jobinfo_result) > 0:
+                    update_num = jobinfo_result.update(type=type, job_celery_id=job_celery_id, gmt_create=gmt_create,
+                                                        gmt_modified=gmt_modified, is_del=is_del, area=area)
+                    if update_num > 0:
+                        return jobinfo_result
+                else:
+                    # 如果不存在相同的case_code的记录，则创建JobInfo记录
+                    jobinfo_result = JobInfo.objects.create(type=type, job_celery_id=job_celery_id, case_code=case_code,
+                                                        gmt_create=gmt_create, gmt_modified=gmt_modified, is_del=is_del, area=area)
+                    if jobinfo_result is not None:
+                        if None not in [state, rate]:
+                            jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id, rate=rate, state=state,
+                                                        gmt_create=gmt_create, gmt_modified=gmt_modified)
+                            if jobrate_result is not None:
+                                return jobinfo_result
+        except:
+            pass
+
+    def post(self, request):
+        if hasattr(request, 'user'):
+            user = getattr(request, 'user')
+            if user:
+                uid = user.id
+                try:
+                    case_result = self.set_caseinfo(request, uid)
+                    job_result = self.set_jobinfo(request, uid)
+                    if case_result is not None:
+                        return Response(case_result.case_code)
+                    if job_result is not None:
+                        return Response(job_result.case_code)
+                except:
+                    pass
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class CaseHistoryListView(CaseListView):

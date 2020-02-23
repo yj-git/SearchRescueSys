@@ -235,19 +235,23 @@ class OilSpillingTrackAvgDateRangeView(APIView):
         if code is not None:
             reader_func = create_reader('file')
             reader = reader_func(_ROOT_DIR, _RESULT_FILE)
-            list_avg = reader.read_date_range(code=code)
+            try:
 
-            # TODO:[-] 20-01-21 不再使用数据库的读取这种方式，放在OilDbReader中
-            # 根据time去重
-            # list_avg = OilspillingAvgModel.objects(
-            #     code=code).distinct(field='time')
-            # if len(list_avg) > 0:
-            #     list_avg = list(set(list_avg))
-            #     # 排序
-            #     list_avg.sort()
-            temp = StartEndDateMidModel(list_avg[0], list_avg[-1])
+                list_avg = reader.read_date_range(code=code)
 
-            return Response(StartEndDateMidModelSerializer(temp).data)
+                # TODO:[-] 20-01-21 不再使用数据库的读取这种方式，放在OilDbReader中
+                # 根据time去重
+                # list_avg = OilspillingAvgModel.objects(
+                #     code=code).distinct(field='time')
+                # if len(list_avg) > 0:
+                #     list_avg = list(set(list_avg))
+                #     # 排序
+                #     list_avg.sort()
+                temp = StartEndDateMidModel(list_avg[0], list_avg[-1])
+
+                return Response(StartEndDateMidModelSerializer(temp).data)
+            except IOError:
+                return Response('不存在指定文件', status=500)
         # return Response()
         return Response('未填code', status=200)
 

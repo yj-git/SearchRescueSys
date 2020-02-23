@@ -468,29 +468,33 @@ export default class OilSpillingMap extends Vue {
     // TODO:[*] 19-11-05 根据当前的 code 获取oil avg的起止时间
     loadDateRange(): void {
         // const myself = this
-        getTargetCodeDateRange(this.code).then((res) => {
-            if (res.status === 200) {
-                // 获取起止时间
-                const start = new Date(res.data['start'])
-                const end = new Date(res.data['end'])
-                /*
+        getTargetCodeDateRange(this.code)
+            .then((res) => {
+                if (res.status === 200) {
+                    // 获取起止时间
+                    const start = new Date(res.data['start'])
+                    const end = new Date(res.data['end'])
+                    /*
           下面需要获取：
                 [ ] -1 有多少天
                 [ ] -2 起始时间
                 [ ] -3 每天的格子数量
 
         */
-                // console.log(res);
-                const daysCount = getDaysNum(start, end)
-                this.days = daysCount
-                // TODO:[-] 20-02-20 加载其实时间范围时，为current赋值
-                this.$store.dispatch('map/setNow', start)
-                this.startDate = start
-                this.finishDate = end
-                // TODO:[*] 19-11-07 此处每次获取完start之后，先赋值给current，之后再由timebar选择之后再更新
-                this.targetDate = start
-            }
-        })
+                    // console.log(res);
+                    const daysCount = getDaysNum(start, end)
+                    this.days = daysCount
+                    // TODO:[-] 20-02-20 加载其实时间范围时，为current赋值
+                    this.$store.dispatch('map/setNow', start)
+                    this.startDate = start
+                    this.finishDate = end
+                    // TODO:[*] 19-11-07 此处每次获取完start之后，先赋值给current，之后再由timebar选择之后再更新
+                    this.targetDate = start
+                }
+            })
+            .catch((res) => {
+                console.log(`获取时间范围出错${res}`)
+            })
     }
 
     // 将当前的溢油数据的div从map中移出

@@ -180,6 +180,9 @@ class CaseListView(APIView):
         type = request.GET.get('type', None)
         if type is not None:
             type = int(type)
+        # TODO:[*] 20-02-25 以下部分建议改为通过model进行获取对应的参数，在model中添加验证方法，不用放在view
+        # TODO:[*] 20-02-25 建议将root_path 与 case_path 通过工厂模式实现创建对应的 路径(路径不由前端传入，路径在后端根据传入的 user name 与当前的 yyyy/mm/dd 共同拼接而成。
+        # eg: /user_name/yyyy/mm/dd/
         root_path = request.GET.get('root_path', None)
         case_path = request.GET.get('case_path', None)
         temp_date = request.GET.get('create_date', None)
@@ -237,6 +240,7 @@ class CaseListView(APIView):
         if wind_dir is not None:
             wind_dir = float(wind_dir)
         try:
+            # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
             if None not in [type, root_path, case_path, create_date, forecast_date, case_name, case_desc, case_code,
                     lat, lon, radius, nums, simulation_duration, simulation_step, console_step,
                     current_nondeterminacy, equation, is_del, area, wind_coefficient, wind_dir]:
@@ -300,6 +304,7 @@ class CaseListView(APIView):
         '''
         type = int(request.GET.get('type', None))
         job_celery_id = request.GET.get('job_celery_id', None)
+        # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
         case_code = request.GET.get('case_code', None)
         temp_date = request.GET.get('gmt_create', None)
         if temp_date is not None:
@@ -323,6 +328,7 @@ class CaseListView(APIView):
         if area is not None:
             area = int(area)
 
+        # TODO:[*] 20-02-25 rate不由前端提交，首次创建完 user_jobinfo 后之后，在 user_jobuserrate 中添加对应的初始记录(此时rate应为0)，以后更新rate在后台中执行
         rate = request.GET.get('rate', None)
         if rate is not None:
             rate = int(rate)
@@ -340,6 +346,7 @@ class CaseListView(APIView):
                         return jobinfo_result
                 else:
                     # 如果不存在相同的case_code的记录，则创建JobInfo记录
+                    # TODO:[-] 20-02-25 添加JobInfo的同时还需要在 user_caseoilinfo 中添加相应记录——已在 set_caseinfo 方法中实现
                     jobinfo_result = JobInfo.objects.create(type=type, job_celery_id=job_celery_id, case_code=case_code,
                                                         gmt_create=gmt_create, gmt_modified=gmt_modified, is_del=is_del, area=area)
                     if jobinfo_result is not None:

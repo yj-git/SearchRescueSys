@@ -32,6 +32,9 @@ from tasks.tasks import my_task
 # from .tasks.oil_task import do_job
 from oilspilling.tasks.oil_task import do_job
 from util.reader import OilFileReader, create_reader
+from oilspilling.base_view import OilBaseView
+from util.enum import JobTypeEnum
+from util.guide import Guide
 
 # 7530
 _ROOT_DIR = r'D:\02proj\SearchRescue\SearchRescueSys\data\demo_data'
@@ -65,7 +68,7 @@ class LargeResultsSetPagination(PageNumberPagination):
     max_page_size = 1000
 
 
-class OilSpillingTrackCountView(APIView):
+class OilSpillingTrackCountView(APIView, OilBaseView):
     def get(self, request):
         '''
             获取指定时间的散点总数
@@ -79,8 +82,17 @@ class OilSpillingTrackCountView(APIView):
             return Response()
         else:
             reader_func = create_reader('file')
-            reader = reader_func(_ROOT_DIR, _RESULT_FILE)
-            return Response(reader.read_track_count(target_date))
+            # TODO:[-] 20-03-02 此处需要修改路径为动态加载，并封装至 OilBaseView 中
+            # guide = Guide(JobTypeEnum.OIL)
+            # root_path, relative_path = guide.get_pathes(code)
+            root_path, relative_path = self.get_nc_paths(code)
+            reader = reader_func(root_path, relative_path)
+            count = 0
+            try:
+                count = reader.read_track_count(target_date)
+            except OSError:
+                print(f'不存在指定文件')
+            return Response(count)
 
 
 class OilSpillingTrackAvgView(APIView):
@@ -126,7 +138,7 @@ class OilSpillingTrackAvgView(APIView):
         '''
 
 
-class OilSpillingTrackView(APIView):
+class OilSpillingTrackView(APIView, OilBaseView):
     # 设定提取指定时间的散点用的分页类(一次性提取3000个散点对后台压力有些大)
     pagination_class = LargeResultsSetPagination
 
@@ -149,8 +161,9 @@ class OilSpillingTrackView(APIView):
         if code is not None:
             try:
                 reader_func = create_reader('file')
-                reader = reader_func(_ROOT_DIR, _RESULT_FILE)
-                oil_track_list = reader.read_current_track('test', target_date_str, page_index=page_index,
+                root_path, relative_path = self.get_nc_paths(code)
+                reader = reader_func(root_path, relative_path)
+                oil_track_list = reader.read_current_track(code, target_date_str, page_index=page_index,
                                                            page_count=page_count)
 
                 # oil_track_list = OilSpillingModel.objects(
@@ -223,7 +236,7 @@ class OilRealDataAvgView(APIView):
         # pass
 
 
-class OilSpillingTrackAvgDateRangeView(APIView):
+class OilSpillingTrackAvgDateRangeView(APIView, OilBaseView):
     def get(self, request):
         '''
             根据指定 code 获取对应code对应的平均观测值的日期数组
@@ -233,11 +246,15 @@ class OilSpillingTrackAvgDateRangeView(APIView):
         code = request.GET.get('code', None)
         list_avg = []
         if code is not None:
-            reader_func = create_reader('file')
+            # 修改为直接从mongo中读取
+            reader_func = create_reader('db')
+            # TDOO:[*] 20-03-02 注意此处使用的是写死的 路径，此处需要修改为从数据库中读取的方式
+            # 注意此处需要通过 app user 根据case_code查找对应的model
+            self.get_target_file_path(code)
             reader = reader_func(_ROOT_DIR, _RESULT_FILE)
             try:
 
-                list_avg = reader.read_date_range(code=code)
+                list_avg = reader.read_date_range(code=code, type=JobTypeEnum.OIL)
 
                 # TODO:[-] 20-01-21 不再使用数据库的读取这种方式，放在OilDbReader中
                 # 根据time去重
@@ -252,6 +269,9 @@ class OilSpillingTrackAvgDateRangeView(APIView):
                 return Response(StartEndDateMidModelSerializer(temp).data)
             except IOError:
                 return Response('不存在指定文件', status=500)
+            except IndexError:
+                # list_avg 长度为0
+                return Response('不存在指定的code的记录', status=500)
         # return Response()
         return Response('未填code', status=200)
 

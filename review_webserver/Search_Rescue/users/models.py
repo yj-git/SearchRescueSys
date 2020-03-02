@@ -24,7 +24,7 @@ class ICaseBaseStore(models.Model):
     create_date = models.DateTimeField(editable=False, auto_now_add=True)
     # 预报的时间
     forecast_date = models.DateTimeField(default=now, editable=False)
-
+    ext = models.CharField(max_length=20)
     class Meta:
         abstract = True
 
@@ -84,7 +84,7 @@ class ICaseBaseInfo(models.Model):
     simulation_step = models.FloatField(null=True, verbose_name="模拟步长")
     console_step = models.FloatField(null=True, verbose_name="输出步长")
     current_nondeterminacy = models.FloatField(null=True, verbose_name="流场不确定性")
-    wind_nondeterminacy = models.FloatField(null=True, verbose_name="风场不确定性",default=0)
+    wind_nondeterminacy = models.FloatField(null=True, verbose_name="风场不确定性", default=0)
     equation = models.IntegerField(null=True, verbose_name="求解方法", choices=CHOISE_TYPE)
 
     class Meta:

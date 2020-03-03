@@ -14,7 +14,8 @@ export class Case {
 
     /**
      * 根据传入的type加载对应的case类型的case list
-     * 注意！:此处不要通过参数直接传入list，因为是异步调用，所以方法执行完，未必执行了对list的赋值操作
+     * 注意！:此处不要通过参数直接传入list，因为是异步调用，
+     * 所以方法执行完，未必执行了对list的赋值操作
      *
      * @param {CaseMinInfo[]} caselist
      * @param {number} [type]
@@ -23,7 +24,8 @@ export class Case {
     getCaseListByUser(type?: number) {
         const caselist: CaseMinInfo[] = []
         // const caselist: Array<CaseMinInfo> = []
-        // TODO:[-] 20-02-18 注意promise.then()方法时定义在原型对象上的，then方法的返回值(可选)，是一个新的promise实例，可以使用链式写法
+        // TODO:[-] 20-02-18 注意promise.then()方法时定义在原型对象上的，
+        // then方法的返回值(可选)，是一个新的promise实例，可以使用链式写法
         return loadCaseListByUser(type ? type : this.typeProduct)
             .then((res) => {
                 if (res.status === 200) {

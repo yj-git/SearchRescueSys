@@ -1,5 +1,8 @@
 import os
 from util.user import get_user
+from util.enum import JobTypeEnum
+from util.guide import Guide
+
 
 class OilBaseView:
     def get_mearn(self, factor: str, uid: int, **kwargs):
@@ -26,3 +29,22 @@ class OilBaseView:
             full_name = os.path.join(root_path, file_name)
 
         pass
+
+    def get_target_file_path(self, case_code: str, **kwargs):
+        '''
+            功能描述：
+                根据传入的case_code获取该case的存储路径，或者包含 type
+            流程：
+                1-
+        '''
+        options = {
+            'type': JobTypeEnum.NULL
+        }
+        options.update(kwargs)
+        print(options)
+        pass
+
+    def get_nc_paths(self, code: str):
+        guide = Guide(JobTypeEnum.OIL)
+        root_path, relative_path = guide.get_pathes(code)
+        return root_path, relative_path

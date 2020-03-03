@@ -16,6 +16,7 @@ from oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMid
 from util.tools import exe_run_time
 
 from oilspilling.models import OilspillingAvgModel
+from util.enum import JobTypeEnum
 
 
 class OilReaderBase:
@@ -95,6 +96,7 @@ class OilFileReader(OilReaderBase, IOilReader, IOilScatter):
             # 读取nc文件
             # self.ds = nc.Dataset(self.full_path)
             # 加入判断文件是否存在的判断
+            # eg:D:\03data\search\123\2020\02\test_case20200207.nc
             if os.path.isfile(self.full_path):
                 self.xarr = xar.open_dataset(self.full_path).load()
             else:
@@ -404,16 +406,29 @@ class OilFileReader(OilReaderBase, IOilReader, IOilScatter):
 
 
 class OilDbReader(OilReaderBase, IOilTrack):
+
     # def __init__(self,root_path:str,file_name:str):
     #     pass
     def read(self):
         pass
 
     def read_date_range(self, **kwargs):
+        options = {
+            'type': JobTypeEnum.OIL
+        }
+        options.update(kwargs)
         code = kwargs.get('code')
+        type = options.get('type')
+        list_avg = []
         # 根据time去重
-        list_avg = OilspillingAvgModel.objects(
-            code=code).distinct(field='time')
+        if type == JobTypeEnum.OIL:
+            list_avg = OilspillingAvgModel.objects(
+                code=code).distinct(field='time')
+            # pass
+        elif type == JobTypeEnum.RESCUE:
+            # TODO:[*] 20-03-02 搜救的相关逻辑未添加
+            # list_avg=
+            pass
         if len(list_avg) > 0:
             list_avg = list(set(list_avg))
             # 排序

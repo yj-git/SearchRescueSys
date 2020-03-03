@@ -586,6 +586,8 @@ export default class OilSpillingMap extends Vue {
     onCaseCode(val: string): void {
         // console.log(`监听到store中的case code 变化 :${val}`)
         this.code = val
+        // TODO:[-] 20-03-02 注意每次cascode发生变化后需要重新加载时间范围！
+        this.loadDateRange()
         // 清除当前的散点
         this.clearAllLayer()
         // 调用加载指定code的平均轨迹的方法

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -100,6 +102,42 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
 
     # 油品，油量，水温
 
+
+    def validate(self, attrs: object):  # 对多个字段校验
+        '''
+            根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
+        :param attrs:
+        :return:
+        '''
+        if (attrs['root_path'] is '') or (attrs['case_path'] is '') or (attrs['create_date'] is '') or (attrs['forecast_date'] is '') \
+             or (attrs['case_name'] is '') or (attrs['case_desc'] is '') or (attrs['case_code'] is '') or (attrs['area'] is '') \
+             or (attrs['lat'] is '') or (attrs['lon'] is '') or (attrs['radius'] is '') or (attrs['nums'] is '') \
+             or (attrs['simulation_duration'] is '') or (attrs['simulation_step'] is '') or (attrs['console_step'] is '') \
+             or (attrs['current_nondeterminacy'] is '') or (attrs['equation'] is '') or (attrs['is_del'] is '') \
+             or (attrs['wind_coefficient'] is '') or (attrs['wind_dir'] is ''):
+            return None
+        attrs['case_code'] = self.gen_casecode(attrs['case_code'])
+        attrs['create_date'] = datetime.strptime(attrs['create_date'], '%Y-%m-%d %H:%M:%S')
+        attrs['forecast_date'] = datetime.strptime(attrs['forecast_date'], '%Y-%m-%d %H:%M:%S')
+        attrs['lat'] = float(attrs['lat'])
+        attrs['lon'] = float(attrs['lon'])
+        attrs['radius'] = float(attrs['radius'])
+        attrs['nums'] = int(attrs['nums'])
+        attrs['simulation_duration'] = float(attrs['simulation_duration'])
+        attrs['simulation_step'] = float(attrs['simulation_step'])
+        attrs['console_step'] = float(attrs['console_step'])
+        attrs['current_nondeterminacy'] = float(attrs['current_nondeterminacy'])
+        attrs['equation'] = int(attrs['equation'])
+        attrs['wind_coefficient'] = float(attrs['wind_coefficient'])
+        attrs['wind_dir'] = float(attrs['wind_dir'])
+        if attrs['is_del'] == '0':
+            attrs['is_del'] = False
+        elif attrs['is_del'] == '1':
+            attrs['is_del'] = True
+        else:
+            return None
+        return attrs
+
     class Meta:
         db_table = 'user_caseoilinfo'
 
@@ -157,7 +195,27 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
             提交的没一个case对应的job
 
     '''
-
+    def validate(self, attrs: object):
+        '''
+            根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
+        :param attrs:
+        :return:
+        '''
+        if (attrs['job_celery_id'] is '') or (attrs['case_code'] is '') or (attrs['gmt_create'] is '') or (attrs['gmt_modified'] is '') \
+             or (attrs['area'] is '') or (attrs['state'] is '') or (attrs['is_del'] is ''):
+            return None
+        attrs['case_code'] = self.gen_casecode(attrs['case_code'])
+        attrs['gmt_create'] = datetime.strptime(attrs['gmt_create'], '%Y-%m-%d %H:%M:%S')
+        attrs['gmt_modified'] = datetime.strptime(attrs['gmt_modified'], '%Y-%m-%d %H:%M:%S')
+        attrs['area'] = int(attrs['area'])
+        attrs['state'] = int(attrs['state'])
+        if attrs['is_del'] == '0':
+            attrs['is_del'] = False
+        elif attrs['is_del'] == '1':
+            attrs['is_del'] = True
+        else:
+            return None
+        return attrs
     class Meta:
         db_table = 'user_jobinfo'
 

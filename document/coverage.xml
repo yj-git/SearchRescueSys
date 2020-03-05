@@ -1,0 +1,142 @@
+{
+	"coverage": {
+		"name": "ceshi_0305_02",
+		"nativeName": "ceshi_0305_02",
+		"namespace": {
+			"name": "SearchRescue",
+			"href": "http:\/\/localhost:8082\/geoserver\/rest\/namespaces\/SearchRescue.json"
+		},
+		"title": "ceshi_0305_02",
+		"description": "Generated from NetCDF",
+		"keywords": {
+			"string": ["ceshi_0305_02", "WCS", "NetCDF"]
+		},
+		"nativeCRS": "GEOGCS[\"WGS 84\", \r\n  DATUM[\"World Geodetic System 1984\", \r\n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \r\n    AUTHORITY[\"EPSG\",\"6326\"]], \r\n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n  UNIT[\"degree\", 0.017453292519943295], \r\n  AXIS[\"Geodetic longitude\", EAST], \r\n  AXIS[\"Geodetic latitude\", NORTH], \r\n  AUTHORITY[\"EPSG\",\"4326\"]]",
+		"srs": "EPSG:4326",
+		"nativeBoundingBox": {
+			"minx": 99.9,
+			"maxx": 150.10000000000002,
+			"miny": -0.1,
+			"maxy": 50.1,
+			"crs": "EPSG:4326"
+		},
+		"latLonBoundingBox": {
+			"minx": 99.9,
+			"maxx": 150.10000000000002,
+			"miny": -0.1,
+			"maxy": 50.1,
+			"crs": "EPSG:4326"
+		},
+		"projectionPolicy": "REPROJECT_TO_DECLARED",
+		"enabled": true,
+		"metadata": {
+			"entry": [{
+				"@key": "COVERAGE_VIEW",
+				"coverageView": {
+					"coverageBands": {
+						"coverageBand": [{
+							"inputCoverageBands": {
+								"@class": "singleton-list",
+								"inputCoverageBand": [{
+									"coverageName": "x_wind_10m"
+								}]
+							},
+							"definition": "x_wind_10m",
+							"index": 0,
+							"compositionType": "BAND_SELECT"
+							},
+							 {
+								"inputCoverageBands": {
+									"@class": "singleton-list",
+									"inputCoverageBand": [{
+										"coverageName": "y_wind_10m"
+									}]
+								},
+								"definition": "y_wind_10m",
+								"index": 1,
+								"compositionType": "BAND_SELECT"
+							}]
+					},
+					"name": "ceshi_0305_02",
+					"envelopeCompositionType": "INTERSECTION",
+					"selectedResolution": "BEST",
+					"selectedResolutionIndex": -1
+				}
+			}, {
+				"@key": "cachingEnabled",
+				"$": "false"
+			}, {
+				"@key": "dirName",
+				"$": "nmefc_wind_dir_xy_ceshi_0305_02"
+			}]
+		},
+		"store": {
+			"@class": "coverageStore",
+			"name": "SearchRescue:nmefc_wind_dir_xy",
+			"href": "http:\/\/localhost:8082\/geoserver\/rest\/workspaces\/SearchRescue\/coveragestores\/nmefc_wind_dir_xy.json"
+		},
+		"nativeFormat": "NetCDF",
+		"grid": {
+			"@dimension": "2",
+			"range": {
+				"low": "0 0",
+				"high": "251 251"
+			},
+			"transform": {
+				"scaleX": 0.2,
+				"scaleY": -0.2,
+				"shearX": 0,
+				"shearY": 0,
+				"translateX": 100,
+				"translateY": 50
+			},
+			"crs": "EPSG:4326"
+		},
+		"supportedFormats": {
+			"string": ["GEOTIFF", "GIF", "PNG", "JPEG", "TIFF"]
+		},
+		"interpolationMethods": {
+			"string": ["nearest neighbor", "bilinear", "bicubic"]
+		},
+		"defaultInterpolationMethod": "nearest neighbor",
+		"dimensions": {
+			"coverageDimension": [{
+				"name": "x_wind_10m",
+				"description": "GridSampleDimension[-Infinity,Infinity]",
+				"range": {
+					"min": "-inf",
+					"max": "inf"
+				},
+				"dimensionType": {
+					"name": "REAL_32BITS"
+				}
+			}, {
+				"name": "y_wind_10m",
+				"description": "GridSampleDimension[-Infinity,Infinity]",
+				"range": {
+					"min": "-inf",
+					"max": "inf"
+				},
+				"dimensionType": {
+					"name": "REAL_32BITS"
+				}
+			}]
+		},
+		"requestSRS": {
+			"string": ["EPSG:4326"]
+		},
+		"responseSRS": {
+			"string": ["EPSG:4326"]
+		},
+		"parameters": {
+			"entry": [{
+				"string": "Bands",
+				"null": ""
+			}, {
+				"string": "Filter",
+				"null": ""
+			}]
+		},
+		"nativeCoverageName": "ceshi_0305_02"
+	}
+}

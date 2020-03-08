@@ -423,6 +423,10 @@ def main():
     pass
 
     # 5 绑定样式
+    # TODO:[-] 20-03-08 绑定样式的api要参考：大体思路是 -> 工作区->layer->修改默认style(注意不能创建)
+    # PUT /workspaces/{workspaceName}/layers/{layerName}   Modify a layer.
+    # https://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/layers.yaml
+    # curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d "<layer><defaultStyle><name>RH2Style</name></defaultStyle></layer>" http://localhost:8090/geoserver/rest/layers/RH2
     style_name='wind_dir_style'
     json_style=f'''
                     <defaultStyle>
@@ -431,11 +435,21 @@ def main():
                         <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8082/geoserver/rest/workspaces/{WORK_SPACE}/styles/{style_name}.xml" type="application/xml"/>
                     </defaultStyle>
                 '''
-    response=requests.post(
-        f'http://localhost:8082/geoserver/rest/layers/{coverage_title}',
+
+    json_style_2 = f'''
+                        <layer>
+                            <defaultStyle>
+                                <name>{style_name}</name>
+                            </defaultStyle>
+                        </layer>
+                    '''
+    url_style=f'http://localhost:8082/geoserver/rest//workspaces/{WORK_SPACE}/layers/{coverage_title}'
+    response=requests.put(
+        url_style,
         auth=('admin', 'geoserver'),
-        data=json_style,
+        data=json_style_2,
         headers=headers_xml)
+    pass
 
 if __name__ == '__main__':
     main()

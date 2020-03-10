@@ -1,4 +1,6 @@
+from requests.models import Response
 from geoserver.catalog import Catalog
+from geoserver.catalog import FailedRequestError
 from conf.settings import CATALOG
 
 
@@ -23,6 +25,17 @@ class CatalogFactory(Catalog):
         self._geo_perfix = 'geoserver/rest'
         assert None not in [self.username, self.pwd, self.url, self.work_space], '初始化失败'
         self._cat = None  # type:Catalog
+
+    @property
+    def base_url(self):
+        '''
+            获取 url:http://localhost:8082
+                _geo_perfix:geoserver/rest
+                拼接后的结果
+        :return:
+        '''
+        merage_url = '/'.join([self.url, self._geo_perfix])
+        return merage_url
 
     @property
     def geo_url(self):
@@ -71,6 +84,7 @@ class CatalogFactory(Catalog):
                        ):
         '''
             此处借鉴 catalog.py -> Catalog -> create_coveragestore
+            TODO:[-] 20-03-10 已完成
         :param name:
         :param workspace:
         :param path:
@@ -85,9 +99,21 @@ class CatalogFactory(Catalog):
         store_name = name
         file_path = f'file:{path}/{name}.nc'
 
-        data = f'<coverageStore><name>{store_name} </name><workspace> {workspace}  </workspace><enabled>true</enabled><type>NetCDF</type><url>{file_path} </url></coverageStore>'
+        # TODO:[*] 以下由于有空格引起了异常，建议加入提出空格的操作
+        data = f'<coverageStore><name>{store_name} </name><workspace> {workspace}</workspace><enabled>true</enabled><type>NetCDF</type><url>{file_path} </url></coverageStore>'
+        # data_bak = data_bak.replace(' ', '')
+        data = ''.join(data.split())
+        # data = '<coverageStore><name>' + store_name + '</name><workspace>' + workspace + "</workspace><enabled>true</enabled><type>NetCDF</type><url>" + file_path + '</url></coverageStore>'
+        # print(data)
         url = f'{self.geo_url}/workspaces/{workspace}/coveragestores?configure=all'
         header = {'content-type': 'text/xml'}
         # TODO:[*] 20-03-09 注意此处直接调用 -> catalog ->http_request 会提示没有client的错误，client保存的是 session
-        
-        res = self.http_request(url, method='post', data=data, headers=header)
+
+        super().__init__(self.base_url, self.username, self.pwd)
+        # TODO:[*] 20-03-10  ERROR [geoserver.rest] - Store must be part of a workspace
+        # 此处调用父类的 http_requset 方法
+        res = self.http_request(url, method='post', data=data, headers=header)  # type:Response
+        if res.status_code not in [200, 201]:
+            # TODO:[-] 20-03-10 此处参考了一下 gsconfig -> catalog -> create_coveragestore 的源码
+            FailedRequestError(f'提交 nc store 错误,url:{url}|name:{name}')
+        pass

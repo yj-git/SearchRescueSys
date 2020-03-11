@@ -74,6 +74,17 @@ class CatalogFactory(Catalog):
             work_space_temp = self._cat.get_workspace(work_space)
         return work_space_temp
 
+    def get_coverage(self,work_space:str,store:str):
+        '''
+            api：
+                https://docs.geoserver.org/latest/en/api/#1.0.0/coverages.yaml
+        :param work_space:
+        :param store:
+        :return:
+        '''
+        pass
+
+
     def create_workspace(self, work_space: str):
         '''
             根据传入的work_space名字创建对应的命名空间，
@@ -415,3 +426,25 @@ class CatalogFactory(Catalog):
         super().__init__(self.base_url, self.username, self.pwd)
         res = self.http_request(url, method='post', data=data, headers=header)
         pass
+
+    def binding_coverage_style(self,work_space:str,coverage_title:str,sld:str=None,style:str=None):
+        '''
+            为指定coverage 绑定指定style (sld)
+        :param work_space:
+        :param coverage_title:
+        :param sld:
+        :param style:
+        :return:
+        '''
+        # 为指定coverage 绑定指定style (sld)
+
+        '''
+            大体流程：
+                1- 查找指定work_space
+                2- 查找指定coverage
+                以上只要有不存在则抛出异常
+                3- 根据传入的sld或style
+        '''
+        if self.get_workspace(work_space) is not None:
+            pass
+

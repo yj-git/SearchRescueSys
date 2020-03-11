@@ -1,0 +1,54 @@
+{
+    "coverage": {      
+      "dimensions": {
+        "coverageDimension": [
+          {
+            "name": "x_wind_10m",
+            "description": "GridSampleDimension[-Infinity,Infinity]",
+            "range": {
+              "min": "-inf",
+              "max": "inf"
+            },
+            "dimensionType": {
+              "name": "REAL_32BITS"
+            }
+          },
+          {
+            "name": "y_wind_10m",
+            "description": "GridSampleDimension[-Infinity,Infinity]",
+            "range": {
+              "min": "-inf",
+              "max": "inf"
+            },
+            "dimensionType": {
+              "name": "REAL_32BITS"
+            }
+          }
+        ]
+      },
+      "requestSRS": {
+        "string": [
+          "EPSG:4326"
+        ]
+      },
+      "responseSRS": {
+        "string": [
+          "EPSG:4326"
+        ]
+      },
+      "parameters": {
+        "entry": [
+          {
+            "string": "Bands",
+            "null": ""
+          },
+          {
+            "string": "Filter",
+            "null": ""
+          }
+        ]
+      },
+      "nativeCoverageName": "view_nmefc_wind"
+    }
+  }
+  

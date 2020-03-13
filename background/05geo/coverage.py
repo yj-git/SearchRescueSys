@@ -12,4 +12,4 @@ class Coverage(ResourceInfo):
 
     @property
     def href(self):
-        return f"{self.catalog}/workspaces/{self.work_space}/coveragestores/{self.store_name}/coverages"
+        return f"{self.catalog.service_url}/workspaces/{self.work_space}/coveragestores/{self.store_name}/coverages"

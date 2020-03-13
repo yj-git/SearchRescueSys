@@ -447,4 +447,5 @@ class CatalogFactory(Catalog):
         '''
         if self.get_workspace(work_space) is not None:
             pass
+        # if self.get_coverage(work_space,)
 

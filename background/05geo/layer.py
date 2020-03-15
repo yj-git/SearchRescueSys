@@ -269,6 +269,7 @@ def main():
 
     coverage_title='ceshi_coverage_01'
     store_name='st_3'
+    # TODO:此种方式提交的有多路band
     json_coverage_new=f'''
     <coverage>
   <name>{coverage_title}</name>

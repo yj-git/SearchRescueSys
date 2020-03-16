@@ -119,13 +119,13 @@ class CaseListView(APIView):
         if len(relas) > 0:
             # 找到所有的有关的case info
             for rela_temp in relas:
-                # caiwb 20-02-29
-                # if hasattr(rela_temp, 'did'):
-                #     case_temp: ICaseBaseModel = getattr(rela_temp, 'did')
-                #     cases.append(case_temp)
-                if hasattr(rela_temp, 'did_id'):
-                    case_temp: ICaseBaseModel = getattr(rela_temp, 'did_id')
+                # TODO:[*] 20-03-06 此处我修改回来了，请注意！ caiwb 20-02-29
+                if hasattr(rela_temp, 'did'):
+                    case_temp: ICaseBaseModel = getattr(rela_temp, 'did')
                     cases.append(case_temp)
+                # if hasattr(rela_temp, 'did_id'):
+                #     case_temp: ICaseBaseModel = getattr(rela_temp, 'did_id')
+                #     cases.append(case_temp)
         return cases
 
     def get(self, request):

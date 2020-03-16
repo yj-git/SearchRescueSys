@@ -629,7 +629,8 @@ export default class OilSpillingMap extends Vue {
                     const trackCount = res.data
                     // TODO:[-] 20-02-01 将散点的总数赋值给options
                     this.processOptions.num.sum = trackCount
-                    this.loadTrackFactory(trackCount) // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
+                    this.loadTrackFactory(trackCount)
+                    // TODO:[*] 19-11-12 调用修改后的loadTrack 工厂方法
 
                     // TODO:[*] 20-01-23 根据获取的当前时间的散点的数量，执行分页请求
                     // 先加载oil 的realdata，再加载热力图

@@ -21,13 +21,12 @@ def main():
     # ws = cat.get_workspaces()
     # TODO:[*] 20-03-13 此处存在的问题是若不存在 指定的ws 链接并不会中断一直链接状态
     ws: Workspace = cat.get_workspace(ws_name)
-    # cat.create_ncstore('nmefc_2016072112_opdr', 'my_test_2', 'nmefc/waterwind')
+    # cat.create_coverageNCstore('nmefc_2016072112_opdr', 'my_test_2', 'nmefc/waterwind')
     store_temp = cat.get_store('nmefc_2016072112_opdr', workspace=ws)
 
     # 测试一下 CoverageLayer
-    coverage=CoverageLayer(cat,'ceshi')
-    coverage.insert_node({'key':'nativeName','val':'ceshi'})
-
+    coverage = CoverageLayer(cat, 'ceshi')
+    coverage.insert_node({'key': 'nativeName', 'val': 'ceshi'})
 
     # mac
     # store_temp = cat.get_store('nmefc_wind', workspace=ws)

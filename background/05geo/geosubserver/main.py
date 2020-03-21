@@ -4,8 +4,8 @@ from geoserver.workspace import Workspace
 import sys
 
 # TODO:[-] 20-03-12 此处使用修改后的gsconfig
-BUILD_SRC = r'D:\01proj\源码\gsconfig'
-# BUILD_SRC = r'/Users/evaseemefly/Documents/01Proj/部分源码/gis/gsconfig'
+# BUILD_SRC = r'D:\01proj\源码\gsconfig'
+BUILD_SRC = r'/Users/evaseemefly/Documents/01Proj/部分源码/gis/gsconfig'
 sys.path.append(BUILD_SRC)
 from src.geoserver.catalog import Catalog
 from src.geoserver.layer import CoverageLayer

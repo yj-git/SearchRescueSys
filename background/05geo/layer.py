@@ -8,7 +8,7 @@ PWD = 'geoserver'
 
 URL = 'http://localhost:8082'
 GEO_PERFIX = 'geoserver/rest'
-WORK_SPACE = 'my_test_2'
+WORK_SPACE = 'ceshi'
 
 url = '/'.join([URL, GEO_PERFIX])
 
@@ -268,7 +268,7 @@ def main():
 
 
     coverage_title='ceshi_coverage_01'
-    store_name='st_3'
+    store_name='nmefc_wind'
     # TODO:此种方式提交的有多路band
     json_coverage_new=f'''
     <coverage>
@@ -413,13 +413,19 @@ def main():
   <nativeCoverageName>{coverage_title}</nativeCoverageName>
 </coverage>
                         '''
+
+    json_coverage_merage='''
+                        <coverage><name>ceshi_coverage_01</name><nativeName>ceshi_coverage_01</nativeName><namespace><name>ceshi</name><atom>ceshi</atom></namespace><title>ceshi_coverage_01</title><nativeCoverageName>ceshi_coverage_01</nativeCoverageName><enabled>true</enabled><nativeFormat>NetCDF</nativeFormat><requestSRS><string>EPSG:4326</string></requestSRS><responseSRS><string>EPSG:4326</string></responseSRS><defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod><metadata><entry key="COVERAGE_VIEW"><coverageView><name>ceshi_coverage_01</name><envelopeCompositionType>INTERSECTION</envelopeCompositionType><selectedResolution /><selectedResolutionIndex>-1</selectedResolutionIndex><coverageBands><coverageBand><definition>x_wind_10m</definition><index>0</index><inputcoveragebands><inputcoverageband><coverageName>x_wind_10m</coverageName></inputcoverageband></inputcoveragebands></coverageBand><coverageBand><definition>ceshi</definition><index>1</index><inputcoveragebands><inputcoverageband><coverageName>y_wind_10m</coverageName></inputcoverageband></inputcoveragebands></coverageBand></coverageBands></coverageView></entry><entry key="cachingEnabled">false</entry><entry key="dirName">nmefc_wind_dir_xy_view_nmefc_wind</entry></metadata><store class="coverageStore"><name>my_test_2:nmefc_2016072112_opdr</name></store><dimensions><coverageDimension><name>x_wind_10m</name><description>GridSampleDimension[-Infinity,Infinity]</description><dimensionType><name>REAL_32BITS</name></dimensionType><range><min>-inf</min><max>inf</max></range></coverageDimension><coverageDimension><name>y_wind_10m</name><description>GridSampleDimension[-Infinity,Infinity]</description><dimensionType><name>REAL_32BITS</name></dimensionType><range><min>-inf</min><max>inf</max></range></coverageDimension></dimensions></coverage>
+                        '''
     headers_xml_json = {'Content-Type': 'application/json'}
     response = requests.post(
         f'http://localhost:8082/geoserver/rest/workspaces/{WORK_SPACE}/coveragestores/{coveragestore}/coverages',
         auth=('admin', 'geoserver'),
         # TODO:[*] 20-03-05 此处的问题是对于一个栅格数据有多个特征时，如何添加 对应的name
         # data='<coverage><nativeCoverageName>x_wind_10m</nativeCoverageName><name>x_wind_10m</name></coverage><coverage><nativeCoverageName>y_wind_10m</nativeCoverageName><name>x_wind_10m</name></coverage>',
-        data=json_coverage_new,
+        # TODO:[*] 20-03-19 使用自动拼接的xml，此部分暂时注释掉
+        # data=json_coverage_new,
+        data=json_coverage_merage,
         headers=headers_xml)
     pass
 

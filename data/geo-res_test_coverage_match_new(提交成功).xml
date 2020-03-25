@@ -1,0 +1,124 @@
+ <coverage>
+  <name>ceshi_coverage_01</name>
+  <nativeName>ceshi_coverage_01</nativeName>
+  <namespace>
+    <name>my_test_2</name>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8082/geoserver/rest/namespaces/my_test_2.xml" type="application/xml"/>
+  </namespace>
+  <title>ceshi_coverage_01</title>
+  <description>Generated from NetCDF</description>
+  <keywords>
+    <string>ceshi_coverage_01</string>
+    <string>WCS</string>
+    <string>NetCDF</string>
+  </keywords>
+  <nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+   <requestSRS>
+    <string>EPSG:4326</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:4326</string>
+  </responseSRS>
+  <parameters>
+    <entry>
+      <string>Bands</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>Filter</string>
+      <null/>
+    </entry>
+  </parameters>
+  <nativeCoverageName>ceshi_coverage_01</nativeCoverageName>
+  <metadata>
+    <entry key="COVERAGE_VIEW">
+      <coverageView>
+      <name>ceshi_coverage_01</name>
+        <envelopeCompositionType>INTERSECTION</envelopeCompositionType>
+        <selectedResolution>BEST</selectedResolution>
+        <selectedResolutionIndex>-1</selectedResolutionIndex>
+        <coverageBands>
+          <coverageBand>
+            <inputCoverageBands class="singleton-list">
+              <inputCoverageBand>
+                <coverageName>x_wind_10m</coverageName>
+              </inputCoverageBand>
+            </inputCoverageBands>
+            <definition>x_wind_10m</definition>
+            <index>0</index>
+            <compositionType>BAND_SELECT</compositionType>
+          </coverageBand>
+          <coverageBand>
+            <inputCoverageBands class="singleton-list">
+              <inputCoverageBand>
+                <coverageName>y_wind_10m</coverageName>
+              </inputCoverageBand>
+            </inputCoverageBands>
+            <definition>y_wind_10m</definition>
+            <index>1</index>
+            <compositionType>BAND_SELECT</compositionType>
+          </coverageBand>
+        </coverageBands>
+        
+      </coverageView>
+    </entry>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="dirName">nmefc_wind_dir_xy_view_nmefc_wind</entry>
+  </metadata>
+  <store class="coverageStore">
+    <name>my_test_2:nmefc_2016072112_opdr</name>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8082/geoserver/rest/workspaces/my_test_2/coveragestores/nmefc_2016072112_opdr.xml" type="application/xml"/>
+  </store>
+  <nativeFormat>NetCDF</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>251 251</high>
+    </range>
+    <transform>
+      <scaleX>0.2</scaleX>
+      <scaleY>-0.2</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>100.0</translateX>
+      <translateY>50.0</translateY>
+    </transform>
+    <crs>EPSG:4326</crs>
+  </grid>
+  <supportedFormats>
+    <string>GEOTIFF</string>
+    <string>GIF</string>
+    <string>PNG</string>
+    <string>JPEG</string>
+    <string>TIFF</string>
+  </supportedFormats>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>x_wind_10m</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <dimensionType>
+        <name>REAL_32BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>y_wind_10m</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <dimensionType>
+        <name>REAL_32BITS</name>
+      </dimensionType>
+    </coverageDimension>
+  </dimensions>
+ 
+</coverage>

@@ -40,6 +40,33 @@
 	<enabled>
 		true
 	</enabled>
+	<requestSRS>
+		<string>
+			EPSG:4326
+		</string>
+	</requestSRS>
+	<responseSRS>
+		<string>
+			EPSG:4326
+		</string>
+	</responseSRS>
+	<parameters>
+		<entry>
+			<string>
+				Bands
+			</string>
+			<null />
+		</entry>
+		<entry>
+			<string>
+				Filter
+			</string>
+			<null />
+		</entry>
+	</parameters>
+	<nativeCoverageName>
+		ceshi_coverage_01
+	</nativeCoverageName>
 	<metadata>
 		<entry key="COVERAGE_VIEW">
 			<coverageView>
@@ -57,12 +84,6 @@
 				</selectedResolutionIndex>
 				<coverageBands>
 					<coverageBand>
-						<definition>
-							x_wind_10m
-						</definition>
-						<index>
-							0
-						</index>
 						<inputCoverageBands class="singleton-list">
 							<inputCoverageBand>
 								<coverageName>
@@ -70,17 +91,17 @@
 								</coverageName>
 							</inputCoverageBand>
 						</inputCoverageBands>
+						<definition>
+							x_wind_10m
+						</definition>
+						<index>
+							0
+						</index>
 						<compositionType>
 							BAND_SELECT
 						</compositionType>
 					</coverageBand>
 					<coverageBand>
-						<definition>
-							y_wind_10m
-						</definition>
-						<index>
-							1
-						</index>
 						<inputCoverageBands class="singleton-list">
 							<inputCoverageBand>
 								<coverageName>
@@ -88,6 +109,12 @@
 								</coverageName>
 							</inputCoverageBand>
 						</inputCoverageBands>
+						<definition>
+							y_wind_10m
+						</definition>
+						<index>
+							1
+						</index>
 						<compositionType>
 							BAND_SELECT
 						</compositionType>
@@ -208,31 +235,4 @@
 			</dimensionType>
 		</coverageDimension>
 	</dimensions>
-	<requestSRS>
-		<string>
-			EPSG:4326
-		</string>
-	</requestSRS>
-	<responseSRS>
-		<string>
-			EPSG:4326
-		</string>
-	</responseSRS>
-	<parameters>
-		<entry>
-			<string>
-				Bands
-			</string>
-			<null />
-		</entry>
-		<entry>
-			<string>
-				Filter
-			</string>
-			<null />
-		</entry>
-	</parameters>
-	<nativeCoverageName>
-		ceshi_coverage_01
-	</nativeCoverageName>
 </coverage>

@@ -11,6 +11,33 @@
 		</name>
 		<link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8082/geoserver/rest/namespaces/my_test_2.xml" type="application/xml" />
 	</namespace>
+	<requestSRS>
+		<string>
+			EPSG:4326
+		</string>
+	</requestSRS>
+	<responseSRS>
+		<string>
+			EPSG:4326
+		</string>
+	</responseSRS>
+	<parameters>
+		<entry>
+			<string>
+				Bands
+			</string>
+			<null />
+		</entry>
+		<entry>
+			<string>
+				Filter
+			</string>
+			<null />
+		</entry>
+	</parameters>
+	<nativeCoverageName>
+		ceshi_coverage_01
+	</nativeCoverageName>
 	<title>
 		ceshi_coverage_01
 	</title>
@@ -144,23 +171,7 @@
 			EPSG:4326
 		</crs>
 	</grid>
-	<supportedFormats>
-		<string>
-			GEOTIFF
-		</string>
-		<string>
-			GIF
-		</string>
-		<string>
-			PNG
-		</string>
-		<string>
-			JPEG
-		</string>
-		<string>
-			TIFF
-		</string>
-	</supportedFormats>
+	
 	<defaultInterpolationMethod>
 		nearest neighbor
 	</defaultInterpolationMethod>
@@ -172,6 +183,11 @@
 			<description>
 				GridSampleDimension[-Infinity,Infinity]
 			</description>
+			<dimensionType>
+				<name>
+					REAL_32BITS
+				</name>
+			</dimensionType>
 			<range>
 				<min>
 					-inf
@@ -180,11 +196,6 @@
 					inf
 				</max>
 			</range>
-			<dimensionType>
-				<name>
-					REAL_32BITS
-				</name>
-			</dimensionType>
 		</coverageDimension>
 		<coverageDimension>
 			<name>
@@ -193,6 +204,11 @@
 			<description>
 				GridSampleDimension[-Infinity,Infinity]
 			</description>
+			<dimensionType>
+				<name>
+					REAL_32BITS
+				</name>
+			</dimensionType>
 			<range>
 				<min>
 					-inf
@@ -201,38 +217,6 @@
 					inf
 				</max>
 			</range>
-			<dimensionType>
-				<name>
-					REAL_32BITS
-				</name>
-			</dimensionType>
 		</coverageDimension>
 	</dimensions>
-	<requestSRS>
-		<string>
-			EPSG:4326
-		</string>
-	</requestSRS>
-	<responseSRS>
-		<string>
-			EPSG:4326
-		</string>
-	</responseSRS>
-	<parameters>
-		<entry>
-			<string>
-				Bands
-			</string>
-			<null />
-		</entry>
-		<entry>
-			<string>
-				Filter
-			</string>
-			<null />
-		</entry>
-	</parameters>
-	<nativeCoverageName>
-		ceshi_coverage_01
-	</nativeCoverageName>
 </coverage>

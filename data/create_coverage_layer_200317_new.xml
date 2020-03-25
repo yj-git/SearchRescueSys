@@ -1,0 +1,27 @@
+<coverageview>
+	<coverageBands>
+		<coverageBand>
+			<definition>
+				ceshi
+			</definition>
+			<index>
+				1
+			</index>
+			<inputcoveragebands>
+				<inputcoverageband>
+					<coverageName>
+						x_wind_10m
+					</coverageName>
+				</inputcoverageband>
+			</inputcoveragebands>
+		</coverageBand>
+		<coverageBand>
+			<definition>
+				ceshi
+			</definition>
+			<index>
+				1
+			</index>
+		</coverageBand>
+	</coverageBands>
+</coverageview>

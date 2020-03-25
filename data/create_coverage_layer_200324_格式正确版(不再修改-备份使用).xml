@@ -1,0 +1,78 @@
+<coverage>
+    <name>ceshi_coverage_01</name>
+    <nativeName>ceshi_coverage_01</nativeName>
+    <namespace>
+        <name>my_test_2</name>
+        <atom>My_Test_2</atom>
+    </namespace>
+    <title>ceshi_coverage_01</title>
+    <nativeCoverageName>ceshi_coverage_01</nativeCoverageName>
+    <enabled>true</enabled>
+    <nativeFormat>NetCDF</nativeFormat>
+    <requestSRS>
+        <string>EPSG:4326</string>
+    </requestSRS>
+    <responseSRS>
+        <string>EPSG:4326</string>
+    </responseSRS>
+    <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+    <metadata>
+        <entry key="cachingEnabled">false</entry>
+        <entry key="dirName">ceshi_coverage_01</entry>
+        <entry key="COVERAGE_VIEW">
+            <coverageView>
+                <name>ceshi_coverage_01</name>
+                <envelopeCompositionType>INTERSECTION</envelopeCompositionType>
+                <selectedResolution>BEST</selectedResolution>
+                <selectedResolutionIndex>-1</selectedResolutionIndex>
+                <coverageBands>
+                    <coverageBand>
+                        <definition>x_wind_10m</definition>
+                        <index>0</index>
+                        <inputCoverageBands>
+                            <inputCoverageBand>
+                                <coverageName>x_wind_10m</coverageName>
+                            </inputCoverageBand>
+                        </inputCoverageBands>
+                    </coverageBand>
+                    <coverageBand>
+                        <definition>y_wind_10m</definition>
+                        <index>1</index>
+                        <inputCoverageBands>
+                            <inputCoverageBand>
+                                <coverageName>y_wind_10m</coverageName>
+                            </inputCoverageBand>
+                        </inputCoverageBands>
+                    </coverageBand>
+                </coverageBands>
+            </coverageView>
+        </entry>
+    </metadata>
+    <store class="coverageStore">
+        <name>my_test_2:nmefc_2016072112_opdr</name>
+    </store>
+    <dimensions>
+        <coverageDimension>
+            <name>x_wind_10m</name>
+            <description>GridSampleDimension[-Infinity,Infinity]</description>
+            <dimensionType>
+                <name>REAL_32BITS</name>
+            </dimensionType>
+            <range>
+                <min>-inf</min>
+                <max>inf</max>
+            </range>
+        </coverageDimension>
+        <coverageDimension>
+            <name>y_wind_10m</name>
+            <description>GridSampleDimension[-Infinity,Infinity]</description>
+            <dimensionType>
+                <name>REAL_32BITS</name>
+            </dimensionType>
+            <range>
+                <min>-inf</min>
+                <max>inf</max>
+            </range>
+        </coverageDimension>
+    </dimensions>
+</coverage>

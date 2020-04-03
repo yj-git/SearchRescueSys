@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     # 'user',
     'users',
     # TODO:[-] 20-02-15 加入了数据字典app
-    'common'
+    'common',
+    'geo'
     # 'apps.user',
     # 'common'
 ]
@@ -105,11 +106,11 @@ DATABASES = {
         # by casablanca
         'USER': 'root',  # 账号
         # 7530
-        'PASSWORD': 'admin123',
+        # 'PASSWORD': 'admin123',
         # 5820
         # 5510
         # p52s
-        # 'PASSWORD': '123456',
+        'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
         # 'PASSWORD': '123456',

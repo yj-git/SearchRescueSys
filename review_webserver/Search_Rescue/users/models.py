@@ -179,6 +179,7 @@ class IJobBaseInfo(models.Model):
     CHOISE_TYPE = (
         (0, 'oil'),
         (1, 'rescue'),
+        (2, 'coverage') #TODO:[-] 20-04-03 +
     )
     id = models.AutoField(primary_key=True)
     # user_caseinfo的id

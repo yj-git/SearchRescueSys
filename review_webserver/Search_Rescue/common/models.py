@@ -38,3 +38,17 @@ class SelectModel(ISelectModel):
 
     class Meta:
         db_table = 'common_select'
+
+
+class IIdModel(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    class Meta:
+        abstract = True
+
+
+class IDescModel(models.Model):
+    desc = models.CharField(max_length=500)
+
+    class Meta:
+        abstract = True

@@ -12,3 +12,6 @@ _FTP = {
     '_USERNAME': 'admin',
     '_PWD': 'admin123'
 }
+
+# 用来存储 ftp 下载的文件的根目录(或放在数据库中？)
+DOWNLOAD_ROOT = r'D:\01proj\SearchRescueSys\data\download'

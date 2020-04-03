@@ -6,6 +6,7 @@
 # @Site    : 
 # @File    : ftp.py
 # @Software: PyCharm
+import os
 from ftplib import FTP, FTP_TLS
 from ftplib import error_perm
 import socket
@@ -14,7 +15,8 @@ from fnmatch import fnmatch, fnmatchcase
 from typing import List
 
 # 当前项目
-from core.file import CoverageFile, IFileBase
+from core.file import ICoverageFile, IFileBase
+from util.tools import check_path_exist
 
 
 class FtpFactory:
@@ -63,4 +65,31 @@ class FtpFactory:
         list_match_names = [name for name in list_all_names if fnmatch(name, file.get_re)]
         return list_match_names
 
+    def _download_file(self, file_name: str, local_path: str):
+        '''
+            将ftp目录下的指定文件下载至本地的指定目录下
+        :param remote_path:
+        :param local_path:
+        :return:
+        '''
+        cache_size = 1024
 
+        # 将此方法统一放在common.tools中
+        check_path_exist(local_path)
+        fp = open(os.path.join(local_path, file_name), 'wb')
+        # 读取指定文件并写入本地文件
+        # 错误1:ftplib.error_perm: 500 Syntax error, command unrecognized.
+        msg = self.ftp.retrbinary('RETR ' + file_name, fp.write, cache_size)
+        # 判断ftp返回的状态
+        if msg.find('226') != -1:
+            print("下载完毕")
+        self.ftp.set_debuglevel(0)
+        fp.close()
+
+
+    def download(self, file: IFileBase):
+        # 1 获取正则匹配的 files names
+        list_match: List[str] = self._get_match_list(file)
+        # 2 执行下载操作
+        self._download_file(file.file_name, file.path_dir)
+        # 3 下载结束后写入数据库

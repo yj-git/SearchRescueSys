@@ -27,6 +27,7 @@ class ICaseBaseStore(models.Model):
     # 预报的时间
     forecast_date = models.DateTimeField(default=now, editable=False)
     ext = models.CharField(max_length=20)
+
     class Meta:
         abstract = True
 
@@ -48,9 +49,13 @@ class ICaseBaseModel(models.Model):
 class IArea(models.Model):
     CHOISE_TYPE = (
         (-1, 'NULL'),
-        (0, 'NORTHWEST'),
+        (0, 'NORTHWEST'),  # 西北太
         (1, 'CHINASEA'),
-        (2, 'EASTCHINASEA'),
+        (2, 'EASTCHINASEA'),  # 东中国海
+        (3, 'BOHAISEA'),  # 东中国海
+        (4, 'INDIAN'),  # 印度洋
+        (5, 'SOUTHCHINASEA')  # 南海
+        # (6,'NORTHWESTPACIFIC')
     )
     area = models.IntegerField(choices=CHOISE_TYPE, default=-1)
 
@@ -102,19 +107,21 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
 
     # 油品，油量，水温
 
-
     def validate(self, attrs: object):  # 对多个字段校验
         '''
             根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
         :param attrs:
         :return:
         '''
-        if (attrs['root_path'] is '') or (attrs['case_path'] is '') or (attrs['create_date'] is '') or (attrs['forecast_date'] is '') \
-             or (attrs['case_name'] is '') or (attrs['case_desc'] is '') or (attrs['case_code'] is '') or (attrs['area'] is '') \
-             or (attrs['lat'] is '') or (attrs['lon'] is '') or (attrs['radius'] is '') or (attrs['nums'] is '') \
-             or (attrs['simulation_duration'] is '') or (attrs['simulation_step'] is '') or (attrs['console_step'] is '') \
-             or (attrs['current_nondeterminacy'] is '') or (attrs['equation'] is '') or (attrs['is_del'] is '') \
-             or (attrs['wind_coefficient'] is '') or (attrs['wind_dir'] is ''):
+        if (attrs['root_path'] is '') or (attrs['case_path'] is '') or (attrs['create_date'] is '') or (
+                attrs['forecast_date'] is '') \
+                or (attrs['case_name'] is '') or (attrs['case_desc'] is '') or (attrs['case_code'] is '') or (
+                attrs['area'] is '') \
+                or (attrs['lat'] is '') or (attrs['lon'] is '') or (attrs['radius'] is '') or (attrs['nums'] is '') \
+                or (attrs['simulation_duration'] is '') or (attrs['simulation_step'] is '') or (
+                attrs['console_step'] is '') \
+                or (attrs['current_nondeterminacy'] is '') or (attrs['equation'] is '') or (attrs['is_del'] is '') \
+                or (attrs['wind_coefficient'] is '') or (attrs['wind_dir'] is ''):
             return None
         attrs['case_code'] = self.gen_casecode(attrs['case_code'])
         attrs['create_date'] = datetime.strptime(attrs['create_date'], '%Y-%m-%d %H:%M:%S')
@@ -195,14 +202,16 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
             提交的没一个case对应的job
 
     '''
+
     def validate(self, attrs: object):
         '''
             根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
         :param attrs:
         :return:
         '''
-        if (attrs['job_celery_id'] is '') or (attrs['case_code'] is '') or (attrs['gmt_create'] is '') or (attrs['gmt_modified'] is '') \
-             or (attrs['area'] is '') or (attrs['state'] is '') or (attrs['is_del'] is ''):
+        if (attrs['job_celery_id'] is '') or (attrs['case_code'] is '') or (attrs['gmt_create'] is '') or (
+                attrs['gmt_modified'] is '') \
+                or (attrs['area'] is '') or (attrs['state'] is '') or (attrs['is_del'] is ''):
             return None
         attrs['case_code'] = self.gen_casecode(attrs['case_code'])
         attrs['gmt_create'] = datetime.strptime(attrs['gmt_create'], '%Y-%m-%d %H:%M:%S')
@@ -216,6 +225,7 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
         else:
             return None
         return attrs
+
     class Meta:
         db_table = 'user_jobinfo'
 

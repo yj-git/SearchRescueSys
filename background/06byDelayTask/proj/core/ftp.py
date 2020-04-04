@@ -88,8 +88,19 @@ class FtpFactory:
 
 
     def download(self, file: IFileBase):
-        # 1 获取正则匹配的 files names
-        list_match: List[str] = self._get_match_list(file)
-        # 2 执行下载操作
-        self._download_file(file.file_name, file.path_dir)
-        # 3 下载结束后写入数据库
+        '''
+
+        @param file:
+        @return:
+        '''
+        if file is isinstance(IFileBase):
+            # 1 获取正则匹配的 files names
+            list_match: List[str] = self._get_match_list(file)
+            # 2 执行下载操作,并进行分类存储
+            self._download_file(file.file_name, file.save_path)
+            # 3 TODO:[*] 20-04-04 下载结束后写入数据库+日志记录 (by cwb)
+            # 4 需要执行标准化操作(by yyq)
+            # 5 TODO:[*] 20-04-04 将标准化后的文件信息 写入数据库+日志记录 (by cwb)
+
+
+

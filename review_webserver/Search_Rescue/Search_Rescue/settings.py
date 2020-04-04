@@ -104,13 +104,13 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
         'NAME': 'searchrescue',  # 数据库名
         # by casablanca
+        # mac
         'USER': 'root',  # 账号
         # 7530
-        # 'PASSWORD': 'admin123',
+        'PASSWORD': 'admin123',
         # 5820
-        # 5510
         # p52s
-        'PASSWORD': '123456',
+        # 'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
         # 'PASSWORD': '123456',

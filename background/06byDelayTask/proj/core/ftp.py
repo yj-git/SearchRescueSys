@@ -86,21 +86,28 @@ class FtpFactory:
         self.ftp.set_debuglevel(0)
         fp.close()
 
-
-    def download(self, file: IFileBase):
+    def batch_download(self, file: IFileBase):
         '''
-
+            批量下载
+            由于定时任务执行时是找到日期去下载当日的全部 栅格 数据，所以只需根据传入的 栅格 file 实现类获取其中的关键信息即可
         @param file:
         @return:
         '''
-        if file is isinstance(IFileBase):
+        if file in isinstance(IFileBase):
             # 1 获取正则匹配的 files names
             list_match: List[str] = self._get_match_list(file)
-            # 2 执行下载操作,并进行分类存储
-            self._download_file(file.file_name, file.save_path)
-            # 3 TODO:[*] 20-04-04 下载结束后写入数据库+日志记录 (by cwb)
-            # 4 需要执行标准化操作(by yyq)
-            # 5 TODO:[*] 20-04-04 将标准化后的文件信息 写入数据库+日志记录 (by cwb)
+            for file_temp_name in list_match:
+                self.download(file_temp_name, file.save_path)
 
-
-
+    def download(self, file_name: str, target_dir: str):
+        '''
+            下载单一的文件
+        @param file_name: 文件名称
+        @param target_dir:下载到的路径
+        @return:
+        '''
+        # 2 执行下载操作,并进行分类存储
+        self._download_file(file_name, target_dir)
+        # 3 TODO:[*] 20-04-04 下载结束后写入数据库+日志记录 (by cwb)
+        # 4 需要执行标准化操作(by yyq)
+        # 5 TODO:[*] 20-04-04 将标准化后的文件信息 写入数据库+日志记录 (by cwb)

@@ -1,0 +1,154 @@
+2020-04-05 11:23:40,336 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 14, in case_customer_exception
+    index=1/0
+ZeroDivisionError: division by zero
+2020-04-05 11:32:02,153 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 22, in case_customer_exception
+    index = 1 / 0
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 1060, in _pydevd_bundle.pydevd_cython_darwin_37_64.SafeCallWrapper.__call__
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 566, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 976, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 969, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 288, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.do_wait_suspend
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1099, in do_wait_suspend
+    self._do_wait_suspend(thread, frame, event, arg, suspend_type, from_this_thread)
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1114, in _do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt
+2020-04-05 11:32:41,115 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 23, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:33:17,437 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 23, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:34:06,032 - delay_task_log - ERROR - zeroErr
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 16, in zeroErr
+    print(index)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 16, in zeroErr
+    print(index)
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 1060, in _pydevd_bundle.pydevd_cython_darwin_37_64.SafeCallWrapper.__call__
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 566, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 855, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 846, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 288, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.do_wait_suspend
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1099, in do_wait_suspend
+    self._do_wait_suspend(thread, frame, event, arg, suspend_type, from_this_thread)
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1114, in _do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt
+2020-04-05 11:34:44,284 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 26, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:35:11,577 - delay_task_log - ERROR - zeroErr
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 20, in zeroErr
+    10 / 0
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 20, in zeroErr
+    10 / 0
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 1060, in _pydevd_bundle.pydevd_cython_darwin_37_64.SafeCallWrapper.__call__
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 566, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 976, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 938, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 288, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.do_wait_suspend
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1099, in do_wait_suspend
+    self._do_wait_suspend(thread, frame, event, arg, suspend_type, from_this_thread)
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1114, in _do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt
+2020-04-05 11:35:30,012 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 28, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:35:44,686 - delay_task_log - ERROR - zeroErr
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 22, in zeroErr
+    print(self.name)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 22, in zeroErr
+    print(self.name)
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 1060, in _pydevd_bundle.pydevd_cython_darwin_37_64.SafeCallWrapper.__call__
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 566, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 855, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 846, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_37_64.pyx", line 288, in _pydevd_bundle.pydevd_cython_darwin_37_64.PyDBFrame.do_wait_suspend
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1099, in do_wait_suspend
+    self._do_wait_suspend(thread, frame, event, arg, suspend_type, from_this_thread)
+  File "/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevd.py", line 1114, in _do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt
+2020-04-05 11:35:55,372 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 29, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:36:26,149 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 29, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:36:38,409 - delay_task_log - ERROR - zeroErr
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 23, in zeroErr
+    10 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:40:15,107 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 29, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 30, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:40:35,661 - delay_task_log - ERROR - zeroErr
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 46, in wrapper
+    return wrapped(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 24, in zeroErr
+    10 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:43:29,872 - delay_task_log - ERROR - case_customer_exception
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 30, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 30, in case_customer_exception
+    index = 1 / 0
+ZeroDivisionError: division by zero
+2020-04-05 11:43:38,534 - delay_task_log - ERROR - zeroErr
+Traceback (most recent call last):
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/common/exceptionLog.py", line 47, in wrapper
+    return wrapped(*args, **kwargs)
+  File "/Users/evaseemefly/Documents/01Proj/SearchRescueSys/background/06byDelayTask/proj/main.py", line 24, in zeroErr
+    10 / 0
+ZeroDivisionError: division by zero

@@ -17,6 +17,9 @@ from typing import List
 # 当前项目
 from core.file import ICoverageFile, IFileBase
 from util.tools import check_path_exist
+# 日志
+from common.exceptionLog import exception
+from common.log import logger
 
 
 class FtpFactory:
@@ -86,6 +89,7 @@ class FtpFactory:
         self.ftp.set_debuglevel(0)
         fp.close()
 
+    @exception(logger)
     def batch_download(self, file: IFileBase):
         '''
             批量下载

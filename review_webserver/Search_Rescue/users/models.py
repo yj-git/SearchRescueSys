@@ -179,7 +179,7 @@ class IJobBaseInfo(models.Model):
     CHOISE_TYPE = (
         (0, 'oil'),
         (1, 'rescue'),
-        (2, 'coverage') #TODO:[-] 20-04-03 +
+        (2, 'coverage')  # TODO:[-] 20-04-03 +
     )
     id = models.AutoField(primary_key=True)
     # user_caseinfo的id
@@ -231,19 +231,20 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
         db_table = 'user_jobinfo'
 
 
+# 状态共有：1-执行，2-等待，3-结束，4-失败 四种
+CHOICE_STATUS = (
+    (1, 'RUNNING'),
+    (2, 'COMPLETED'),
+    (3, 'WAITTING'),
+    (4, 'ERROR'),
+    (5, 'UNUSED'),
+)
+
+
 class JobUserRate(models.Model):
     '''
 
     '''
-
-    # 状态共有：1-执行，2-等待，3-结束，4-失败 四种
-    CHOICE_STATUS = (
-        (1, 'RUNNING'),
-        (2, 'COMPLETED'),
-        (3, 'WAITTING'),
-        (4, 'ERROR'),
-        (5, 'UNUSED'),
-    )
     id = models.AutoField(primary_key=True)
     jid = models.ForeignKey(JobInfo, on_delete=models.CASCADE)
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -257,3 +258,36 @@ class JobUserRate(models.Model):
 
     class Meta:
         db_table = 'user_jobuserrate'
+
+
+class ITask(models.Model):
+    '''
+        所有任务的抽象父类
+    '''
+    # 类型命名规范: eg: '间隔_预报产品类型_区域'
+    CHOICE_TYPES = (
+        # 流场
+        (1, 'DAILY_CURRENT_BHS'),
+        (2, 'DAILY_CURRENT_ECS'),  # 东中国海
+        (3, 'DAILY_CURRENT_IND'),  # 印度洋
+        (4, 'DAILY_CURRENT_SCS'),  # 南海
+        (5, 'DAILY_CURRENT_NWP'),  # 西北太
+        # 风场
+        (6, 'DAILY_WIND_WRF')  # 西北太
+    )
+    id = models.AutoField(primary_key=True)
+    # 数值预报产品种类
+    product_type = models.IntegerField(choices=CHOICE_TYPES, default=1)
+    # 状态
+    state = models.IntegerField(choices=CHOICE_STATUS, default=5)
+
+    class Meta:
+        abstract = True
+
+
+class TaskUserModel(ITask, ICaseBaseStore):
+    '''
+        TODO:[-] 20-04-07 + 新添加的 和定时任务有关系的表
+    '''
+    class Meta:
+        db_table = 'user_taskinfo'

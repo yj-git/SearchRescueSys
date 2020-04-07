@@ -73,7 +73,6 @@ class IFileBase(metaclass=ABCMeta):
         :return:
         '''
 
-
         pass
 
 
@@ -113,7 +112,7 @@ class WindCoverageFile(ICoverageFile):
                 ROOT -> COMMON -> DAILY -> yyyy/mm/dd
         :return:
         '''
-        save_dir = os.path.join(settings.DOWNLOAD_ROOT, 'COMMON', 'DAILY', self.current.date().year,
+        save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', self.current.date().year,
                                 self.current.date().month, self.current.date().day)
         return save_dir
 
@@ -122,4 +121,19 @@ class CurrentCoverageFile(ICoverageFile):
     '''
         流场数据
     '''
-    pass
+
+    def __init__(self, url: str, path_dir: str, file_name: str, current: datetime):
+        super().__init__(url, path_dir, file_name)
+        self.current = current
+
+    @property
+    def save_path(self) -> str:
+        '''
+            大致思路放在一个公用的方法中，调用时根据参数返回最终的 path (相对路径)
+            路径的命名规范如下：
+                ROOT -> COMMON -> DAILY -> yyyy/mm/dd
+        :return:
+        '''
+        save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', self.current.date().year,
+                                self.current.date().month, self.current.date().day)
+        return save_dir

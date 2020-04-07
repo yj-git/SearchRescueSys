@@ -41,7 +41,7 @@ def coverage_current_job():
     :return:
     '''
     print(f'执行每日定时任务:coverage_current_job|now:{datetime.now()}')
-    # 下面再调用 -> ftp.py ->
+    # 下面再调用 -> ftp.py -> batch_download 批量下载
 
 
 def coverage_wind_job():

@@ -50,7 +50,7 @@ def init_product(current: datetime):
     :return:
     '''
     # 获取当前时间的匹配的str
-    re_str = f'{current.year}{current.month}{current.day}'
+    re_str = f'{current.strftime("%Y%m%d")}'
 
     # 流场
     list_products.append(ProductMidModel(ProductType.CURRENT, [AreaNameMidModel(Area.BOHAISEA, f'bhs_cur_{re_str}.nc'),

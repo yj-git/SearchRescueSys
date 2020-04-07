@@ -135,8 +135,8 @@ class CurrentCoverageFile(ICoverageFile):
                 ROOT -> COMMON -> DAILY -> yyyy/mm/dd
         :return:
         '''
-        save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', self.current.date().year,
-                                self.current.date().month, self.current.date().day)
+        save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', str(self.current.date().year),
+                                str(self.current.date().month), str(self.current.date().day))
         return save_dir
 
     @property

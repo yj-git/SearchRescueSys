@@ -79,13 +79,14 @@ class FtpFactory:
 
         # 将此方法统一放在common.tools中
         check_path_exist(local_path)
+        print(f"开始下载{file_name}....")
         fp = open(os.path.join(local_path, file_name), 'wb')
         # 读取指定文件并写入本地文件
         # 错误1:ftplib.error_perm: 500 Syntax error, command unrecognized.
         msg = self.ftp.retrbinary('RETR ' + file_name, fp.write, cache_size)
         # 判断ftp返回的状态
         if msg.find('226') != -1:
-            print("下载完毕")
+            print(f"{file_name}下载完毕,存储至:{os.path.join(local_path,file_name)}")
         self.ftp.set_debuglevel(0)
         fp.close()
 

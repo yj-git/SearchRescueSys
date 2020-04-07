@@ -8,9 +8,9 @@
 # @Software: PyCharm
 
 _FTP = {
-    '_URL': '128.5.6.6',
-    '_USERNAME': 'admin',
-    '_PWD': 'admin123'
+    '_URL': '128.5.6.142',
+    '_USERNAME': 'Currents',
+    '_PWD': '123'
 }
 
 # 用来存储 ftp 下载的文件的根目录(或放在数据库中？)

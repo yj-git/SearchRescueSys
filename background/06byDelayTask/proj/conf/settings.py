@@ -15,3 +15,11 @@ _FTP = {
 
 # 用来存储 ftp 下载的文件的根目录(或放在数据库中？)
 DOWNLOAD_ROOT = r'D:\01proj\SearchRescueSys\data\download'
+
+# mongo相关的配置
+_MONGO = {
+    'COLLECTION': '',
+    'DB_NAME': 'test',
+    'HOST': '127.0.0.1',
+    'PORT': 27017
+}

@@ -6,15 +6,20 @@
 # @Site    : 
 # @File    : job.py
 # @Software: PyCharm
+import os
 from datetime import datetime
 from pymongo import MongoClient
 from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 
+from typing import List
+
 from conf.settings import _MONGO, DOWNLOAD_ROOT, _FTP
 from core.file import IFileBase, ICoverageFile, CurrentCoverageFile
 from core.ftp import FtpFactory
+from model.midemodel import AreaNameMidModel, ProductMidModel
+from common.enum import Area, ProductType
 
 mongo_client = MongoClient(_MONGO.get('HOST'), _MONGO.get('PORT'))
 
@@ -36,6 +41,33 @@ def scheduler_start():
     scheduler.start()
 
 
+list_products: List[ProductMidModel] = []
+
+
+def init_product(current: datetime):
+    '''
+        初始化 product
+    :return:
+    '''
+    # 获取当前时间的匹配的str
+    re_str = f'{current.year}{current.month}{current.day}'
+
+    # 流场
+    list_products.append(ProductMidModel(ProductType.CURRENT, [AreaNameMidModel(Area.BOHAISEA, f'bhs_cur_{re_str}.nc'),
+                                                               AreaNameMidModel(Area.EASTCHINASEA,
+                                                                                f'ecs_new_current_{re_str}.nc'),
+                                                               AreaNameMidModel(Area.INDIAN, f'ind_cur_{re_str}.nc'),
+                                                               AreaNameMidModel(Area.SOUTHCHINASEA,
+                                                                                f'scs_cur_{re_str}.nc'),
+                                                               AreaNameMidModel(Area.NORTHWEST,
+                                                                                f'nwp_cur_{re_str}.nc')],
+                                         os.path.join(DOWNLOAD_ROOT, 'current')))
+    # 风场
+    list_products.append(ProductMidModel(ProductType.WIND, [AreaNameMidModel(Area.NORTHWEST, f'nmefc_wrf_{re_str}.nc')
+                                                            ],
+                                         os.path.join(DOWNLOAD_ROOT, 'wind')))
+
+
 # 以下定义的为各类job
 # TODO:[-] 20-04-07 + 所有的job的命名规范为: 所属事务_类型_job
 @scheduler.scheduled_job('cron', id="coverage_current_job", hour=8, minute=30, jobstore='mongo')
@@ -48,10 +80,18 @@ def coverage_current_job():
     # 下面再调用 -> ftp.py -> batch_download 批量下载
     # 次数需要根据当前时间创建一个 IFileBase 的实现类
     # TODO:[*] 20-04-07 可以去掉 url 以及 file_name
-    current_file = CurrentCoverageFile('', DOWNLOAD_ROOT, '', datetime.now())
+
     ftp = FtpFactory(_FTP.get('_URL'), _FTP.get('_USERNAME'), _FTP.get('_PWD'))
-    ftp.batch_download(current_file)
-    # TODO:[*] 20-04-07 需要加入一个记录 定时任务 的表
+    product_current = [prodcut_temp for prodcut_temp in list_products if
+                       prodcut_temp.product_type == ProductType.CURRENT]
+    if len(product_current) == 1:
+        for temp_area in product_current[0].area_names:
+            current_file = CurrentCoverageFile('', DOWNLOAD_ROOT, '', datetime.now(), temp_area.re)
+            ftp.batch_download(current_file)
+            pass
+
+
+# TODO:[*] 20-04-07 需要加入一个记录 定时任务 的表
 
 
 def coverage_wind_job():

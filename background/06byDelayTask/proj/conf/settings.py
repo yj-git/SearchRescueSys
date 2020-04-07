@@ -18,7 +18,7 @@ DOWNLOAD_ROOT = r'D:\01proj\SearchRescueSys\data\download'
 
 # mongo相关的配置
 _MONGO = {
-    'COLLECTION': '',
+    'COLLECTION': 'geo_job',
     'DB_NAME': 'test',
     'HOST': '127.0.0.1',
     'PORT': 27017

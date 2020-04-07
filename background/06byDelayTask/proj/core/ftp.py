@@ -97,7 +97,10 @@ class FtpFactory:
         @param file:
         @return:
         '''
-        if file in isinstance(IFileBase):
+        if self.ftp is None:
+            self.init_ftp()
+        if isinstance(file,IFileBase):
+        # if file in isinstance(IFileBase):
             # 1 获取正则匹配的 files names
             list_match: List[str] = self._get_match_list(file)
             for file_temp_name in list_match:

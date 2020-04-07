@@ -122,8 +122,9 @@ class CurrentCoverageFile(ICoverageFile):
         流场数据
     '''
 
-    def __init__(self, url: str, path_dir: str, file_name: str, current: datetime):
+    def __init__(self, url: str, path_dir: str, file_name: str, current: datetime, re_str: str = None):
         super().__init__(url, path_dir, file_name)
+        self._re_str = re_str
         self.current = current
 
     @property
@@ -137,3 +138,8 @@ class CurrentCoverageFile(ICoverageFile):
         save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', self.current.date().year,
                                 self.current.date().month, self.current.date().day)
         return save_dir
+
+    @property
+    def get_re(self) -> str:
+        if self._re_str is not None:
+            return self._re_str

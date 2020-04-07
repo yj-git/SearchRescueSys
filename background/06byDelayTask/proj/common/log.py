@@ -19,6 +19,7 @@ def init_logger():
     # 3 创建 handler
     # 3-1 将日志消息发送到磁盘文件，并支持日志文件按时间切割
     # err:IsADirectoryError: [Errno 21] Is a directory:
+    # TODO:[*] 20-04-07 此处的日志路径有错误
     file_handler = TimedRotatingFileHandler(LOG_ROOT_PATH)
     # 3-2 设置日志记录的 format
     log_format_str = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

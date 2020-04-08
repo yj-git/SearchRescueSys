@@ -8,6 +8,7 @@
 # @Software: PyCharm
 import os
 from datetime import datetime
+from abc import ABCMeta, abstractmethod
 from pymongo import MongoClient
 from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
 from apscheduler.jobstores.memory import MemoryJobStore
@@ -100,3 +101,41 @@ def coverage_wind_job():
     :return:
     '''
     pass
+
+
+class ICoverageWorkFlow(metaclass=ABCMeta):
+    '''
+        抽象的 栅格数据的工作流 抽象类，部分方法需要子类实现
+    '''
+
+    def __init__(self, current: datetime, root_path: str):
+        '''
+            current: 当前时间
+            areas:   所有的区域 middle model
+        :param current:
+        :param root_path:
+        '''
+        self.current = current
+        self.areas: List[AreaNameMidModel] = []
+
+    @abstractmethod
+    def coverage_convert(self, *args, **kwargs):
+        pass
+
+
+class CurrentCoverageWorkFlow(ICoverageWorkFlow):
+    '''
+        流场的 工作流
+    '''
+
+    def coverage_convert(self, *args, **kwargs):
+        '''
+            大体流程:
+                1- 读取指定文件
+                2- 数据验证
+                3- 修改指定的 variables -> u/v -> 修改 long_name ，添加 standard_name
+        :param args:
+        :param kwargs:
+        :return:
+        '''
+        pass

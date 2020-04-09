@@ -56,6 +56,8 @@ class ICoverage4NC(metaclass=ABCMeta):
         # 1 TODO:[*] 20-04-09 此处需要写入日志
         if check_file_exist(self.root_path, self.file_name):
             # 2 读取
+            # root_path:'D:\\01proj\\SearchRescueSys\\data\\download\\COMMON\\DAILY\\2020\\4\\9'
+            # file_name:'bhs_cur_20200409.nc'
             ds_temp = xar.open_dataset(os.path.join(self.root_path, self.file_name))
             # 由于需要写入改为使用 netcdf4
             ds_temp = nc.Dataset(os.path.join(self.root_path, self.file_name), 'r+')
@@ -86,7 +88,7 @@ class CurrentCoverage4NC(ICoverage4NC):
 
             # 2- 修改 standard_name
             self.ds_xr.variables['v'].standard_name = 'y_sea_water_velocity'
-            self.ds_xr.variables['v'].standard_name = 'x_sea_water_velocity'
+            self.ds_xr.variables['u'].standard_name = 'x_sea_water_velocity'
         pass
 
 

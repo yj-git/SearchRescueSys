@@ -29,4 +29,4 @@ def check_file_exist(local_path: str, file_name: str):
     :return:
     '''
     file_temp = Path(os.path.join(local_path, file_name))
-    return file_temp.is_fifo()
+    return file_temp.is_file()

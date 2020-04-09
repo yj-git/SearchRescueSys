@@ -86,7 +86,7 @@ class FtpFactory:
         msg = self.ftp.retrbinary('RETR ' + file_name, fp.write, cache_size)
         # 判断ftp返回的状态
         if msg.find('226') != -1:
-            print(f"{file_name}下载完毕,存储至:{os.path.join(local_path,file_name)}")
+            print(f"{file_name}下载完毕,存储至:{os.path.join(local_path, file_name)}")
         self.ftp.set_debuglevel(0)
         fp.close()
 
@@ -100,8 +100,8 @@ class FtpFactory:
         '''
         if self.ftp is None:
             self.init_ftp()
-        if isinstance(file,IFileBase):
-        # if file in isinstance(IFileBase):
+        if isinstance(file, IFileBase):
+            # if file in isinstance(IFileBase):
             # 1 获取正则匹配的 files names
             list_match: List[str] = self._get_match_list(file)
             for file_temp_name in list_match:

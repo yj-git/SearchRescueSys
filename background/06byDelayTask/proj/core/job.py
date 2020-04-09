@@ -15,10 +15,11 @@ from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 
 from typing import List
-
+# 当前项目
 from conf.settings import _MONGO, DOWNLOAD_ROOT, _FTP
 from core.file import IFileBase, ICoverageFile, CurrentCoverageFile
 from core.ftp import FtpFactory
+from core.data import CurrentCoverage4NC, ICoverage4NC
 from model.midemodel import AreaNameMidModel, ProductMidModel
 from common.enum import Area, ProductType
 
@@ -87,8 +88,12 @@ def coverage_current_job():
                        prodcut_temp.product_type == ProductType.CURRENT]
     if len(product_current) == 1:
         for temp_area in product_current[0].area_names:
-            current_file = CurrentCoverageFile('', DOWNLOAD_ROOT, '', datetime.now(), temp_area.re)
+            # TODO:[*] 20-04-09 由于在 -> init_product 中 的 AreaNameMidModel -> re 实际就是对应的文件名称(目前的需求是每天不同区域的风场或流场的数据只有一个——实效)
+            current_file = CurrentCoverageFile('', DOWNLOAD_ROOT, temp_area.re, datetime.now(), temp_area.re)
             ftp.batch_download(current_file)
+            # 转换
+            current_covert_wf: ICoverageWorkFlow = CurrentCoverageWorkFlow(datetime.now(), current_file.save_path)
+            current_covert_wf.init_convert(current_file.file_name)
             pass
 
 
@@ -116,11 +121,21 @@ class ICoverageWorkFlow(metaclass=ABCMeta):
         :param root_path:
         '''
         self.current = current
+        self.root_path = root_path
         self.areas: List[AreaNameMidModel] = []
 
     @abstractmethod
     def coverage_convert(self, *args, **kwargs):
         pass
+
+    def init_convert(self, file_name: str):
+        '''
+            执行转换的主方法，调用需要子类实现的 -> coverage_convert 方法
+        :param root_path:
+        :param file_name:
+        :return:
+        '''
+        self.coverage_convert(file_name=file_name)
 
 
 class CurrentCoverageWorkFlow(ICoverageWorkFlow):
@@ -138,4 +153,11 @@ class CurrentCoverageWorkFlow(ICoverageWorkFlow):
         :param kwargs:
         :return:
         '''
+        # 存储路径 + 名称
+        root_path = self.root_path
+        file_name = kwargs.get('file_name')
+
+        coverage_nc: ICoverage4NC = CurrentCoverage4NC(root_path, file_name, ['lat', 'lon', 'time'], ['u', 'v'])
+        coverage_nc.init_modify()
+
         pass

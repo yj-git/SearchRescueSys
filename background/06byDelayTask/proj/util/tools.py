@@ -8,6 +8,7 @@
 # @Software: PyCharm
 
 import os
+from pathlib import Path
 
 
 def check_path_exist(local_path: str):
@@ -18,3 +19,14 @@ def check_path_exist(local_path: str):
     '''
     if not os.path.exists(local_path):
         os.makedirs(local_path)
+
+
+def check_file_exist(local_path: str, file_name: str):
+    '''
+        判断指定文件是否存在(上面方式也可以同时判断文件或文件夹，暂时保留)
+    :param local_path:
+    :param file_name:
+    :return:
+    '''
+    file_temp = Path(os.path.join(local_path, file_name))
+    return file_temp.is_fifo()

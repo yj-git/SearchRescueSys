@@ -8,6 +8,8 @@
 # @Software: PyCharm
 
 import os
+import wrapt
+import time
 from pathlib import Path
 
 
@@ -30,3 +32,14 @@ def check_file_exist(local_path: str, file_name: str):
     '''
     file_temp = Path(os.path.join(local_path, file_name))
     return file_temp.is_file()
+
+def exe_run_time():
+    '''
+        计算方法耗时的装饰器
+    :return:
+    '''
+    @wrapt.decorator
+    def wrapper(wrapped, instance, args, kwargs):
+        local_time = time.time()
+        wrapped(*args, **kwargs)
+        print(f'当前方法:{wrapped.__name__}耗时:{time.time() - local_time}')

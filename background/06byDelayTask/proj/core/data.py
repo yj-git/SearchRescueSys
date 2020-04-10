@@ -21,7 +21,7 @@ import xarray as xar
 # typing
 from typing import List
 # 本项目
-from util.tools import check_file_exist
+from util.tools import check_file_exist, exe_run_time
 
 
 class ICoverage4NC(metaclass=ABCMeta):
@@ -44,6 +44,7 @@ class ICoverage4NC(metaclass=ABCMeta):
         '''
         return True
 
+    @exe_run_time()
     def load_data(self):
         '''
             大体流程:
@@ -66,6 +67,7 @@ class ICoverage4NC(metaclass=ABCMeta):
                 self.ds_xr = ds_temp
             pass
 
+    @exe_run_time()
     @abstractmethod
     def modify_variable(self):
         '''
@@ -90,8 +92,6 @@ class CurrentCoverage4NC(ICoverage4NC):
             self.ds_xr.variables['v'].standard_name = 'y_sea_water_velocity'
             self.ds_xr.variables['u'].standard_name = 'x_sea_water_velocity'
         pass
-
-
 
 
 class WindCoverage4NC(ICoverage4NC):

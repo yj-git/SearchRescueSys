@@ -15,6 +15,13 @@
                 :showsize="'small'"
                 @click.native="onClick"
             ></InfoBox>
+            <InfoBox
+                :msg="'风场+流场数据'"
+                :iconstyle="'fa-pause-circle'"
+                :levelstyle="'my-warning'"
+                :showsize="'small'"
+                @click.native="onClick"
+            ></InfoBox>
         </div>
         <transition name="fade">
             <div class="user-caselist" v-show="isShowByList">

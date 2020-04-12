@@ -9,6 +9,7 @@
 from datetime import datetime
 
 from core.job import coverage_current_job, init_product
+from util.tools import exe_run_time
 
 def case_test_coveragedownload():
     '''
@@ -19,8 +20,20 @@ def case_test_coveragedownload():
     init_product(current)
     coverage_current_job()
 
+# err:TypeError: exe_run_time() takes 0 positional arguments but 1 was given
+# err:TypeError: 'NoneType' object is not callable
+@exe_run_time()
+def case_test_wrap():
+    '''
+        20-04-10 + 测试计时器
+    :return:
+    '''
+    print('测试')
+
+
 def main():
     case_test_coveragedownload()
+    # case_test_wrap()
     pass
 
 

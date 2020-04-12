@@ -8,8 +8,11 @@ from django.utils.timezone import now
 CHOIST_TYPE = ((0, 'NULL'),
                # 失事类型
                (1, 'OPTIONWRECK'),
+               # 计算方法
                (2, 'EQUATION'),
-               (3, 'NULL'))
+               (3, 'NULL'),
+               # 对应的 栅格数据类型
+               (4, 'COVERAGE_TYPE'))
 
 
 class ISelectModel(models.Model):
@@ -35,6 +38,12 @@ class SelectModel(ISelectModel):
     '''
         所有的下拉框数据字典均存储在此处
     '''
+    menu_title = models.CharField(max_length=100)  # 菜单 title
+    menu_content = models.CharField(max_length=100)  # 菜单content
+    menu_level = models.IntegerField(default=99)  # 菜单等级
+    menu_url = models.CharField(max_length=500)  # 菜单url(跳转路径)
+    menu_sort = models.IntegerField(default=99)  # 菜单排序
+    menu_class = models.CharField(default='default', max_length=100)  # 菜单样式
 
     class Meta:
         db_table = 'common_select'

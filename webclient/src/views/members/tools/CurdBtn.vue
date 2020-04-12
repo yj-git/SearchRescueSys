@@ -20,12 +20,17 @@
                 :iconstyle="'fa-pause-circle'"
                 :levelstyle="'my-warning'"
                 :showsize="'small'"
-                @click.native="onClick"
+                @click.native="isShowByCoverageSearch = !isShowByCoverageSearch"
             ></InfoBox>
         </div>
         <transition name="fade">
             <div class="user-caselist" v-show="isShowByList">
                 <JobList :caseList="caseList"></JobList>
+            </div>
+        </transition>
+        <transition name="fade">
+            <div class="user_caselist" v-show="isShowByCoverageSearch">
+                <CoverageSearchForm></CoverageSearchForm>
             </div>
         </transition>
     </div>
@@ -35,13 +40,15 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import InfoBox from '@/views/members/form/InfoBox.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import JobList from '@/views/members/table/JobListMin.vue'
+import CoverageSearchForm from '@/views/members/form/search_form/CoverageSearchForm.vue'
 import { ICaseMin, CaseMinInfo } from '@/middle_model/case'
 @Component({
-    components: { InfoBox, JobListUser, JobList }
+    components: { InfoBox, JobListUser, JobList, CoverageSearchForm }
 })
 export default class CurdBtn extends Vue {
     mydata: any = null
     isShowByList = false
+    isShowByCoverageSearch = false
     @Prop()
     caseList: CaseMinInfo[]
 

@@ -44,7 +44,7 @@ class ICoverage4NC(metaclass=ABCMeta):
         '''
         return True
 
-    @exe_run_time()
+    # @exe_run_time()
     def load_data(self):
         '''
             大体流程:

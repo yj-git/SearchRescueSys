@@ -90,7 +90,7 @@ class FtpFactory:
         self.ftp.set_debuglevel(0)
         fp.close()
 
-    @exe_run_time()
+    # @exe_run_time()
     @exception(logger)
     def batch_download(self, file: IFileBase):
         '''
@@ -108,7 +108,7 @@ class FtpFactory:
             for file_temp_name in list_match:
                 self.download(file_temp_name, file.save_path)
 
-    @exe_run_time()
+    # @exe_run_time()
     def download(self, file_name: str, target_dir: str):
         '''
             下载单一的文件

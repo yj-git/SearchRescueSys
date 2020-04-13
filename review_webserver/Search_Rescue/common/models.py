@@ -12,7 +12,10 @@ CHOIST_TYPE = ((0, 'NULL'),
                (2, 'EQUATION'),
                (3, 'NULL'),
                # 对应的 栅格数据类型
-               (4, 'COVERAGE_TYPE'))
+               (4, 'COVERAGE_TYPE'),
+               # 对应的 栅格所在区域
+               (5,'COVERAGE_AREA')
+               )
 
 
 class ISelectModel(models.Model):

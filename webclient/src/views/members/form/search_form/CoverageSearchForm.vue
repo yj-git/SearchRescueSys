@@ -19,9 +19,9 @@
                                 >{{ item.name }}</option
                             >
                         </select> -->
-                        <el-select v-model="coverageArea" placeholder="请选择" @change="setType">
+                        <el-select v-model="coverageType" placeholder="请选择" @change="setType">
                             <el-option
-                                v-for="item in coverageAreas"
+                                v-for="item in coverageTypes"
                                 :key="item.key"
                                 :label="item.name"
                                 :value="item.key"
@@ -41,7 +41,7 @@
                                 >{{ item.name }}</option
                             >
                         </select> -->
-                        <el-select v-model="coverageArea" placeholder="请选择" @change="setType">
+                        <el-select v-model="coverageArea" placeholder="请选择">
                             <el-option
                                 v-for="item in coverageAreas"
                                 :key="item.key"
@@ -54,13 +54,13 @@
                 <div class="form-row">
                     <div class="form-group col-md-6 form-inline" style="text-align:left;">
                         <div class="col-sm-3 smdiv">
-                            <label>起始月</label>
+                            <label>选定日期</label>
                         </div>
 
                         <el-date-picker
-                            v-model="startMonth"
-                            type="month"
-                            placeholder="起始月"
+                            v-model="selectCurrent"
+                            type="date"
+                            placeholder="选定日期"
                             style="width:60%;"
                         ></el-date-picker>
                     </div>
@@ -75,13 +75,71 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-
+import { loadSelectByType, loadSelectParentByType } from '@/api/select'
+import { SelectTypeEnum } from '@/enum/select'
+import { DEFAULT_SELECT_KEY, DEFAULT_SELECT_ITEM } from '@/const/common'
 // 历史栅格数据查询列表
+@Component({})
 export default class CoverageSearchForm extends Vue {
-    coverageType = 0
-    coverageArea = 0
-    coverageTypes: Array<{ key: number; name: string }> = []
-    coverageAreas: Array<{ key: number; name: string }> = []
+    coverageType = DEFAULT_SELECT_KEY
+    coverageArea = DEFAULT_SELECT_KEY
+    selectCurrent: Date = new Date()
+    coverageTypes: Array<{ key: number; name: string }> = [DEFAULT_SELECT_ITEM]
+    coverageAreas: Array<{ key: number; name: string }> = [DEFAULT_SELECT_ITEM]
+    mounted(): void {
+        loadSelectParentByType(SelectTypeEnum.COVERAGE).then(
+            (res: {
+                data: Array<{ menu_titl: string; id: number; menu_content: string }>
+                status: number
+            }) => {
+                if (res.status == 200) {
+                    // console.log(res.data)
+                    if (res.data.length > 0) {
+                        res.data.forEach((temp) => {
+                            this.coverageTypes.push({ key: temp.id, name: temp.menu_content })
+                        })
+                    }
+                }
+            }
+        )
+    }
+    created(): void {
+        console.log('加载完成')
+    }
+    setType(key: number): void {
+        this.coverageType = key
+    }
+    loadSearchResult(): void {
+        console.log(
+            `type:${this.coverageType}|area:${this.coverageArea}|current:${this.selectCurrent}`
+        )
+        if (this.coverageArea === DEFAULT_SELECT_KEY || this.coverageType === DEFAULT_SELECT_KEY) {
+            console.log('有未选择的选项')
+        }
+        // 将 area|type|current 作为参数 -> django
+    }
+
+    @Watch('coverageType')
+    onCoverageType(key: number): void {
+        // console.log(key)
+        loadSelectParentByType(SelectTypeEnum.COVERAGE_AREA, key).then(
+            (res: {
+                data: Array<{ menu_titl: string; id: number; menu_content: string }>
+                status: number
+            }) => {
+                if (res.status == 200) {
+                    if (res.data.length > 0) {
+                        // console.log(res.data)
+                        // 注意先清空
+                        this.coverageAreas = []
+                        res.data.forEach((temp) => {
+                            this.coverageAreas.push({ key: temp.id, name: temp.menu_content })
+                        })
+                    }
+                }
+            }
+        )
+    }
 }
 </script>
 

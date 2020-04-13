@@ -43,3 +43,4 @@ def exe_run_time():
         local_time = time.time()
         wrapped(*args, **kwargs)
         print(f'当前方法:{wrapped.__name__}耗时:{time.time() - local_time}')
+    return wrapper

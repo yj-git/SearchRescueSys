@@ -35,6 +35,8 @@ class ISelectModel(models.Model):
     # TODO:[-] 20-04-14
     # common.SelectModel.did: (fields.E321) Field specifies on_delete=SET_DEFAULT, but has no default value.
     #         HINT: Set a default value, or change the on_delete rule.
+
+    # django.db.utils.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`searchrescue`.`#sql-1124_14`, CONSTRAINT `common_select_did_id_ce6b9eb4_fk_dict_base_code` FOREIGN KEY (`did_id`) REFERENCES `dict_base` (`code`))')
     did = models.ForeignKey('DictBaseModel', to_field='code', on_delete=models.SET_DEFAULT,default=-1)
 
     class Meta:

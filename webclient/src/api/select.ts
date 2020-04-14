@@ -27,11 +27,20 @@ const loadSelectByType = (type: SelectTypeEnum, parent?: number) => {
     })
 }
 
-const loadSelectParentByType = (type: SelectTypeEnum, parent?: number) => {
+/**
+ *
+ *
+ * @param {number} dict
+ * @param {SelectTypeEnum} [type]
+ * @param {number} [parent]
+ * @returns
+ */
+const loadSelectParentByType = (dict: number, type?: SelectTypeEnum, parent?: number) => {
     const url = `${host}${area}/select/parent/`
     return axios.get(url, {
         headers: authHeader(),
         params: {
+            dict: dict,
             type: type,
             parent: parent
         }

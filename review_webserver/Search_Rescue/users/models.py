@@ -277,7 +277,9 @@ class ITask(models.Model):
     )
     id = models.AutoField(primary_key=True)
     # 数值预报产品种类
-    product_type = models.IntegerField(choices=CHOICE_TYPES, default=1)
+    product_type = models.IntegerField(choices=CHOICE_TYPES, default=-1)
+    coverage_type = models.IntegerField(default=-1)
+    coverage_area = models.IntegerField(default=-1)
     # 状态
     state = models.IntegerField(choices=CHOICE_STATUS, default=5)
 
@@ -289,5 +291,6 @@ class TaskUserModel(ITask, ICaseBaseStore):
     '''
         TODO:[-] 20-04-07 + 新添加的 和定时任务有关系的表
     '''
+
     class Meta:
         db_table = 'user_taskinfo'

@@ -77,6 +77,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { loadSelectByType, loadSelectParentByType } from '@/api/select'
 import { SelectTypeEnum } from '@/enum/select'
+import { DictEnum } from '@/enum/dict'
 import { DEFAULT_SELECT_KEY, DEFAULT_SELECT_ITEM } from '@/const/common'
 // 历史栅格数据查询列表
 @Component({})
@@ -87,7 +88,7 @@ export default class CoverageSearchForm extends Vue {
     coverageTypes: Array<{ key: number; name: string }> = [DEFAULT_SELECT_ITEM]
     coverageAreas: Array<{ key: number; name: string }> = [DEFAULT_SELECT_ITEM]
     mounted(): void {
-        loadSelectParentByType(SelectTypeEnum.COVERAGE).then(
+        loadSelectParentByType(DictEnum.COVERAGE_TYPE).then(
             (res: {
                 data: Array<{ menu_titl: string; id: number; menu_content: string }>
                 status: number
@@ -122,7 +123,7 @@ export default class CoverageSearchForm extends Vue {
     @Watch('coverageType')
     onCoverageType(key: number): void {
         // console.log(key)
-        loadSelectParentByType(SelectTypeEnum.COVERAGE_AREA, key).then(
+        loadSelectByType(SelectTypeEnum.COVERAGE_AREA, key).then(
             (res: {
                 data: Array<{ menu_titl: string; id: number; menu_content: string }>
                 status: number

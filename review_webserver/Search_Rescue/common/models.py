@@ -14,7 +14,7 @@ CHOIST_TYPE = ((0, 'NULL'),
                # 对应的 栅格数据类型
                (4, 'COVERAGE_TYPE'),
                # 对应的 栅格所在区域
-               (5,'COVERAGE_AREA')
+               (5, 'COVERAGE_AREA')
                )
 
 
@@ -32,6 +32,10 @@ class ISelectModel(models.Model):
     parent = models.IntegerField(default=0)
     # 下拉框对应的类型
     type_select = models.IntegerField(choices=CHOIST_TYPE, default=0)
+    # TODO:[-] 20-04-14
+    # common.SelectModel.did: (fields.E321) Field specifies on_delete=SET_DEFAULT, but has no default value.
+    #         HINT: Set a default value, or change the on_delete rule.
+    did = models.ForeignKey('DictBaseModel', to_field='code', on_delete=models.SET_DEFAULT,default=-1)
 
     class Meta:
         abstract = True
@@ -64,3 +68,24 @@ class IDescModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class IDictModel(models.Model):
+    '''
+        所有字典表的抽象父类
+    '''
+    # id=models.AutoField
+    code = models.IntegerField(default=-1, primary_key=True)
+    pid = models.IntegerField(default=-1)
+    type_code = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)
+    desc = models.CharField(max_length=200)
+    val = models.CharField(max_length=50)
+
+    class Meta:
+        abstract = True
+
+
+class DictBaseModel(IDictModel):
+    class Meta:
+        db_table = 'dict_base'

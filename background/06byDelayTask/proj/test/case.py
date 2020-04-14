@@ -8,7 +8,7 @@
 # @Software: PyCharm
 from datetime import datetime
 
-from core.job import coverage_current_job, init_product
+from core.job import coverage_current_job, coverage_wind_job, init_product
 from util.tools import exe_run_time
 
 def case_test_coveragedownload():
@@ -18,7 +18,10 @@ def case_test_coveragedownload():
     '''
     current = datetime.now()
     init_product(current)
-    coverage_current_job()
+#    coverage_current_job()
+    # TODO:[-] 20-04-14 增加风场下载 by caiwb
+    coverage_wind_job()
+
 
 # err:TypeError: exe_run_time() takes 0 positional arguments but 1 was given
 # err:TypeError: 'NoneType' object is not callable

@@ -16,5 +16,7 @@ export enum SelectTypeEnum {
     /**
      * 求解方法
      */
-    EQUATION = 2
+    EQUATION = 2,
+    COVERAGE = 4,
+    COVERAGE_AREA = 5
 }

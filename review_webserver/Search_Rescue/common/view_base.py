@@ -4,7 +4,7 @@
 # @Author  : evaseemefly
 # @Desc    :
 # @Site    : 
-# @File    : base_view.py
+# @File    : view_base.py
 # @Software: PyCharm
 from typing import Tuple
 from abc import abstractmethod, ABCMeta

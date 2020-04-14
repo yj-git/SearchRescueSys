@@ -16,14 +16,26 @@ const area = '/common'
  * @param {SelectTypeEnum} type
  * @returns
  */
-const loadSelectByType = (type: SelectTypeEnum) => {
+const loadSelectByType = (type: SelectTypeEnum, parent?: number) => {
     const url = `${host}${area}/select/`
     return axios.get(url, {
         headers: authHeader(),
         params: {
-            type: type
+            type: type,
+            parent: parent
         }
     })
 }
 
-export { loadSelectByType }
+const loadSelectParentByType = (type: SelectTypeEnum, parent?: number) => {
+    const url = `${host}${area}/select/parent/`
+    return axios.get(url, {
+        headers: authHeader(),
+        params: {
+            type: type,
+            parent: parent
+        }
+    })
+}
+
+export { loadSelectByType, loadSelectParentByType }

@@ -8,7 +8,7 @@ from typing import List
 
 from common.models import SelectModel
 from common.serializers import SelectModelSerializer
-from common.base_view import IBaseSelectListView
+from common.view_base import IBaseSelectListView
 
 
 class SelectListView(APIView, IBaseSelectListView):

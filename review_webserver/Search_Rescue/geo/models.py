@@ -41,11 +41,14 @@ class ICoverageModel(models.Model):
     # 特征变量数组
     variables = models.CharField(default='', max_length=500)
     is_original = models.BooleanField(default=True)
+    coverage_type = models.IntegerField(default=-1)
+    coverage_area = models.IntegerField(default=-1)
+
     class Meta:
         abstract = True
 
 
-class CoverageModel(IIdModel, IArea, IIsDelModel, IStoreModel, IForecastModel, ICoverageModel, IDescModel):
+class CoverageModel(IIdModel,  IIsDelModel, IStoreModel, IForecastModel, ICoverageModel, IDescModel):
     '''
         保存的栅格数据的info model
     '''

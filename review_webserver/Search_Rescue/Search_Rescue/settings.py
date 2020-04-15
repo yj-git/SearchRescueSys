@@ -116,6 +116,9 @@ DATABASES = {
         # 'PASSWORD': '123456',
         'HOST': '127.0.0.1',  # HOST
         'POST': 3306,  # 端口
+        'OPTIONS': {
+            "init_command": "SET foreign_key_checks = 0;",
+        },
     }
 
 }
@@ -237,5 +240,3 @@ _ROOT_DIR = r'D:\03data\search'
 # _ROOT_DIR = r'D:\03data\oil'
 
 _RESULT_FILE = 'sanjioil.nc'
-
-

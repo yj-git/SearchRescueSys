@@ -8,6 +8,7 @@ class SelectModelSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     parent = serializers.IntegerField()
     type_select = serializers.IntegerField()
+    did_id = serializers.IntegerField()
     # TODO:[-] + 20-04-12 新补充了一部分
     menu_title = serializers.CharField()  # 菜单 title
     menu_content = serializers.CharField()  # 菜单content

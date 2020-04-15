@@ -5,6 +5,7 @@ import os
 from Search_Rescue.settings import _ROOT_DIR
 ROOT_PATH = _ROOT_DIR
 
+DEFAULT_FK=-1
 
 def get_path(temp: str, dt: datetime):
     '''

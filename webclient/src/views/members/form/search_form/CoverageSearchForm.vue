@@ -65,38 +65,97 @@
                         ></el-date-picker>
                     </div>
                 </div>
-                <el-button type="primary" icon="el-icon-search" @click="loadSearchResult"
+                <el-button type="primary" icon="el-icon-search" @click="submitCoverageCondition"
                     >搜索</el-button
                 >
             </form>
         </div>
+        <transition name="fade">
+            <div class="card mt10">
+                <div class="card-header card-my-header">
+                    栅格数据列表
+                </div>
+                <div class="card-header card-my-body">
+                    <div class="row">
+                        <div class="col">
+                            <!-- 暂时不使用之前的 ul -> li 的方式 -->
+                            <!-- <ul class="list-group">
+                                <li
+                                    class="list-group-item"
+                                    v-for="(item, index) in coverageList"
+                                    :key="index"
+                                    @click="loadCoverageInfo(item)"
+                                >
+                                    {{ item.name }}
+                                </li>
+                            </ul> -->
+                            <table class="table">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th scope="col">id</th>
+                                        <th scope="col">文件名</th>
+                                        <th scope="col">区域</th>
+                                        <th scope="col">类型</th>
+                                        <th scope="col">文件大小</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in coverageList" :key="index">
+                                        <th scope="row">{{ item.key }}</th>
+                                        <td>{{ item.name }}</td>
+                                        <td>{{ item.areaId }}</td>
+                                        <td>{{ item.typeId }}</td>
+                                        <td>{{ item.size }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { loadSelectByType, loadSelectParentByType } from '@/api/select'
+import { loadCoverageList } from '@/api/geo'
 import { SelectTypeEnum } from '@/enum/select'
-import { DEFAULT_SELECT_KEY, DEFAULT_SELECT_ITEM } from '@/const/common'
+import { DictEnum } from '@/enum/dict'
+import { DEFAULT_SELECT_KEY, DEFAULT_SELECT_ITEM, DEFAULT_DICT_KEY } from '@/const/common'
 // 历史栅格数据查询列表
 @Component({})
 export default class CoverageSearchForm extends Vue {
     coverageType = DEFAULT_SELECT_KEY
+    dictType = DEFAULT_DICT_KEY
     coverageArea = DEFAULT_SELECT_KEY
+    dictArea = DEFAULT_DICT_KEY
     selectCurrent: Date = new Date()
-    coverageTypes: Array<{ key: number; name: string }> = [DEFAULT_SELECT_ITEM]
-    coverageAreas: Array<{ key: number; name: string }> = [DEFAULT_SELECT_ITEM]
+    coverageTypes: Array<{ key: number; name: string; did: number }> = [DEFAULT_SELECT_ITEM]
+    coverageAreas: Array<{ key: number; name: string; did: number }> = [DEFAULT_SELECT_ITEM]
+    coverageList: Array<{
+        key: number
+        name: string
+        areaId: number
+        typeId: number
+        size: number
+    }> = []
     mounted(): void {
-        loadSelectParentByType(SelectTypeEnum.COVERAGE).then(
+        loadSelectParentByType(DictEnum.COVERAGE_TYPE).then(
             (res: {
-                data: Array<{ menu_titl: string; id: number; menu_content: string }>
+                data: Array<{ menu_titl: string; id: number; menu_content: string; did_id: number }>
                 status: number
             }) => {
                 if (res.status == 200) {
                     // console.log(res.data)
                     if (res.data.length > 0) {
                         res.data.forEach((temp) => {
-                            this.coverageTypes.push({ key: temp.id, name: temp.menu_content })
+                            this.coverageTypes.push({
+                                key: temp.id,
+                                name: temp.menu_content,
+                                did: temp.did_id
+                            })
                         })
                     }
                 }
@@ -109,22 +168,51 @@ export default class CoverageSearchForm extends Vue {
     setType(key: number): void {
         this.coverageType = key
     }
-    loadSearchResult(): void {
+    submitCoverageCondition(): void {
         console.log(
-            `type:${this.coverageType}|area:${this.coverageArea}|current:${this.selectCurrent}`
+            `type:${this.coverageType}-dict:${this.dictType}|area:${this.coverageArea}-dict:${this.dictArea}|current:${this.selectCurrent}`
         )
         if (this.coverageArea === DEFAULT_SELECT_KEY || this.coverageType === DEFAULT_SELECT_KEY) {
             console.log('有未选择的选项')
         }
+        loadCoverageList(this.dictType, this.dictArea).then((res) => {
+            if (res.status === 200) {
+                this.coverageList = []
+                if (res.data.length > 0) {
+                    res.data.forEach((temp) => {
+                        this.coverageList.push({
+                            key: temp.id,
+                            name: temp.file_name,
+                            areaId: temp.coverage_area,
+                            typeId: temp.coverage_type,
+                            size: temp.file_size
+                        })
+                    })
+                }
+                // console.log(res.data)
+            }
+        })
+
         // 将 area|type|current 作为参数 -> django
+    }
+    loadCoverageInfo(): void {}
+
+    @Watch('coverageArea')
+    onCoverageArea(key: number): void {
+        const tempArea = this.coverageAreas.find((temp) => temp.key === key)
+        if (tempArea != undefined) this.dictArea = tempArea.did
     }
 
     @Watch('coverageType')
     onCoverageType(key: number): void {
         // console.log(key)
-        loadSelectParentByType(SelectTypeEnum.COVERAGE_AREA, key).then(
+        // TODO:[-] 20-04-15 监听 type 变化后 -> 修改 对应的字典
+        const tempType = this.coverageTypes.find((temp) => temp.key === key)
+        if (tempType != undefined) this.dictType = tempType.did
+
+        loadSelectByType(SelectTypeEnum.COVERAGE_AREA, key).then(
             (res: {
-                data: Array<{ menu_titl: string; id: number; menu_content: string }>
+                data: Array<{ menu_titl: string; id: number; menu_content: string; did_id: number }>
                 status: number
             }) => {
                 if (res.status == 200) {
@@ -133,7 +221,11 @@ export default class CoverageSearchForm extends Vue {
                         // 注意先清空
                         this.coverageAreas = []
                         res.data.forEach((temp) => {
-                            this.coverageAreas.push({ key: temp.id, name: temp.menu_content })
+                            this.coverageAreas.push({
+                                key: temp.id,
+                                name: temp.menu_content,
+                                did: temp.did_id
+                            })
                         })
                     }
                 }

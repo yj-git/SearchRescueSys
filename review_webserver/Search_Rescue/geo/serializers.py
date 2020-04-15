@@ -9,6 +9,7 @@
 from rest_framework import serializers
 
 class CoverageSerializer(serializers.Serializer):
+    id=serializers.IntegerField()
     # 维度数组 只存维度的 名称
     dimessions = serializers.CharField()
     # 特征变量数组

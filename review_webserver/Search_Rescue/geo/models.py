@@ -48,7 +48,7 @@ class ICoverageModel(models.Model):
         abstract = True
 
 
-class CoverageModel(IIdModel, IArea, IIsDelModel, IStoreModel, IForecastModel, ICoverageModel, IDescModel):
+class CoverageModel(IIdModel,  IIsDelModel, IStoreModel, IForecastModel, ICoverageModel, IDescModel):
     '''
         保存的栅格数据的info model
     '''

@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from util.common import DEFAULT_FK
 
 
 # Create your models here.
@@ -277,11 +278,13 @@ class ITask(models.Model):
     )
     id = models.AutoField(primary_key=True)
     # 数值预报产品种类
-    product_type = models.IntegerField(choices=CHOICE_TYPES, default=-1)
+    # product_type = models.IntegerField(choices=CHOICE_TYPES, default=-1)
     coverage_type = models.IntegerField(default=-1)
     coverage_area = models.IntegerField(default=-1)
     # 状态
     state = models.IntegerField(choices=CHOICE_STATUS, default=5)
+    # TODO:[-] + 20-04-15 加入与 geo_coverageinfo 表 的关联(不要使用外键)
+    coverage_id = models.IntegerField(default=DEFAULT_FK)
 
     class Meta:
         abstract = True

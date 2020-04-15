@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from geoserver.catalog import Catalog
 from util.common import DEFAULT_FK
 from geo.models import CoverageModel
+from geo.serializers import CoverageSerializer
 
 # Create your views here.
 
@@ -21,5 +22,5 @@ class CoverageInfoView(APIView):
         coverage_area: int = int(coverage_area_str) if coverage_area_str is not None else DEFAULT_FK
         match_list: List[CoverageModel] = CoverageModel.objects.filter(coverage_area=coverage_area,
                                                                        coverage_type=coverage_type, is_del=False).all()
-
-        pass
+        json_data=CoverageSerializer(match_list,many=True).data
+        return Response(json_data)

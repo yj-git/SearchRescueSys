@@ -3,6 +3,9 @@ from django.utils.timezone import now
 # 本项目的
 from users.models import IIsDelModel, IArea
 from common.models import IIdModel, IDescModel
+from base.models import CHOICE_GEO_TYPE, IIsDelModel
+from users.models import TaskUserModel
+from util.common import DEFAULT_NULL_KEY, DEFAULT_FK
 
 
 # Create your models here.
@@ -21,12 +24,46 @@ class IStoreModel(models.Model):
         abstract = True
 
 
+class IEnabledModel(models.Model):
+    enabled = models.BooleanField(default=True)
+
+    class Meta:
+        abstract = True
+
+
 class IForecastModel(models.Model):
     # 时间
     create_date = models.DateTimeField(default=now)
 
     class Meta:
         abstract = True
+
+
+class IGeoWorkSpaceModel(models.Model):
+    work_space = models.CharField(default='default', max_length=50)
+    work_space_url = models.CharField(default='default', max_length=100)
+
+    class Meta:
+        abstract = True
+
+
+class GeoWorkSpaceModel(IGeoWorkSpaceModel, IIsDelModel, IEnabledModel):
+    class Meta:
+        db_table = 'geo_workspaceinfo'
+
+
+class IGeoStoreModel(models.Model):
+    work_space = models.CharField(default='default', max_length=50)
+    store_name = models.CharField(default='default', max_length=100)
+    store_type = models.IntegerField(choices=CHOICE_GEO_TYPE, default=DEFAULT_NULL_KEY)
+
+    class Meta:
+        abstract = True
+
+
+class GeoStoreModel(IGeoStoreModel, IIsDelModel, IEnabledModel):
+    class Meta:
+        db_table = 'geo_storeinfo'
 
 
 class ILayerModel(models.Model):
@@ -40,6 +77,24 @@ class ILayerModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class GeoLayerModel(ILayerModel, IEnabledModel, IIsDelModel):
+    class Meta:
+        db_table = 'geo_layerinfo'
+
+
+class RGeoInfo(models.Model):
+    '''
+        与 geoserver 相关的表的关联表
+    '''
+    layer = models.ForeignKey(GeoLayerModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    ws = models.ForeignKey(GeoWorkSpaceModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    store = models.ForeignKey(GeoStoreModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    task = models.ForeignKey(TaskUserModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+
+    class Meta:
+        db_table = 'rela_geo_base'
 
 
 class ICoverageModel(models.Model):

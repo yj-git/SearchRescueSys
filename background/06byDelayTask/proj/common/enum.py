@@ -56,3 +56,15 @@ class Area(Enum):
         南海
     '''
     SOUTHCHINASEA = 5
+
+
+@unique
+class DownState(Enum):
+    '''
+        状态共有：1-执行，2-等待，3-结束，4-失败 四种
+    '''
+    RUNNING = 1
+    COMPLETED = 2 
+    WAITTING = 3
+    ERROR = 4
+    UNUSED = 5

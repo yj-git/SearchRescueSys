@@ -84,19 +84,6 @@ class GeoLayerModel(ILayerModel, IEnabledModel, IIsDelModel):
         db_table = 'geo_layerinfo'
 
 
-class RGeoInfo(models.Model):
-    '''
-        与 geoserver 相关的表的关联表
-    '''
-    layer = models.ForeignKey(GeoLayerModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-    ws = models.ForeignKey(GeoWorkSpaceModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-    store = models.ForeignKey(GeoStoreModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-    task = models.ForeignKey(TaskUserModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-
-    class Meta:
-        db_table = 'rela_geo_base'
-
-
 class ICoverageModel(models.Model):
     '''
         所有的栅格文件的父类
@@ -134,3 +121,17 @@ class CoverageModel(IIdModel, IIsDelModel, IStoreModel, IForecastModel, ICoverag
 
     class Meta:
         db_table = 'geo_coverageinfo'
+
+
+class RGeoInfo(models.Model):
+    '''
+        与 geoserver 相关的表的关联表
+    '''
+    layer = models.ForeignKey(GeoLayerModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    ws = models.ForeignKey(GeoWorkSpaceModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    store = models.ForeignKey(GeoStoreModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    task = models.ForeignKey(TaskUserModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    coverage = models.ForeignKey(CoverageModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+
+    class Meta:
+        db_table = 'rela_geo_base'

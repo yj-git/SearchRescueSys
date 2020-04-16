@@ -4,15 +4,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from util.common import DEFAULT_FK
+from base.models import IIsDelModel
 
 
 # Create your models here.
-# TODO:[-] 20-02-12 注意所有的抽象model命名时加上I(参考c#的接口命名规范)
-class IIsDelModel(models.Model):
-    is_del = models.BooleanField(default=False)
-
-    class Meta:
-        abstract = True
 
 
 class ICaseBaseStore(models.Model):

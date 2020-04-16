@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
-from opendrift.readers import reader_netCDF_CF_generic
-from opendrift.models.openoil import OpenOil
+# caiwb 2020-04-15
+#from opendrift.readers import reader_netCDF_CF_generic
+#from opendrift.models.openoil import OpenOil
 
 
 class ForecastJob(object):

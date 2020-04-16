@@ -29,6 +29,19 @@ class IForecastModel(models.Model):
         abstract = True
 
 
+class ILayerModel(models.Model):
+    '''
+        TODO:[*] 20-04-15 加入的需要发布到geoserver的相关信息
+    '''
+    work_space = models.CharField(default='default', max_length=50)
+    title = models.CharField(default='default', max_length=100)
+    store_name = models.CharField(default='default', max_length=100)
+    layer_name = models.CharField(default='default', max_length=50)
+
+    class Meta:
+        abstract = True
+
+
 class ICoverageModel(models.Model):
     '''
         所有的栅格文件的父类
@@ -48,9 +61,20 @@ class ICoverageModel(models.Model):
         abstract = True
 
 
-class CoverageModel(IIdModel,  IIsDelModel, IStoreModel, IForecastModel, ICoverageModel, IDescModel):
+class CoverageModel(IIdModel, IIsDelModel, IStoreModel, IForecastModel, ICoverageModel, IDescModel):
     '''
         保存的栅格数据的info model
+        TODO:[*] 20-04-15 现在是否有必要将 store 与 layer 分开存成两个表？
+                          此处还欠缺一个 style 的绑定，应该放在 layer中
+                          将之前的CoverageModel -> CoverageStoreModel
+                          db -> geo_coverage_store
+                    +     db -> geo_coverage_layer
+                    +     db -> geo_coverageinfo (xx_store + xx_layer)
+                         之前在 gsconfig 中 分为 :
+                         layer
+                         store
+                         style
+                         是否有必要按照此种方式进行划分
     '''
 
     class Meta:

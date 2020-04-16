@@ -36,3 +36,7 @@ export const GET_CASE_CODE = 'GET_CASE_CODE'
 // map 相关
 export const SET_MAP_NOW = 'SET_MAP_NOW'
 export const GET_MAP_NOW = 'GET_MAP_NOW'
+
+// geo 相关
+export const SET_GEO_COVERAGEID = 'SET_GEO_COVERAGEID'
+export const GET_GEO_COVERAGEID = 'GET_GEO_COVERAGEID'

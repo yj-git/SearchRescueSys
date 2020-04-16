@@ -123,7 +123,7 @@ import {
 
 // TODO:[-] 20-01-23 尝试将oil的部分操作放在oil 类中()
 import { Oil, IOptions } from './oil'
-
+import { Coverage, IOptions as ICoverageOptions } from './coverage'
 import { OilPointRealDataMidModel } from '@/middle_model/rescue'
 import { OilMidModel } from '@/middle_model/oil'
 import { ICaseMin, CaseMinInfo, CaseOilModel } from '@/middle_model/case'
@@ -133,6 +133,9 @@ import { getDaysNum } from '@/common/date'
 import { optionsFactors, optionsShowTypes } from '@/const/Oil'
 import { OilFactor, ShowType } from '@/enum/OilSelect'
 import { Case, CaseModelInfo } from '@/views/content/oilspilling/case'
+
+// api
+import { loadCoverageInfo, loadGeoserverInfo } from '@/api/geo'
 
 // STORE 常量
 import { GET_MAP_NOW } from '@/store/types'
@@ -641,6 +644,34 @@ export default class OilSpillingMap extends Vue {
                 }
             })
         }
+    }
+
+    // TODO:[-] 20-04-16 注意此处的 Getter -> geo.ts -> getters 而不是 actions!
+    @Getter('coverageid', { namespace: 'geo' }) getCoverageId
+    @Watch('getCoverageId')
+    onCoverageId(val: number): void {
+        console.log(`vuex -> coverageId:${val}`)
+        /* 
+            逻辑: 根据 coverage_id -> geo_coverageinfo -> rela_geo_base 
+                                                                        -> geo_workspaceinfo
+                                                                        -> geo_storeinfo
+                                                                        -> geo_layerinfo
+        */
+        loadGeoserverInfo().then((res) => {
+            if (res.status == 200) {
+                // 是一个server list
+                const server: { host: string } = res.data[0]
+                const options: ICoverageOptions = {
+                    baseUrl: server.host,
+                    workSpace: '',
+                    layer: '',
+                    style: '',
+                    format: ''
+                }
+                const coverageTemp = new Coverage(options)
+                coverageTemp.loadGeoLayer(val)
+            }
+        })
     }
 }
 </script>

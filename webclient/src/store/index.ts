@@ -7,6 +7,7 @@ import mapStore from './modules/map'
 import auth from './modules/auth'
 import common from './modules/common'
 import Case from './modules/case'
+import geo from './modules/geo'
 
 Vue.use(Vuex)
 
@@ -23,7 +24,8 @@ export default new Vuex.Store({
         map: mapStore,
         auth: auth,
         common: common,
-        case: Case
+        case: Case,
+        geo: geo
         // oilStore
     },
     // TODO:[*] 19-11-08 此部分先注释掉

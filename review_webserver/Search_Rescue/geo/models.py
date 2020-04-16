@@ -74,6 +74,8 @@ class ILayerModel(models.Model):
     title = models.CharField(default='default', max_length=100)
     store_name = models.CharField(default='default', max_length=100)
     layer_name = models.CharField(default='default', max_length=50)
+    # 由于只有绑定了layer样式才有意义，所以样式的名称放在此处
+    style_name = models.CharField(default='default', max_length=50)
 
     class Meta:
         abstract = True
@@ -82,6 +84,19 @@ class ILayerModel(models.Model):
 class GeoLayerModel(ILayerModel, IEnabledModel, IIsDelModel):
     class Meta:
         db_table = 'geo_layerinfo'
+
+
+class GeoServerBaseModel(models.Model):
+    url = models.CharField(default='localhost', max_length=50)
+    port = models.IntegerField(default=8082)
+
+    # host = ('get_host')
+    @property
+    def host(self):
+        return ''.join([self.url, ':', str(self.port)])
+
+    class Meta:
+        db_table = 'geo_serverinfo'
 
 
 class ICoverageModel(models.Model):

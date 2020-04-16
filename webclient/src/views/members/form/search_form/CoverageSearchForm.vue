@@ -100,7 +100,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(item, index) in coverageList" :key="index">
+                                    <tr
+                                        v-for="(item, index) in coverageList"
+                                        :key="index"
+                                        @click="selectCoverage(item)"
+                                    >
                                         <th scope="row">{{ item.key }}</th>
                                         <td>{{ item.name }}</td>
                                         <td>{{ item.areaId }}</td>
@@ -124,6 +128,9 @@ import { loadCoverageList } from '@/api/geo'
 import { SelectTypeEnum } from '@/enum/select'
 import { DictEnum } from '@/enum/dict'
 import { DEFAULT_SELECT_KEY, DEFAULT_SELECT_ITEM, DEFAULT_DICT_KEY } from '@/const/common'
+import { Mutation, State, namespace } from 'vuex-class'
+// vuex -> types
+import { SET_GEO_COVERAGEID } from '@/store/types'
 // 历史栅格数据查询列表
 @Component({})
 export default class CoverageSearchForm extends Vue {
@@ -163,11 +170,41 @@ export default class CoverageSearchForm extends Vue {
         )
     }
     created(): void {
-        console.log('加载完成')
+        // console.log('加载完成')
     }
     setType(key: number): void {
         this.coverageType = key
     }
+    selectCoverage(val: {
+        key: number
+        name: string
+        areaId: number
+        typeId: number
+        size: number
+    }): void {
+        console.log(val)
+        this.selectCoverageId(val.key)
+        // this.$store
+        //     .dispatch('geo/setCoverageID', val.key)
+        //     .then(() => {
+        //         console.log(`CoverageSearchForm存入->geo/coverageId:${val.key}`)
+        //     })
+        //     .catch((err) => {
+        //         console.log(`出现错误:${err}`)
+        //     })
+    }
+
+    /*
+        TODO:[-] 20-04-16 
+        No overload matches this call.
+        Overload 1 of 2, '(proto: Vue, key: string): void', gave the following error.
+        Argument of type '"SET_GEO_COVERAGEID"' is not assignable to parameter of type 'Vue'.
+        Overload 2 of 2, '(type: string, options?: BindingOptions | undefined): VuexDecorator', gave the following error.
+        Argument of type '{ name: string; }' is not assignable to parameter of type 'BindingOptions'.
+        Object literal may only specify known properties, and 'name' does not exist in type 'BindingOptions'.
+    */
+    @Mutation(SET_GEO_COVERAGEID, { namespace: 'geo' }) selectCoverageId
+
     submitCoverageCondition(): void {
         console.log(
             `type:${this.coverageType}-dict:${this.dictType}|area:${this.coverageArea}-dict:${this.dictArea}|current:${this.selectCurrent}`
@@ -175,7 +212,7 @@ export default class CoverageSearchForm extends Vue {
         if (this.coverageArea === DEFAULT_SELECT_KEY || this.coverageType === DEFAULT_SELECT_KEY) {
             console.log('有未选择的选项')
         }
-        loadCoverageList(this.dictType, this.dictArea).then((res) => {
+        loadCoverageList(this.dictType, this.dictArea, this.selectCurrent).then((res) => {
             if (res.status === 200) {
                 this.coverageList = []
                 if (res.data.length > 0) {

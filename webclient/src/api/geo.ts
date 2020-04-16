@@ -10,15 +10,33 @@ import { SelectTypeEnum } from '../enum/select'
 
 const area = '/geo'
 
-const loadCoverageList = (typeVal: number, areaVal: number) => {
+const loadCoverageList = (typeVal: number, areaVal: number, current?: Date) => {
     const url = `${host}${area}/coverage/list/`
     return axios.get(url, {
         headers: authHeader(),
         params: {
             type: typeVal,
-            area: areaVal
+            area: areaVal,
+            current: current
         }
     })
 }
 
-export { loadCoverageList }
+const loadCoverageInfo = (taskId: number) => {
+    const url = `${host}${area}/coverage/geoinfo/`
+    return axios.get(url, {
+        headers: authHeader(),
+        params: {
+            taskid: taskId
+        }
+    })
+}
+
+const loadGeoserverInfo = () => {
+    const url = `${host}${area}/server/list/`
+    return axios.get(url, {
+        headers: authHeader()
+    })
+}
+
+export { loadCoverageList, loadCoverageInfo, loadGeoserverInfo }

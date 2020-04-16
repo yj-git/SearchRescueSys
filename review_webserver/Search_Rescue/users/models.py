@@ -20,9 +20,8 @@ class ICaseBaseStore(models.Model):
     case_path = models.CharField(max_length=100)
     # case创建时间
     create_date = models.DateTimeField(editable=False, auto_now_add=True)
-
     # 预报的时间
-    forecast_date = models.DateField(default=now, editable=False)
+    forecast_date = models.DateTimeField(default=now, editable=False)
     # forecast_date = models.DateTimeField(default=now, editable=False)
     ext = models.CharField(max_length=20)
 

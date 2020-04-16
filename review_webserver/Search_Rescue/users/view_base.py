@@ -26,8 +26,12 @@ class TaskBaseView(CoverageBaseView):
         :return:
         '''
         # TODO:[*] 20-04-15 对于返回两个参数的方法如何加入类型约束？
-        coverage_type, coverage_area = self.covert_request_typearea(request)
+        coverage_type, coverage_area, forecast_datetime = self.covert_request_typearea(request)
+        # TODO:[*] 20-04-16 由于时间的问题，此处只能先暂时去掉
         return TaskUserModel.objects.filter(coverage_area=coverage_area, coverage_type=coverage_type,
                                             state=TaskStateEnum.COMPLETED.value).all()
+        # return TaskUserModel.objects.filter(coverage_area=coverage_area, coverage_type=coverage_type,
+        #                                     forecast_date=forecast_datetime,
+        #                                     state=TaskStateEnum.COMPLETED.value).all()
 
         # if hasattr(request,'area') and hasattr(request,'type'):

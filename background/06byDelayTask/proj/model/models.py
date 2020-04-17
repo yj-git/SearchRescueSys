@@ -5,9 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import ForeignKey,Sequence,MetaData,Table
 from sqlalchemy.orm import relationship,sessionmaker
 
+import os
 from datetime import datetime
-from conf.settings import DOWNLOAD_ROOT
-from common.enum import DownState
+from conf.settings import DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT
 
 engine = create_engine("mysql+pymysql://root:123456@localhost/searchrescue", encoding='utf-8', echo=True)
 
@@ -117,23 +117,47 @@ def main():
 
     file_name = 'bhs_cur_20200414.nc'
     target_dir = r'C:\data\SearchRescueSys\data\download\COMMON\DAILY\2020\4\14'
-    userTaskInfo = UserTaskinfo()
-    userTaskInfo.root_path = DOWNLOAD_ROOT
-    userTaskInfo.case_path = target_dir
-    userTaskInfo.create_date = datetime.now()
-    userTaskInfo.forecast_date = datetime.now().date()
-    userTaskInfo.ext = 'nc'
-    #userTaskInfo.id = Column(Integer, primary_key=True)
-    #userTaskInfo.state = DownState.COMPLETED
-    userTaskInfo.state = 2
+    # 更新UserTaskinfo
+    # userTaskInfo = UserTaskinfo()
+    # userTaskInfo.root_path = DOWNLOAD_ROOT
+    # userTaskInfo.case_path = target_dir[-(len(target_dir)-len(DOWNLOAD_ROOT)-1):]
+    # userTaskInfo.create_date = datetime.now()
+    # userTaskInfo.forecast_date = datetime.now().date()
+    # userTaskInfo.ext = 'nc'
+    # #userTaskInfo.id = Column(Integer, primary_key=True)
+    # userTaskInfo.state = 2
+    # fileCode = file_name.split('_')
+    # if(len(fileCode) > 2):
+    #     userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
+    #     if(fileCode[1] == 'cur'):
+    #         userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+    #     elif(fileCode[1] == 'wrf'):
+    #         userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
+    #     session.add(userTaskInfo)
+    #     session.commit()
 
+    # 更新GeoCoverageinfo
+    geoCoverageinfo = GeoCoverageinfo()
     fileCode = file_name.split('_')
-    if(len(fileCode) > 2):
-        userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
-        if(fileCode[1] == 'cur'):
-            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
-            session.add(userTaskInfo)
-            session.commit()
+    if (fileCode[1] == 'cur'):
+        geoCoverageinfo.root_path = GEO_CURRENT_ROOT
+    elif (fileCode[1] == 'wrf'):
+        geoCoverageinfo.root_path = GEO_WIND_ROOT
+    geoCoverageinfo.relative_path = os.path.join(str(datetime.now().date().year),
+                                str(datetime.now().date().month), str(datetime.now().date().day))
+    geoCoverageinfo.file_name = file_name
+    file_size = os.path.getsize(os.path.join(target_dir, file_name))
+    geoCoverageinfo.file_size = file_size
+    geoCoverageinfo.create_date = datetime.now()
+    if (len(fileCode) > 2):
+        geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
+        if (fileCode[1] == 'cur'):
+            geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+        elif (fileCode[1] == 'wrf'):
+            geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
+        session.add(geoCoverageinfo)
+        session.commit()
+
     pass
 
 

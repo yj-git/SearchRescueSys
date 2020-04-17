@@ -3,6 +3,7 @@
         <div id="map_content">
             <l-map ref="basemap" :zoom="zoom" :center="center">
                 <l-tile-layer :url="url"></l-tile-layer>
+                <l-tile-layer :url="coverageUrl"></l-tile-layer>
                 <l-polyline
                     :lat-lngs="polyline.latlngs"
                     :fill="false"
@@ -166,16 +167,17 @@ export default class OilSpillingMap extends Vue {
     center: any = [17.6, 131.6]
     url =
         '//map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}'
+    coverageUrl: string = ''
     // 指定时间
     // targetDate: Date = new Date();
     // 溢油平均轨迹
-    oilAvgPointList: Array<OilPointRealDataMidModel> = []
+    oilAvgPointList: OilPointRealDataMidModel[] = []
     // TODO:[*] 19-10-31 由于设置类型为any，且赋值为null，引发的子组件在为null的情况下未渲染
     oilAvgRealData: OilMidModel = new OilMidModel()
     // 指定时刻的全部轨迹散点数组
-    oilScatterPointList: Array<number[]> = []
-    oilScatterCircleList: Array<any> = []
-    oilHeatmapList: Array<any> = []
+    oilScatterPointList: number[][] = []
+    oilScatterCircleList: any[] = []
+    oilHeatmapList: any[] = []
     polyline: {
         latlngs: []
         color: string
@@ -665,11 +667,26 @@ export default class OilSpillingMap extends Vue {
                     baseUrl: server.host,
                     workSpace: '',
                     layer: '',
-                    style: '',
-                    format: ''
+                    style: ''
                 }
                 const coverageTemp = new Coverage(options)
                 coverageTemp.loadGeoLayer(val)
+                const basemap: any = this.$refs.basemap
+                const mymap: any = basemap['mapObject']
+                const currentStr = ''
+                const wmsLayer = L.tileLayer.wms(
+                    `http://localhost:8082/geoserver/nmefc_wind/wms?TIME=${currentStr}`,
+                    // `http://localhost:8080/geoserver/SearchRescue/wms`,
+                    {
+                        layers: 'nmefc_wind:current_ecs_200407',
+                        styles: 'nmefc_wind:nmefc_current',
+                        format: 'image/png',
+                        transparent: true
+                    }
+                )
+                this.windLayer = wmsLayer
+                const fluxDivIconTarget = wmsLayer.addTo(mymap)
+                console.log(coverageTemp)
             }
         })
     }
@@ -796,6 +813,7 @@ export default class OilSpillingMap extends Vue {
 .typhoon_footer {
     display: flex;
     flex-direction: row;
+
     background: #0044cc;
     width: 100%;
     color: white;

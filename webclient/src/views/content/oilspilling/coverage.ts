@@ -8,7 +8,7 @@ export interface ICoverageOptions {
     workSpace: string
     layer: string
     style: string
-    format: string
+    // format: string
 }
 
 export interface IOptions extends IBaseUrlOptions, ICoverageOptions {
@@ -17,6 +17,9 @@ export interface IOptions extends IBaseUrlOptions, ICoverageOptions {
 export class Coverage {
     private defaultCoverage: IBaseUrlOptions = {
         baseUrl: 'xx'
+    }
+    private defaultFormat: { format: string } = {
+        format: 'image/png'
     }
     private baseUrl: string
     private workSpace: string
@@ -34,6 +37,7 @@ export class Coverage {
         */
         this.options = {
             ...this.defaultCoverage,
+            ...this.defaultFormat,
             ...options
         }
 
@@ -61,5 +65,37 @@ export class Coverage {
         //     console.log(res)
         // })
         console.log(taskId)
+        loadCoverageInfo(taskId)
+            .then(
+                (res: {
+                    status: number
+                    data: {
+                        work_space: string
+                        title: string
+                        store_name: string
+                        layer_name: string
+                        style_name: string
+                    }[]
+                }): void => {
+                    if (res.status === 200) {
+                        /* 
+                        work_space: "nmefc_wind"
+                        title: "current_ecs_200407"
+                        store_name: "ecs_new_current_20200407"
+                        layer_name: "nmefc_wind:current_ecs_200407"
+                        style_name: "default"
+                    */
+                        if (res.data.length > 0) {
+                            this.workSpace = res.data[0].work_space
+                            this.layer = res.data[0].layer_name
+                            this.style = res.data[0].style_name
+                        }
+                        console.log(res.data)
+                    }
+                }
+            )
+            .catch((err): void => {
+                console.log(`|coverage.ts->loadGeoLayer|引发错误:${err}`)
+            })
     }
 }

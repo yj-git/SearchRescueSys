@@ -139,19 +139,19 @@ export default class CoverageSearchForm extends Vue {
     coverageArea = DEFAULT_SELECT_KEY
     dictArea = DEFAULT_DICT_KEY
     selectCurrent: Date = new Date()
-    coverageTypes: Array<{ key: number; name: string; did: number }> = [DEFAULT_SELECT_ITEM]
-    coverageAreas: Array<{ key: number; name: string; did: number }> = [DEFAULT_SELECT_ITEM]
-    coverageList: Array<{
+    coverageTypes: { key: number; name: string; did: number }[] = [DEFAULT_SELECT_ITEM]
+    coverageAreas: { key: number; name: string; did: number }[] = [DEFAULT_SELECT_ITEM]
+    coverageList: {
         key: number
         name: string
         areaId: number
         typeId: number
         size: number
-    }> = []
+    }[] = []
     mounted(): void {
         loadSelectParentByType(DictEnum.COVERAGE_TYPE).then(
             (res: {
-                data: Array<{ menu_titl: string; id: number; menu_content: string; did_id: number }>
+                data: { menu_titl: string; id: number; menu_content: string; did_id: number }[]
                 status: number
             }) => {
                 if (res.status == 200) {
@@ -249,7 +249,7 @@ export default class CoverageSearchForm extends Vue {
 
         loadSelectByType(SelectTypeEnum.COVERAGE_AREA, key).then(
             (res: {
-                data: Array<{ menu_titl: string; id: number; menu_content: string; did_id: number }>
+                data: { menu_titl: string; id: number; menu_content: string; did_id: number }[]
                 status: number
             }) => {
                 if (res.status == 200) {

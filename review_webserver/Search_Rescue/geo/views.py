@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework.decorators import APIView, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 
-from geoserver.catalog import Catalog
+# from geoserver.catalog import Catalog
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from util.enum import TaskStateEnum
 from geo.models import CoverageModel, RGeoInfo, GeoLayerModel, GeoServerBaseModel
@@ -15,7 +15,7 @@ from base.view_base import CoverageBaseView
 
 # Create your views here.
 
-cat = Catalog("http://localhost:8083/geoserver/rest")
+# cat = Catalog("http://localhost:8083/geoserver/rest")
 
 
 class CoverageListView(TaskBaseView):

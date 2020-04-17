@@ -3,9 +3,12 @@ from datetime import datetime
 import os
 # from apps.user.models import AuthUserDir, CaseInfo
 from Search_Rescue.settings import _ROOT_DIR
+
 ROOT_PATH = _ROOT_DIR
 
-DEFAULT_FK=-1
+DEFAULT_FK = -1
+DEFAULT_NULL_KEY = -1
+
 
 def get_path(temp: str, dt: datetime):
     '''

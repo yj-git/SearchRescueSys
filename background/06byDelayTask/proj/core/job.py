@@ -116,12 +116,8 @@ def coverage_wind_job():
                        prodcut_wind.product_type == ProductType.WIND]
     for wind_area in product_wind[0].area_names:
         if len(product_wind) == 1:
-            # TODO:[*] 20-04-09 由于在 -> init_product 中 的 AreaNameMidModel -> re 实际就是对应的文件名称(目前的需求是每天不同区域的风场或流场的数据只有一个——实效)
-            #self, url: str, path_dir: str, file_name: str, current: datetime
-            #product_wind[0].area_names
             wind_file = WindCoverageFile('', DOWNLOAD_ROOT, wind_area.re, datetime.now())
             ftp.batch_download(wind_file)
-            # 转换
     pass
 
 

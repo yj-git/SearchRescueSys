@@ -238,6 +238,8 @@ export default class CoverageSearchForm extends Vue {
 <style lang="less" scoped>
 .card {
     background-color: transparent !important;
+    // 新加一个每个card的底部空余
+    margin-bottom: 1rem;
     /* 对于多条件搜索的card的一些样式 */
     .card-my-header {
         background: linear-gradient(to right, #1a6865 30%, rgba(4, 107, 114, 0.639));

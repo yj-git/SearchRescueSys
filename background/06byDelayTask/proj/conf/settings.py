@@ -22,6 +22,10 @@ _FTP_WIND = {
 # DOWNLOAD_ROOT = r'D:\01proj\SearchRescueSys\data\download'
 DOWNLOAD_ROOT = r'C:\data\SearchRescueSys\data\download'  #caiwb 2020-04-13
 
+# 用来存储要发布的nc文件
+GEO_CURRENT_ROOT = r'D:\03data\geoserver_data\current'
+GEO_WIND_ROOT = r'D:\setup\GeoServer\GeoServer 2.13.0\data_dir\nmefc\waterwind'
+
 # mongo相关的配置
 _MONGO = {
     'COLLECTION': 'geo_job',

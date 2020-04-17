@@ -3,16 +3,11 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
-from util.common import DEFAULT_FK
+from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
+from base.models import IIsDelModel
 
 
 # Create your models here.
-# TODO:[-] 20-02-12 注意所有的抽象model命名时加上I(参考c#的接口命名规范)
-class IIsDelModel(models.Model):
-    is_del = models.BooleanField(default=False)
-
-    class Meta:
-        abstract = True
 
 
 class ICaseBaseStore(models.Model):
@@ -25,8 +20,10 @@ class ICaseBaseStore(models.Model):
     case_path = models.CharField(max_length=100)
     # case创建时间
     create_date = models.DateTimeField(editable=False, auto_now_add=True)
+
     # 预报的时间
-    forecast_date = models.DateTimeField(default=now, editable=False)
+    forecast_date = models.DateField(default=now, editable=False)
+    # forecast_date = models.DateTimeField(default=now, editable=False)
     ext = models.CharField(max_length=20)
 
     class Meta:
@@ -279,12 +276,14 @@ class ITask(models.Model):
     id = models.AutoField(primary_key=True)
     # 数值预报产品种类
     # product_type = models.IntegerField(choices=CHOICE_TYPES, default=-1)
-    coverage_type = models.IntegerField(default=-1)
-    coverage_area = models.IntegerField(default=-1)
+    coverage_type = models.IntegerField(default=DEFAULT_NULL_KEY)
+    coverage_area = models.IntegerField(default=DEFAULT_NULL_KEY)
     # 状态
     state = models.IntegerField(choices=CHOICE_STATUS, default=5)
+
     # TODO:[-] + 20-04-15 加入与 geo_coverageinfo 表 的关联(不要使用外键)
-    coverage_id = models.IntegerField(default=DEFAULT_FK)
+    # TODO:[-] - 20-04-16 去掉了外键关系 放在 -> rela_geo_base 关联表 中
+    # coverage_id = models.IntegerField(default=DEFAULT_FK)
 
     class Meta:
         abstract = True

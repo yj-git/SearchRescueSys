@@ -7,9 +7,9 @@ from sqlalchemy.orm import relationship,sessionmaker
 
 import os
 from datetime import datetime
-from conf.settings import DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT
+from conf.settings import DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT, _WORK_SPACE
 
-engine = create_engine("mysql+pymysql://root:123456@localhost/searchrescue", encoding='utf-8', echo=True)
+engine = create_engine("mysql+pymysql://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
 
 # 生成基类
 Base = declarative_base()
@@ -108,35 +108,35 @@ class RelaGeoBase(Base):
 
 
 def main():
-    Session_class = sessionmaker(bind=engine)  # 创建与数据库的会话session class ,注意,这里返回给session的是个class,不是实例
-    # session 会话
+    Session_class = sessionmaker(bind=engine)
     session = Session_class()
-#    userTaskInfo = session.query(UserTaskinfo).filter_by(id=1).first()
-#    geo = session.query(GeoCoverageinfo).filter_by(id=1).first()
-#    code = session.query(DictBase).filter_by(type_code='bhs').first()
 
-    file_name = 'bhs_cur_20200414.nc'
-    target_dir = r'C:\data\SearchRescueSys\data\download\COMMON\DAILY\2020\4\14'
-    # 更新UserTaskinfo
-    # userTaskInfo = UserTaskinfo()
-    # userTaskInfo.root_path = DOWNLOAD_ROOT
-    # userTaskInfo.case_path = target_dir[-(len(target_dir)-len(DOWNLOAD_ROOT)-1):]
-    # userTaskInfo.create_date = datetime.now()
-    # userTaskInfo.forecast_date = datetime.now().date()
-    # userTaskInfo.ext = 'nc'
-    # #userTaskInfo.id = Column(Integer, primary_key=True)
-    # userTaskInfo.state = 2
-    # fileCode = file_name.split('_')
-    # if(len(fileCode) > 2):
-    #     userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
-    #     if(fileCode[1] == 'cur'):
-    #         userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
-    #     elif(fileCode[1] == 'wrf'):
-    #         userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
-    #     session.add(userTaskInfo)
-    #     session.commit()
+    file_name = 'bhs_cur_20200413.nc'
+    # file_name = 'ind_cur_20200413.nc'
+    # file_name = 'nwp_cur_20200413.nc'
+    # file_name = 'scs_cur_20200413.nc'
+    # file_name = 'nmefc_wrf_2020041300.nc'
 
-    # 更新GeoCoverageinfo
+    target_dir = r'd:\data\SearchRescueSys\data\download\COMMON\DAILY\2020\4\13'
+    # 记录UserTaskinfo状态
+    userTaskInfo = UserTaskinfo()
+    userTaskInfo.root_path = DOWNLOAD_ROOT
+    userTaskInfo.case_path = target_dir[-(len(target_dir)-len(DOWNLOAD_ROOT)-1):]
+    userTaskInfo.create_date = datetime.now()
+    userTaskInfo.forecast_date = datetime.now().date()
+    userTaskInfo.ext = 'nc'
+    userTaskInfo.state = 2
+    fileCode = file_name.split('_')
+    if(len(fileCode) > 2):
+        if(fileCode[1] == 'cur'):
+            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+            userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
+        elif(fileCode[1] == 'wrf'):
+            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
+            userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code='nwp').first().code
+        session.add(userTaskInfo)
+
+    # 记录GeoCoverageinfo状态
     geoCoverageinfo = GeoCoverageinfo()
     fileCode = file_name.split('_')
     if (fileCode[1] == 'cur'):
@@ -150,14 +150,26 @@ def main():
     geoCoverageinfo.file_size = file_size
     geoCoverageinfo.create_date = datetime.now()
     if (len(fileCode) > 2):
-        geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
         if (fileCode[1] == 'cur'):
             geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+            geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
         elif (fileCode[1] == 'wrf'):
             geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
+            geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code='nwp').first().code
         session.add(geoCoverageinfo)
-        session.commit()
 
+    # 记录geoStoreinfo状态
+    geoStoreinfo = GeoStoreinfo()
+    fileCode = file_name.split('_')
+    if (fileCode[1] == 'cur'):
+        geoStoreinfo.work_space = _WORK_SPACE.get('CURRENT')
+    elif (fileCode[1] == 'wrf'):
+        geoStoreinfo.work_space = _WORK_SPACE.get('WIND')
+    geoStoreinfo.store_name = file_name[:(len(file_name)-3)]
+    geoStoreinfo.store_type = 301
+    session.add(geoStoreinfo)
+
+    session.commit()
     pass
 
 

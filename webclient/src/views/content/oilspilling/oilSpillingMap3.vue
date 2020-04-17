@@ -167,7 +167,7 @@ export default class OilSpillingMap extends Vue {
     center: any = [17.6, 131.6]
     url =
         '//map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}'
-    coverageUrl: string = ''
+    coverageUrl = ''
     // 指定时间
     // targetDate: Date = new Date();
     // 溢油平均轨迹
@@ -502,6 +502,9 @@ export default class OilSpillingMap extends Vue {
             })
     }
 
+    // TODO:[*] 20-04-17 根据当前的 task -> db: user_taskinfo -> rela_geo_base -> geo_coverageinfo
+    loadDateRangeByCoverage(): void {}
+
     // 将当前的溢油数据的div从map中移出
     clearOilDivFromMap(): void {
         // console.log("鼠标移出");
@@ -659,6 +662,7 @@ export default class OilSpillingMap extends Vue {
                                                                         -> geo_storeinfo
                                                                         -> geo_layerinfo
         */
+        // 1- 加载 geo_layerinfo
         loadGeoserverInfo().then((res) => {
             if (res.status == 200) {
                 // 是一个server list
@@ -685,10 +689,13 @@ export default class OilSpillingMap extends Vue {
                     }
                 )
                 this.windLayer = wmsLayer
+                // TODO:[*] 20-04-17 此处需要再修改一下
                 const fluxDivIconTarget = wmsLayer.addTo(mymap)
                 console.log(coverageTemp)
             }
         })
+
+        // 2- 获取时间范围等信息(概述信息)
     }
 }
 </script>

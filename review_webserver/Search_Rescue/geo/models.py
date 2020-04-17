@@ -34,6 +34,8 @@ class IEnabledModel(models.Model):
 class IForecastModel(models.Model):
     # 时间
     create_date = models.DateTimeField(default=now)
+    gmt_forecast_start = models.DateTimeField(default=now)
+    gmt_forecast_end = models.DateTimeField(default=now)
 
     class Meta:
         abstract = True
@@ -113,6 +115,18 @@ class ICoverageModel(models.Model):
     is_original = models.BooleanField(default=True)
     coverage_type = models.IntegerField(default=-1)
     coverage_area = models.IntegerField(default=-1)
+
+    class Meta:
+        abstract = True
+
+
+class IForecastModelnew(models.Model):
+    '''
+        预报 model 抽象类
+        主要有预报时效的相关字段
+    '''
+    gmt_forecast_start = models.DateTimeField(default=now)
+    gmt_forecast_end = models.DateTimeField(default=now)
 
     class Meta:
         abstract = True

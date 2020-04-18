@@ -98,7 +98,11 @@ class OilFileReader(OilReaderBase, IOilReader, IOilScatter):
             # 加入判断文件是否存在的判断
             # eg:D:\03data\search\123\2020\02\test_case20200207.nc
             if os.path.isfile(self.full_path):
-                self.xarr = xar.open_dataset(self.full_path).load()
+                try:
+                    self.xarr = xar.open_dataset(self.full_path).load()
+                except:
+                    print("Unexpected error:", sys.exc_info()[0])
+                    raise
             else:
                 raise IOError
 

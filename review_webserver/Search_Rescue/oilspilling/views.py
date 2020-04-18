@@ -149,6 +149,7 @@ class OilSpillingTrackView(APIView, OilBaseView):
         :param request:
         :return:
         '''
+        status_code = 200
         # TODO:[*] 20-01-20 最新的设计想通过分批加载的方式解决加载较慢的问题
         target_date_str = request.GET.get('date')
         code = request.GET.get('code', None)
@@ -171,15 +172,20 @@ class OilSpillingTrackView(APIView, OilBaseView):
                 json_data = OilSpillingTrackModelSerializer(oil_track_list, many=True).data
             except KeyError:
                 msg = '不存在的key索引/时间超出范围'
+                status_code = 500
+            except IOError:
+                msg = '指定路径不存在'
+                status_code = 500
             except:
                 msg = '其他错误'
+                status_code = 500
         # return Response(
         #     {
         #         'data': json_data,
         #         'error': msg
         #     }
         # )
-        return Response(json_data)
+        return Response(json_data, status=status_code)
         # return Response(msg if json_data is None else json_data)
 
 

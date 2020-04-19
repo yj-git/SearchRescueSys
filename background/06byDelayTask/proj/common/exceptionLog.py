@@ -13,7 +13,7 @@ def excepition_noparams(func):
             err = ""
             err += func.__name__
             customer_logger.exception(err)
-        raise
+        #raise
 
     return wrapper
 

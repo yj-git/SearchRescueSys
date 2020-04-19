@@ -16,7 +16,10 @@ from typing import List
 
 # 当前项目
 from core.file import ICoverageFile, IFileBase
+from core.db import DbFile
 from util.tools import check_path_exist, exe_run_time
+from conf.settings import _MYSQL
+
 # 日志
 from common.exceptionLog import exception
 from common.log import logger
@@ -119,5 +122,7 @@ class FtpFactory:
         # 2 执行下载操作,并进行分类存储
         self._download_file(file_name, target_dir)
         # 3 TODO:[*] 20-04-04 下载结束后写入数据库+日志记录 (by cwb)
+        db_file = DbFile(_MYSQL.get('HOST'), _MYSQL.get('DB_NAME'), _MYSQL.get('USESR'), _MYSQL.get('PASSWORD'))
+        db_file.record_state(file_name, target_dir)
         # 4 需要执行标准化操作(by yyq)
         # 5 TODO:[*] 20-04-04 将标准化后的文件信息 写入数据库+日志记录 (by cwb)

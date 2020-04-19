@@ -23,7 +23,9 @@ class TaskBaseView(CoverageBaseView):
         '''
             根据 request 中的 type+area -> user_taskinfo 中的记录并返回
         :param request:
-        :return:
+        :type request:
+        :return: user_taskinfo 表中的记录
+        :rtype:
         '''
         # TODO:[*] 20-04-15 对于返回两个参数的方法如何加入类型约束？
         coverage_type, coverage_area, forecast_datetime = self.covert_request_typearea(request)

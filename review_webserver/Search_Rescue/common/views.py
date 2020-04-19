@@ -31,6 +31,15 @@ class SelectListView(APIView, IBaseSelectListView):
     #     return Response(json_data)
 
     def get(self, request):
+        '''
+            TODO:[*] 此处需要修改 type_select 是否需要改为 dict 中的key？
+            根据 parent 与 type_select 获取对应的菜单
+        Args:
+            request ():
+
+        Returns:
+
+        '''
         parent, type_select = self.get_base_params(request)
         parents: List[SelectModel] = []
         if type_select:
@@ -48,6 +57,11 @@ class SelectParentListView(APIView, IBaseSelectListView):
 
     def get(self, request):
         '''
+            根据传入的 dict_id 从 tb:dict_base -> tb:common_select 中 common_select.did_id==dict_base.code
+        Args:
+            request ():
+
+        Returns:
 
         '''
         parent, type_select = self.get_base_params(request)

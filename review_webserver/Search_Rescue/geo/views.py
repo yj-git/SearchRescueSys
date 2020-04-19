@@ -13,6 +13,7 @@ from users.view_base import TaskBaseView
 from users.models import TaskUserModel
 from base.view_base import CoverageBaseView
 
+
 # Create your views here.
 
 # cat = Catalog("http://localhost:8083/geoserver/rest")
@@ -20,12 +21,20 @@ from base.view_base import CoverageBaseView
 
 class CoverageListView(TaskBaseView):
     '''
+
         TODO:[*] 此处出现问题:
             TypeError: Cannot create a consistent method resolution
                     order (MRO) for bases APIView, CoverageBaseView
     '''
 
     def get(self, request):
+        '''
+             根据 type , area 获取对应的 coverageinfo 数据(list)
+        :param request:
+        :type request:
+        :return:List[coverageinfo]
+        :rtype:
+        '''
         # TODO:[-] 20-04-15 此处需要先从 -> user_taskinfo 表中找到对应的记录 -> coverage_id 再根据 coverage_id 找到 -> geo_coverageinfo 表中的记录，
         # 并做验证
         list_task: List[TaskUserModel] = self.get_task_coverage(request)
@@ -41,9 +50,9 @@ class CoverageListView(TaskBaseView):
 class GeoInfoView(TaskBaseView):
     def get(self, request):
         '''
-            获取 geo_layerinfo 这张表对应的数据
+            获取 geo_layerinfo 这张表对应的数据(list)
         :param request:
-        :return:
+        :return: List[GeoLayerModel]
         '''
         task_id_str: str = request.GET.get('taskid', None)
         list_task: List[TaskUserModel] = TaskUserModel.objects.filter(
@@ -64,9 +73,11 @@ class GeoServerView(APIView):
 
     def get(self, request):
         '''
-
+            获取 geoserver 的服务列表
         :param request:
+        :type request:
         :return:
+        :rtype:
         '''
         list: List[GeoServerBaseModel] = GeoServerBaseModel.objects.all()
         json_data = GeoserverSerializer(list, many=True).data

@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/4/15 10:46
 # @Author  : evaseemefly
-# @Desc    :
+# @Desc    : TODO:[*] 20-04-19 抽象的父类，提供部分公共可用的方法
+#            是否不用继承自APIView？一个是让继承的子类中，再继承APIView，以避免循环引用的问题，并加上I关键字
+#            对于非继承APIView的父类需要约定一个命名规范
 # @Site    : 
 # @File    : view_base.py
 # @Software: PyCharm
@@ -21,6 +23,14 @@ from util.common import DEFAULT_FK
 
 class CoverageBaseView(APIView):
     def covert_request_typearea(self, request) -> Tuple[int, int, datetime]:
+        '''
+            根据 request -> type ,area 获取 type,area (int,int)
+        Args:
+            request ():
+
+        Returns:
+
+        '''
         coverage_type_str: str = request.GET.get('type', None)
         coverage_area_str: str = request.GET.get('area', None)
         forecast_datetime_str: str = request.GET.get('current', None)

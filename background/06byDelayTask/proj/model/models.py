@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 from conf.settings import DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT, _WORK_SPACE
 
-engine = create_engine("mysql+pymysql://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
+engine = create_engine("mysql+mysqldb://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
 
 # 生成基类
 Base = declarative_base()

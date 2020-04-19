@@ -22,7 +22,7 @@ class DbFile:
         self.user = user
         self.password = password
         #self.engine = create_engine("mysql+pymysql://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
-        self.engine = create_engine(("mysql+pymysql://%s:%s@%s/%s" % (user, password, host, db_name)), encoding='utf-8', echo=True)
+        self.engine = create_engine(("mysql+mysqldb://%s:%s@%s/%s" % (user, password, host, db_name)), encoding='utf-8', echo=True)
 
     def record_state(self, file_name, target_dir):
         '''

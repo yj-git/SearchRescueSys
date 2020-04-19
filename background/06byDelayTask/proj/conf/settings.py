@@ -10,13 +10,13 @@
 _FTP = {
     '_URL': '128.5.6.142',
     '_USERNAME': 'Currents',
-    '_PWD': '123'
+    '_PWD': ''
 }
 # 增加风场FTP地址，caiwb 2020-04-13
 _FTP_WIND = {
     '_URL': '128.5.6.142',
     '_USERNAME': 'wind',
-    '_PWD': '123'
+    '_PWD': ''
 }
 # 用来存储 ftp 下载的文件的根目录(或放在数据库中？)
 # DOWNLOAD_ROOT = r'D:\01proj\SearchRescueSys\data\download'
@@ -44,7 +44,7 @@ _MYSQL = {
     'DB_NAME': 'searchrescue',
     'HOST': '127.0.0.1',
     'USER': 'root',
-    'PASSWORD': 'admin123',
+    'PASSWORD': '123456',
 }
 
 COVERAGE_STORE={

@@ -16,8 +16,8 @@ from apscheduler.jobstores.mongodb import MongoDBJobStore
 
 from typing import List
 # 当前项目
-from conf.settings import _MONGO, DOWNLOAD_ROOT, _FTP
-from core.file import IFileBase, ICoverageFile, CurrentCoverageFile
+from conf.settings import _MONGO, DOWNLOAD_ROOT, _FTP, _FTP_WIND
+from core.file import IFileBase, ICoverageFile, CurrentCoverageFile, WindCoverageFile
 from core.ftp import FtpFactory
 from core.data import CurrentCoverage4NC, ICoverage4NC
 from model.midemodel import AreaNameMidModel, ProductMidModel
@@ -56,16 +56,17 @@ def init_product(current: datetime):
 
     # 流场
     list_products.append(ProductMidModel(ProductType.CURRENT, [AreaNameMidModel(Area.BOHAISEA, f'bhs_cur_{re_str}.nc'),
-                                                               AreaNameMidModel(Area.EASTCHINASEA,
-                                                                                f'ecs_new_current_{re_str}.nc'),
+                                                                AreaNameMidModel(Area.EASTCHINASEA,
+                                                                                       f'ecs_new_current_{re_str}.nc'),
                                                                AreaNameMidModel(Area.INDIAN, f'ind_cur_{re_str}.nc'),
-                                                               AreaNameMidModel(Area.SOUTHCHINASEA,
+                                                                AreaNameMidModel(Area.SOUTHCHINASEA,
                                                                                 f'scs_cur_{re_str}.nc'),
                                                                AreaNameMidModel(Area.NORTHWEST,
                                                                                 f'nwp_cur_{re_str}.nc')],
                                          os.path.join(DOWNLOAD_ROOT, 'current')))
     # 风场
-    list_products.append(ProductMidModel(ProductType.WIND, [AreaNameMidModel(Area.NORTHWEST, f'nmefc_wrf_{re_str}.nc')
+    # TODO:[-] 20-04-14 增加风场预报时效 by caiwb
+    list_products.append(ProductMidModel(ProductType.WIND, [AreaNameMidModel(Area.NORTHWEST, f'nmefc_wrf_{re_str}00.nc')
                                                             ],
                                          os.path.join(DOWNLOAD_ROOT, 'wind')))
 
@@ -100,11 +101,23 @@ def coverage_current_job():
 # TODO:[*] 20-04-07 需要加入一个记录 定时任务 的表
 
 
+@scheduler.scheduled_job('cron', id="coverage_wind_job", hour=8, minute=30, jobstore='mongo')
 def coverage_wind_job():
     '''
+        通过cron表达式定义的负责条件的定时器
         TODO:[*] 20-04-07 by cwb
     :return:
     '''
+    print(f'执行每日定时任务:coverage_wind_job|now:{datetime.now()}')
+    # 下面再调用 -> ftp.py -> batch_download 批量下载
+    # 次数需要根据当前时间创建一个 IFileBase 的实现类
+    ftp = FtpFactory(_FTP_WIND.get('_URL'), _FTP_WIND.get('_USERNAME'), _FTP_WIND.get('_PWD'))
+    product_wind = [prodcut_wind for prodcut_wind in list_products if
+                       prodcut_wind.product_type == ProductType.WIND]
+    for wind_area in product_wind[0].area_names:
+        if len(product_wind) == 1:
+            wind_file = WindCoverageFile('', DOWNLOAD_ROOT, wind_area.re, datetime.now())
+            ftp.batch_download(wind_file)
     pass
 
 

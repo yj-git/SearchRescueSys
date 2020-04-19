@@ -102,6 +102,8 @@ class WindCoverageFile(ICoverageFile):
 
     def __init__(self, url: str, path_dir: str, file_name: str, current: datetime):
         super().__init__(url, path_dir, file_name)
+        # TODO:[-] 20-04-13 增加了self._re_str = file_name by caiwb
+        self._re_str = file_name
         self.current = current
 
     @property
@@ -112,10 +114,15 @@ class WindCoverageFile(ICoverageFile):
                 ROOT -> COMMON -> DAILY -> yyyy/mm/dd
         :return:
         '''
-        save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', self.current.date().year,
-                                self.current.date().month, self.current.date().day)
+        save_dir = os.path.join(self.path_dir, 'COMMON', 'DAILY', str(self.current.date().year),
+                                str(self.current.date().month), str(self.current.date().day))
         return save_dir
 
+    # TODO:[-] 20-04-13 增加了get_re方法 by caiwb
+    @property
+    def get_re(self) -> str:
+        if self._re_str is not None:
+            return self._re_str
 
 class CurrentCoverageFile(ICoverageFile):
     '''

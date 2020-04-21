@@ -673,25 +673,36 @@ export default class OilSpillingMap extends Vue {
                     layer: '',
                     style: ''
                 }
+                // if (res.data.length === 1) {
+                //     res.data[0]
+                // }
+
                 const coverageTemp = new Coverage(options)
-                coverageTemp.loadGeoLayer(val)
-                const basemap: any = this.$refs.basemap
-                const mymap: any = basemap['mapObject']
-                const currentStr = ''
-                const wmsLayer = L.tileLayer.wms(
-                    `http://localhost:8082/geoserver/nmefc_wind/wms?TIME=${currentStr}`,
-                    // `http://localhost:8080/geoserver/SearchRescue/wms`,
-                    {
-                        layers: 'nmefc_wind:current_ecs_200407',
-                        styles: 'nmefc_wind:nmefc_current',
-                        format: 'image/png',
-                        transparent: true
-                    }
-                )
-                this.windLayer = wmsLayer
-                // TODO:[*] 20-04-17 此处需要再修改一下
-                const fluxDivIconTarget = wmsLayer.addTo(mymap)
-                console.log(coverageTemp)
+                coverageTemp.loadGeoLayer(val).then(() => {
+                    console.log(coverageTemp)
+                    const basemap: any = this.$refs.basemap
+                    const mymap: any = basemap['mapObject']
+                    const currentStr = ''
+                    const wmsLayer = L.tileLayer.wms(
+                        `http://localhost:8082/geoserver/nmefc_wind/wms?TIME=${currentStr}`,
+                        // `http://localhost:8080/geoserver/SearchRescue/wms`,
+                        // {
+                        //     layers: 'nmefc_wind:current_ecs_200407',
+                        //     styles: 'nmefc_wind:nmefc_current',
+                        //     format: 'image/png',
+                        //     transparent: true
+                        // }
+                        {
+                            layers: coverageTemp.layer,
+                            styles: coverageTemp.style,
+                            format: 'image/png',
+                            transparent: true
+                        }
+                    )
+                    this.windLayer = wmsLayer
+                    // TODO:[*] 20-04-17 此处需要再修改一下
+                    const fluxDivIconTarget = wmsLayer.addTo(mymap)
+                })
             }
         })
 

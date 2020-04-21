@@ -55,14 +55,19 @@ def init_product(current: datetime):
     re_str = f'{current.strftime("%Y%m%d")}'
 
     # 流场
-    list_products.append(ProductMidModel(ProductType.CURRENT, [AreaNameMidModel(Area.BOHAISEA, f'bhs_cur_{re_str}.nc'),
-                                                                AreaNameMidModel(Area.EASTCHINASEA,
-                                                                                       f'ecs_new_current_{re_str}.nc'),
-                                                               AreaNameMidModel(Area.INDIAN, f'ind_cur_{re_str}.nc'),
-                                                                AreaNameMidModel(Area.SOUTHCHINASEA,
-                                                                                f'scs_cur_{re_str}.nc'),
-                                                               AreaNameMidModel(Area.NORTHWEST,
-                                                                                f'nwp_cur_{re_str}.nc')],
+    # list_products.append(ProductMidModel(ProductType.CURRENT, [AreaNameMidModel(Area.BOHAISEA, f'bhs_cur_{re_str}.nc'),
+    #                                                             AreaNameMidModel(Area.EASTCHINASEA,
+    #                                                                                    f'ecsnew_current_{re_str}.nc'),
+    #                                                            AreaNameMidModel(Area.INDIAN, f'ind_cur_{re_str}.nc'),
+    #                                                             AreaNameMidModel(Area.SOUTHCHINASEA,
+    #                                                                             f'scs_cur_{re_str}.nc'),
+    #                                                            AreaNameMidModel(Area.NORTHWEST,
+    #                                                                             f'nwp_cur_{re_str}.nc')],
+    #                                      os.path.join(DOWNLOAD_ROOT, 'current')))
+    # TODO:[-] 20-04-20 演示时只测试 东中国海的数据
+    list_products.append(ProductMidModel(ProductType.CURRENT, [
+        AreaNameMidModel(Area.EASTCHINASEA,
+                         f'ecsnew_current_{re_str}.nc')],
                                          os.path.join(DOWNLOAD_ROOT, 'current')))
     # 风场
     # TODO:[-] 20-04-14 增加风场预报时效 by caiwb
@@ -113,7 +118,7 @@ def coverage_wind_job():
     # 次数需要根据当前时间创建一个 IFileBase 的实现类
     ftp = FtpFactory(_FTP_WIND.get('_URL'), _FTP_WIND.get('_USERNAME'), _FTP_WIND.get('_PWD'))
     product_wind = [prodcut_wind for prodcut_wind in list_products if
-                       prodcut_wind.product_type == ProductType.WIND]
+                    prodcut_wind.product_type == ProductType.WIND]
     for wind_area in product_wind[0].area_names:
         if len(product_wind) == 1:
             wind_file = WindCoverageFile('', DOWNLOAD_ROOT, wind_area.re, datetime.now())

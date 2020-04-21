@@ -21,12 +21,12 @@ export class Coverage {
     private defaultFormat: { format: string } = {
         format: 'image/png'
     }
-    private baseUrl: string
-    private workSpace: string
-    private layer: string
-    private style: string
-    private format: string
-    private options: IOptions
+    public baseUrl: string
+    public workSpace: string
+    public layer: string
+    public style: string
+    public format: string
+    public options: IOptions
 
     public constructor(options: IOptions) {
         /*
@@ -57,15 +57,15 @@ export class Coverage {
      * @param {number} taskId
      * @memberof Coverage
      */
-    public loadGeoLayer(taskId: number): void {
+    public loadGeoLayer(taskId: number) {
         // loadCoverageInfo(taskId).then((res) => {
         //     console.log(res)
         // })
         // loadGeoserverInfo().then((res) => {
         //     console.log(res)
         // })
-        console.log(taskId)
-        loadCoverageInfo(taskId)
+        // console.log(taskId)
+        return loadCoverageInfo(taskId)
             .then(
                 (res: {
                     status: number
@@ -90,7 +90,7 @@ export class Coverage {
                             this.layer = res.data[0].layer_name
                             this.style = res.data[0].style_name
                         }
-                        console.log(res.data)
+                        // console.log(res.data)
                     }
                 }
             )

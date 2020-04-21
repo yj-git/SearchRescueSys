@@ -5,9 +5,14 @@
 
 2019-11-13 `溢油`效果如下：
 1. 热力图版
-![avatar](document/99img/TIM截图20191113153654.png)  
+    ![avatar](document/99img/TIM截图20191113153654.png)  
+
 2. 散点图版
-![avatar](document/99img/TIM截图20191113153557.png)  
+    ![avatar](document/99img/TIM截图20191113153557.png)  
+
+  20-04-20 效果如下:
+
+  ![WX20200421-162737@2x](document/99img/WX20200421-162737@2x.png)
 
 ---
 [进度详见](./SCHEDULE.MD)

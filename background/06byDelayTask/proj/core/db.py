@@ -13,18 +13,21 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from conf.settings import _MYSQL, DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT, _WORK_SPACE
-from model.models import DictBase, GeoCoverageinfo, GeoLayerinfo, GeoStoreinfo, GeoWorkspaceinfo, UserTaskinfo, RelaGeoBase
+from model.models import DictBase, GeoCoverageinfo, GeoLayerinfo, GeoStoreinfo, GeoWorkspaceinfo, UserTaskinfo, \
+    RelaGeoBase
+
 
 class DbFile:
-    def __init__(self, host, db_name, user, password):
+    def __init__(self, host:str, db_name:str, user:str, password:str):
         self.host = host
         self.db_name = db_name
         self.user = user
         self.password = password
-        #self.engine = create_engine("mysql+pymysql://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
-        self.engine = create_engine(("mysql+mysqldb://%s:%s@%s/%s" % (user, password, host, db_name)), encoding='utf-8', echo=True)
+        # self.engine = create_engine("mysql+pymysql://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
+        self.engine = create_engine(("mysql+mysqldb://%s:%s@%s/%s" % (user, password, host, db_name)), encoding='utf-8',
+                                    echo=True)
 
-    def record_state(self, file_name, target_dir):
+    def record_state(self, file_name: str, target_dir: str):
         '''
         记录海流、海面风数值预报文件下载状态，初始化文件GeoServer的Coverage、Store基本信息
         :param target_dir:
@@ -38,14 +41,22 @@ class DbFile:
         userTaskInfo = UserTaskinfo()
         userTaskInfo.root_path = DOWNLOAD_ROOT
         userTaskInfo.case_path = target_dir[-(len(target_dir) - len(DOWNLOAD_ROOT) - 1):]
+        # TODO:[*] 20-04-19 注意往数据库里写入时是 世界时 注意！
         userTaskInfo.create_date = datetime.now()
+        # TODO:[*] 20-04-19 此处的预报时效有误，不应该是 当前时间，而是通过 文件名 + 种类确定
         userTaskInfo.forecast_date = datetime.now().date()
         userTaskInfo.ext = 'nc'
         userTaskInfo.state = 2
         fileCode = file_name.split('_')
         if (len(fileCode) > 2):
-            if (fileCode[1] == 'cur'):
+            # TODO:[*] 20-04-20 建议以下部分，因为都有 判断是否 为 流 还是 风 的判断，最好写在一块，或者写成一个 私有方法
+            # TODO:[-] 20-04-19 此处判断时注意 东中国海 ，ecs_new_current_xx.nc -> ecsnew_current_20200420.nc
+            # if (fileCode[1] == 'cur' or (fileCode[1] == 'new' and fileCode[2] == 'current')):
+            if (fileCode[1] == 'cur' or fileCode[1] == 'current'):
                 userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+                # TODO:[*] 20-04-20 此处会出现bug
+                # err: AttributeError: 'NoneType' object has no attribute 'code'
+                # 此处由于 修改了文件名称 , 现在为 ecsnew
                 userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
             elif (fileCode[1] == 'wrf'):
                 userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
@@ -55,7 +66,7 @@ class DbFile:
         # 记录GeoCoverageinfo状态
         geoCoverageinfo = GeoCoverageinfo()
         fileCode = file_name.split('_')
-        if (fileCode[1] == 'cur'):
+        if (fileCode[1] == 'cur' or fileCode[1] == 'current' ):
             geoCoverageinfo.root_path = GEO_CURRENT_ROOT
         elif (fileCode[1] == 'wrf'):
             geoCoverageinfo.root_path = GEO_WIND_ROOT
@@ -66,7 +77,7 @@ class DbFile:
         geoCoverageinfo.file_size = file_size
         geoCoverageinfo.create_date = datetime.now()
         if (len(fileCode) > 2):
-            if (fileCode[1] == 'cur'):
+            if (fileCode[1] == 'cur' or fileCode[1] == 'current'):
                 geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
                 geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
             elif (fileCode[1] == 'wrf'):
@@ -77,7 +88,7 @@ class DbFile:
         # 记录geoStoreinfo状态
         geoStoreinfo = GeoStoreinfo()
         fileCode = file_name.split('_')
-        if (fileCode[1] == 'cur'):
+        if (fileCode[1] == 'cur' or fileCode[1] == 'current'):
             geoStoreinfo.work_space = _WORK_SPACE.get('CURRENT')
         elif (fileCode[1] == 'wrf'):
             geoStoreinfo.work_space = _WORK_SPACE.get('WIND')
@@ -85,4 +96,3 @@ class DbFile:
         geoStoreinfo.store_type = 301
         session.add(geoStoreinfo)
         session.commit()
-

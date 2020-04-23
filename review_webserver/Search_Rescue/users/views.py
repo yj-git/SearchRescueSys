@@ -18,9 +18,9 @@ from users.middle_model import JobInfoMidModel, CaseNumsMidModel
 
 # 引入task中的任务
 # TODO:[*] 20-02-05 尝试将替换apps中的tasks为外置的tasks
-# from apps.tasks.oil_task import do_job
-# from tasks.oil_task import do_job
-# from apps.oilspilling.tasks.oil_task import do_job
+# from apps.tasks_bakup.oil_task import do_job
+# from tasks_bakup.oil_task import do_job
+# from apps.oilspilling.tasks_bakup.oil_task import do_job
 # from apps.user.operate import check_case_name
 # from apps.user.common import check_case_name
 # 尝试引入类型约束
@@ -87,19 +87,20 @@ class CaseListView(APIView):
         1: 'CaseRescueInfo'
     }
 
-    def get_casecode(self, uid: str, type: CHOICE_TYPE) -> List[str]:
+    def get_casecodes(self, uid: str, type: CHOICE_TYPE) -> List[str]:
         '''
             根据uid获取 case_oil_info表中的所有的case_code
         :param uid:
         :return:
         '''
         # by cwb 2020-02-20
-        #if type == '0':
+        # if type == '0':
         if type == 0:
             model = AuthOilRela
         else:
             model = AuthRescueRela
         rela = model.objects.filter(uid_id=uid)
+        # 注意did 就是 user_authresuce_rela/ user_authoil_rela 关联表中对应的 user_caserescueinfo/user_caseoilinfo 中的 case_code
         dids: List[ICaseBaseModel] = [temp_rela.did for temp_rela in rela]
         codes = [temp.case_code for temp in dids]
         return codes
@@ -146,7 +147,8 @@ class CaseListView(APIView):
                     try:
                         type = int(type_case)
                         if any([uid, type_case]) is not None:
-                            case_codes = self.get_casecode(uid, type)
+                            # 不使用 直接获取对应的 case_code ，而是直接获取对应的 caseXXinfo
+                            case_codes = self.get_casecodes(uid, type)
                             cases = self.get_caseinfo(uid, type)
                             if len(cases) > 0:
                                 # 方式1：
@@ -227,12 +229,19 @@ class CaseListView(APIView):
             if attrs is not None:
                 # 创建CaseOilInfo记录
                 case_result = CaseOilInfo.objects.create(root_path=attrs['root_path'],
-                                        case_path=attrs['case_path'], create_date=attrs['create_date'], forecast_date=attrs['forecast_date'],
-                                        case_name=attrs['case_name'], case_desc=attrs['case_desc'], case_code=attrs['case_code'],
-                                        lat=attrs['lat'], lon=attrs['lon'], radius=attrs['radius'], nums=attrs['nums'], simulation_duration=attrs['simulation_duration'],
-                                        simulation_step=attrs['simulation_step'], console_step=attrs['console_step'], current_nondeterminacy=attrs['current_nondeterminacy'],
-                                        equation=attrs['equation'], is_del=attrs['is_del'], area=attrs['area'], wind_coefficient=attrs['wind_coefficient'],
-                                        wind_dir=attrs['wind_dir'])
+                                                         case_path=attrs['case_path'], create_date=attrs['create_date'],
+                                                         forecast_date=attrs['forecast_date'],
+                                                         case_name=attrs['case_name'], case_desc=attrs['case_desc'],
+                                                         case_code=attrs['case_code'],
+                                                         lat=attrs['lat'], lon=attrs['lon'], radius=attrs['radius'],
+                                                         nums=attrs['nums'],
+                                                         simulation_duration=attrs['simulation_duration'],
+                                                         simulation_step=attrs['simulation_step'],
+                                                         console_step=attrs['console_step'],
+                                                         current_nondeterminacy=attrs['current_nondeterminacy'],
+                                                         equation=attrs['equation'], is_del=attrs['is_del'],
+                                                         area=attrs['area'], wind_coefficient=attrs['wind_coefficient'],
+                                                         wind_dir=attrs['wind_dir'])
                 if case_result is not None:
                     # 建立User、Case关系
                     if type == 0:
@@ -274,11 +283,16 @@ class CaseListView(APIView):
             if attrs is not None:
                 # 创建JobInfo记录
                 # TODO:[-] 20-02-25 添加JobInfo的同时还需要在 user_caseoilinfo 中添加相应记录——已在 set_caseinfo 方法中实现
-                jobinfo_result = JobInfo.objects.create(type=type, job_celery_id=attrs['job_celery_id'], case_code=attrs['case_code'],
-                                 gmt_create=attrs['gmt_create'], gmt_modified=attrs['gmt_modified'], is_del=attrs['is_del'], area=attrs['area'])
+                jobinfo_result = JobInfo.objects.create(type=type, job_celery_id=attrs['job_celery_id'],
+                                                        case_code=attrs['case_code'],
+                                                        gmt_create=attrs['gmt_create'],
+                                                        gmt_modified=attrs['gmt_modified'], is_del=attrs['is_del'],
+                                                        area=attrs['area'])
                 if jobinfo_result is not None:
-                    jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id, rate=attrs['rate'], state=attrs['state'],
-                                                    gmt_create=attrs['gmt_create'], gmt_modified=attrs['gmt_modified'])
+                    jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id,
+                                                                rate=attrs['rate'], state=attrs['state'],
+                                                                gmt_create=attrs['gmt_create'],
+                                                                gmt_modified=attrs['gmt_modified'])
                     if jobrate_result is not None:
                         return jobinfo_result
                     else:
@@ -302,18 +316,6 @@ class CaseListView(APIView):
                         return Response(job_result.case_code)
                 except:
                     pass
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class CaseHistoryListView(CaseListView):
@@ -350,7 +352,16 @@ class CaseHistoryListView(CaseListView):
 # permission_classes = (IsAuthenticated,)
 
 class CaseModelView(CaseBaseView):
+
     def get(self, request):
+        '''
+            从 user_caseinfo表中找到对应的记录
+            TODO:[*] 20-04-22 此处注意修改 不能写死CaseOilInfo ，因为还有搜救的表
+        :param request:
+        :type request:
+        :return:
+        :rtype:
+        '''
         user = self.get_user(request)
         type = request.GET.get('type', None)
         code = request.GET.get('casecode', None)

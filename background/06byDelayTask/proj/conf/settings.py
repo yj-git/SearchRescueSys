@@ -46,7 +46,7 @@ _MYSQL = {
     'DB_NAME': 'searchrescue',
     'HOST': '127.0.0.1',
     'USER': 'root',
-    'PASSWORD': 'admin123',
+    'PASSWORD': '123456',
 }
 
 COVERAGE_STORE={

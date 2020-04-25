@@ -193,8 +193,8 @@ class OilDbJob(NCJobBase):
 
 
 # TODO:[-] 20-04-23 加入了 celery
-@celery_app.task(bind=True)
-# @shared_task
+# @celery_app.task(bind=True)
+@shared_task
 def do_job():
     '''
         写入数据库只需要做如下工作：

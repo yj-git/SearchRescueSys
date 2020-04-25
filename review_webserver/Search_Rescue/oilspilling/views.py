@@ -302,8 +302,9 @@ class CreateOilSpillingView(APIView):
                 try:
 
                     # 获取了用户名称之后，向celery提交耗时作业
-                    my_task.delay(username)
-                    # do_job()
+                    # my_task.delay(username)
+                    # TODO:[-] 20-04-23 注意调用时，是调用指定的 延时def.delay(),而不是直接调用该方法！！切记！！
+                    do_job.delay()
                     pass
                     return Response('提交成功')
                 except TypeError:

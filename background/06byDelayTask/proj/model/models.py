@@ -120,8 +120,7 @@ def main():
     # file_name = 'nwp_cur_20200413.nc'
     # file_name = 'scs_cur_20200413.nc'
     # file_name = 'nmefc_wrf_2020041300.nc'
-
-    target_dir = r'c:\data\SearchRescueSys\data\download\COMMON\DAILY\2020\4\13'
+    target_dir = r'd:\data\SearchRescueSys\data\download\COMMON\DAILY\2020\4\13'
     # 记录UserTaskinfo状态
     userTaskInfo = UserTaskinfo()
     userTaskInfo.root_path = DOWNLOAD_ROOT
@@ -138,8 +137,7 @@ def main():
     area_code = fileCode[0]
     type_code = fileCode[1]
     if(len(fileCode) > 2):
-        if(type_code == 'cur' or type_code == 'current' ):
-            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+        if(type_code == 'cur' or type_code == 'current' ):            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
             userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=area_code).first().code
         elif(type_code == 'wrf'):
             userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
@@ -149,8 +147,7 @@ def main():
     # 记录GeoCoverageinfo状态
     geoCoverageinfo = GeoCoverageinfo()
     fileCode = file_name.split('_')
-    if (type_code == 'cur' or type_code == 'current' ):
-        geoCoverageinfo.root_path = GEO_CURRENT_ROOT
+    if (fileCode[1] == 'cur'):        geoCoverageinfo.root_path = GEO_CURRENT_ROOT
     elif (type_code == 'wrf'):
         geoCoverageinfo.root_path = GEO_WIND_ROOT
     geoCoverageinfo.relative_path = os.path.join(str(datetime.now().date().year),
@@ -171,8 +168,8 @@ def main():
             else:
                 vars = ''
             geoCoverageinfo.dimessions = dims
-            geoCoverageinfo.variables = vars
-            geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+            geoCoverageinfo.variables = vars            geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+
             geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=area_code).first().code
         elif (type_code == 'wrf'):
             if(('time' in ds.dimensions) and ('latitude' in ds.dimensions) and ('longitude' in ds.dimensions)):

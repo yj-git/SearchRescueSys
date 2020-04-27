@@ -66,7 +66,7 @@ class DbFile:
                 # TODO:[-] 20-04-20 此处会出现bug
                 # err: AttributeError: 'NoneType' object has no attribute 'code'
                 # 此处由于 修改了文件名称 , 现在为 ecsnew
-                userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
+                userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=type_code).first().code
             elif (type_code == 'wrf'):
                 userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
                 userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code='nwp').first().code

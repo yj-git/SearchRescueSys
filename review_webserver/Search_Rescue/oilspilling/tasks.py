@@ -30,6 +30,7 @@ from util.reader import OilFileReader, create_reader
 from django.contrib.auth.models import User
 # TODO:[-] 20-04-23 加入了celery的异步作业调度
 from tasks.celery_con import app as celery_app
+from base.tasks_base import TaskOpenDrift
 
 
 def check_case_name(user_id: str, case_name: str) -> bool:
@@ -61,6 +62,7 @@ class OilPyJob(NCJobBase):
 
     def handle_do_py(self, event: Event, **kwargs):
         print('模拟调用py文件，并传入相应参数')
+        TaskOpenDrift()
         pass
 
 

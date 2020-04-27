@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from base.models import IIsDelModel
+from geo.models import CoverageModel
 
 
 # Create your models here.
@@ -130,7 +131,8 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
         # 判断 attrs中是否有在指定list中的值为Null的对象，若有则返回None
         # TODO:[-] 20-04-25 使用此种方式完成对于是否为空的判断
         # 方式1:
-        un_null_list = ['root_path', 'case_path', 'forecast_data', 'case_name']
+        un_null_list = ['root_path', 'case_path', 'forecast_data', 'case_name', 'lat', 'lon', 'nums',
+                        'wind_coefficient']
         if any([attrs.get(temp) is None for temp in un_null_list]):
             return None
 
@@ -330,3 +332,18 @@ class TaskUserModel(ITask, ICaseBaseStore):
 
     class Meta:
         db_table = 'user_taskinfo'
+
+
+class RelaCaseOilCoverage(models.Model):
+    '''
+        TODO:[-] 20-04-27
+        用来关联 geo_coverageInfo 与 user_caseoilinfo 表
+        有两个外键 分别对应的是 geo_coverageInfo 代表的 流场+风场 的数据(可以为空，不可都为空)
+    '''
+    id = models.AutoField(primary_key=True)
+    wind_id = models.ForeignKey(CoverageModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    current_id = models.ForeignKey(CoverageModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+    case_id = models.ForeignKey(CaseOilInfo, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
+
+    class Meta:
+        db_table = 'rela_case_oil'

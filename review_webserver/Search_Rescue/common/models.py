@@ -91,3 +91,4 @@ class IDictModel(models.Model):
 class DictBaseModel(IDictModel):
     class Meta:
         db_table = 'dict_base'
+

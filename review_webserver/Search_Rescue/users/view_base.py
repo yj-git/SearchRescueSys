@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from util.common import DEFAULT_FK
 from util.enum import TaskStateEnum
 from base.view_base import CoverageBaseView
+from base.tasks_base import TaskOpenDrift
 from users.models import TaskUserModel, AuthOilRela, AuthRescueRela, CaseOilInfo, CaseRescueInfo, ICaseBaseModel, \
     JobInfo, JobUserRate, \
     ICaseBaseStore
@@ -191,6 +192,10 @@ class CaseBaseView(APIView):
                     return None
         except:
             pass
+
+    def _do_job(self, attrs: {}):
+        task_open_drift = TaskOpenDrift()
+        task_open_drift.job([attrs['lon'], attrs['lat']])
 
 
 class TaskBaseView(CoverageBaseView):

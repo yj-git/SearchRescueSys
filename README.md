@@ -97,3 +97,7 @@ eg:
 		|__ tasks.py				oil对应的任务task
 ```
 * [ ] 20-04-23 pm:若采用上面的方式，将tasks写在对应的app下，会存在无法触发异步任务的问题
+
+现将调用 `opendrift` 的task代码准备放在 `/Search_Rescue/base/` 目录下 命名为 `task_base.py`
+
+### 规约

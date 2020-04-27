@@ -104,36 +104,71 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
 
     # 油品，油量，水温
 
-    def validate(self, attrs: object):  # 对多个字段校验
+    def validate(self, attrs: {}):  # 对多个字段校验
         '''
             根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
+            目前实际就是判断不可为null的是否不为null
         :param attrs:
         :return:
         '''
-        if (attrs['root_path'] is '') or (attrs['case_path'] is '') or (attrs['create_date'] is '') or (
-                attrs['forecast_date'] is '') \
-                or (attrs['case_name'] is '') or (attrs['case_desc'] is '') or (attrs['case_code'] is '') or (
-                attrs['area'] is '') \
-                or (attrs['lat'] is '') or (attrs['lon'] is '') or (attrs['radius'] is '') or (attrs['nums'] is '') \
-                or (attrs['simulation_duration'] is '') or (attrs['simulation_step'] is '') or (
-                attrs['console_step'] is '') \
-                or (attrs['current_nondeterminacy'] is '') or (attrs['equation'] is '') or (attrs['is_del'] is '') \
-                or (attrs['wind_coefficient'] is '') or (attrs['wind_dir'] is ''):
+        # 此处应判断是否为null
+        # 对于字典的判断最好使用 xx.get('xx')的方式 否则不存在会抛出异常
+
+        # 注释掉
+        # if (attrs['root_path'] is '') or (attrs['case_path'] is '') or (attrs['create_date'] is '') or (
+        #         attrs['forecast_date'] is '') \
+        #         or (attrs['case_name'] is '') or (attrs['case_desc'] is '') or (attrs['case_code'] is '') or (
+        #         attrs['area'] is '') \
+        #         or (attrs['lat'] is '') or (attrs['lon'] is '') or (attrs['radius'] is '') or (attrs['nums'] is '') \
+        #         or (attrs['simulation_duration'] is '') or (attrs['simulation_step'] is '') or (
+        #         attrs['console_step'] is '') \
+        #         or (attrs['current_nondeterminacy'] is '') or (attrs['equation'] is '') or (attrs['is_del'] is '') \
+        #         or (attrs['wind_coefficient'] is '') or (attrs['wind_dir'] is ''):
+        #     return None
+
+        # 此处准备改成列表推导
+        # 判断 attrs中是否有在指定list中的值为Null的对象，若有则返回None
+        # TODO:[-] 20-04-25 使用此种方式完成对于是否为空的判断
+        # 方式1:
+        un_null_list = ['root_path', 'case_path', 'forecast_data', 'case_name']
+        if any([attrs.get(temp) is None for temp in un_null_list]):
             return None
-        attrs['case_code'] = self.gen_casecode(attrs['case_code'])
-        attrs['create_date'] = datetime.strptime(attrs['create_date'], '%Y-%m-%d %H:%M:%S')
-        attrs['forecast_date'] = datetime.strptime(attrs['forecast_date'], '%Y-%m-%d %H:%M:%S')
-        attrs['lat'] = float(attrs['lat'])
-        attrs['lon'] = float(attrs['lon'])
-        attrs['radius'] = float(attrs['radius'])
-        attrs['nums'] = int(attrs['nums'])
-        attrs['simulation_duration'] = float(attrs['simulation_duration'])
-        attrs['simulation_step'] = float(attrs['simulation_step'])
-        attrs['console_step'] = float(attrs['console_step'])
-        attrs['current_nondeterminacy'] = float(attrs['current_nondeterminacy'])
-        attrs['equation'] = int(attrs['equation'])
-        attrs['wind_coefficient'] = float(attrs['wind_coefficient'])
-        attrs['wind_dir'] = float(attrs['wind_dir'])
+
+        # 方式2：
+        # for temp in un_null_list:
+        #     if attrs.get(temp) is None:
+        #         return None
+
+        # 方式3:
+        # if (attrs.get('root_path') or attrs.get('case_path') or attrs.get('create_date') or
+        #         attrs.get('forecast_date')
+        #         or attrs.get('case_name') or attrs.get('case_desc') or attrs.get('case_code') or
+        #         attrs.get('area')
+        #         or attrs.get('lat') or attrs.get(
+        #             'lon') or attrs.get('radius') or attrs.get('nums')
+        #         or attrs.get('simulation_duration') or
+        #         attrs.get('simulation_step') or
+        #         attrs.get('console_step')
+        #         or attrs.get('current_nondeterminacy') or
+        #         attrs.get('equation') or attrs.get('is_del')
+        #         or attrs.get('wind_coefficient') or
+        #         attrs.get('wind_dir')):
+        #     return None
+
+        attrs['case_code'] = self.gen_casecode(attrs.get('case_code'))
+        attrs['create_date'] = datetime.strptime(attrs.get('create_date', datetime.utcnow()), '%Y-%m-%d %H:%M:%S')
+        attrs['forecast_date'] = datetime.strptime(attrs.get('forecast_date'), '%Y-%m-%d %H:%M:%S')
+        attrs['lat'] = float(attrs.get('lat'))
+        attrs['lon'] = float(attrs.get('lon'))
+        attrs['radius'] = float(attrs.get['radius'])
+        attrs['nums'] = int(attrs.get['nums'])
+        attrs['simulation_duration'] = float(attrs.get['simulation_duration'])
+        attrs['simulation_step'] = float(attrs.get['simulation_step'])
+        attrs['console_step'] = float(attrs.get['console_step'])
+        attrs['current_nondeterminacy'] = float(attrs.get['current_nondeterminacy'])
+        attrs['equation'] = int(attrs.get['equation'])
+        attrs['wind_coefficient'] = float(attrs.get['wind_coefficient'])
+        attrs['wind_dir'] = float(attrs.get['wind_dir'])
         if attrs['is_del'] == '0':
             attrs['is_del'] = False
         elif attrs['is_del'] == '1':

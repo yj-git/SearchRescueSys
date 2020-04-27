@@ -1,12 +1,14 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from celery.decorators import task
+# from celery.decorators import task
+from tasks.celery_con import app
 import time
 import sys
 from enum import Enum
 from datetime import datetime
 from abc import ABCMeta, abstractmethod
-
+# 当前项目
+from tasks.celery_con import app
 TASK_DIR = r'D:/02proj/SearchRescue/SearchRescueSys/background/04byRabbitmq/'
 sys.path.append(TASK_DIR)
 
@@ -118,7 +120,7 @@ class NCJobBase:
 
 # @shared_task
 # TODO:[*] celery 3.1 开始可以通过如下的方式获取task的id
-@task(bind=True)
+@app.task(bind=True)
 def my_task(self, msg):
     print('测试耗时任务')
     print(f'传入的参数为:{msg}')

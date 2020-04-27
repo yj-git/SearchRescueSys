@@ -18,9 +18,9 @@ from users.middle_model import JobInfoMidModel, CaseNumsMidModel
 
 # 引入task中的任务
 # TODO:[*] 20-02-05 尝试将替换apps中的tasks为外置的tasks
-# from apps.tasks.oil_task import do_job
-# from tasks.oil_task import do_job
-# from apps.oilspilling.tasks.oil_task import do_job
+# from apps.tasks_bakup.oil_task import do_job
+# from tasks_bakup.oil_task import do_job
+# from apps.oilspilling.tasks_bakup.oil_task import do_job
 # from apps.user.operate import check_case_name
 # from apps.user.common import check_case_name
 # 尝试引入类型约束
@@ -81,54 +81,8 @@ def getCaseList(request):
 
 
 # TODO:[*] 20-02-12 此处还是准备使用类视图的方式，有部分方法需要重用
-class CaseListView(APIView):
-    CHOICE_TYPE = {
-        0: 'CaseOilInfo',
-        1: 'CaseRescueInfo'
-    }
-
-    def get_casecode(self, uid: str, type: CHOICE_TYPE) -> List[str]:
-        '''
-            根据uid获取 case_oil_info表中的所有的case_code
-        :param uid:
-        :return:
-        '''
-        # by cwb 2020-02-20
-        #if type == '0':
-        if type == 0:
-            model = AuthOilRela
-        else:
-            model = AuthRescueRela
-        rela = model.objects.filter(uid_id=uid)
-        dids: List[ICaseBaseModel] = [temp_rela.did for temp_rela in rela]
-        codes = [temp.case_code for temp in dids]
-        return codes
-
-    def get_caseinfo(self, uid: str, type: CHOICE_TYPE) -> List[ICaseBaseModel]:
-        '''
-            根据传入的 uid 与 type 获取对应的case list
-        :param uid:
-        :param type:
-        :return:
-        '''
-        cases: List[ICaseBaseModel] = []
-        if type == 0:
-            model = AuthOilRela
-        else:
-            model = AuthRescueRela
-        relas = model.objects.filter(uid_id=uid)
-        # 找到关联表->的case
-        if len(relas) > 0:
-            # 找到所有的有关的case info
-            for rela_temp in relas:
-                # TODO:[*] 20-03-06 此处我修改回来了，请注意！ caiwb 20-02-29
-                if hasattr(rela_temp, 'did'):
-                    case_temp: ICaseBaseModel = getattr(rela_temp, 'did')
-                    cases.append(case_temp)
-                # if hasattr(rela_temp, 'did_id'):
-                #     case_temp: ICaseBaseModel = getattr(rela_temp, 'did_id')
-                #     cases.append(case_temp)
-        return cases
+class CaseListView(CaseBaseView):
+    _status = 500
 
     def get(self, request):
         # uid = request.GET.get('uid', None)
@@ -146,7 +100,8 @@ class CaseListView(APIView):
                     try:
                         type = int(type_case)
                         if any([uid, type_case]) is not None:
-                            case_codes = self.get_casecode(uid, type)
+                            # 不使用 直接获取对应的 case_code ，而是直接获取对应的 caseXXinfo
+                            case_codes = self.get_casecodes(uid, type)
                             cases = self.get_caseinfo(uid, type)
                             if len(cases) > 0:
                                 # 方式1：
@@ -176,119 +131,8 @@ class CaseListView(APIView):
         json_data = JobMidSerializer(jobs_mid, many=True)
         return Response(json_data.data)
 
-    def gen_casecode(self, code):
-        '''
-            根据传入的 code 参数，生成带时间戳的case_code编码
-        :param code:
-        :return:
-        '''
-        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
-        case_code = code + '_' + dt_ms
-        return case_code
-
-    def set_caseinfo(self, request, uid: str):
-        '''
-            根据传入的 uid 与 request 添加或更新对应的case
-        :param uid:
-        :param request:
-        :return:
-        '''
-        type = request.GET.get('type', None)
-        if type is not None:
-            type = int(type)
-        # TODO:[*] 20-02-25 以下部分建议改为通过model进行获取对应的参数，在model中添加验证方法，不用放在view
-        # TODO:[*] 20-02-25 建议将root_path 与 case_path 通过工厂模式实现创建对应的 路径(路径不由前端传入，路径在后端根据传入的 user name 与当前的 yyyy/mm/dd 共同拼接而成。
-        # eg: /user_name/yyyy/mm/dd/
-        attrs = {}
-        users = User.objects.filter(id=uid)
-        attrs['root_path'] = users[0].username
-        attrs['case_path'] = datetime.now().strftime('%Y/%m')
-        attrs['create_date'] = request.GET.get('create_date', None)
-        attrs['forecast_date'] = request.GET.get('forecast_date', None)
-        attrs['case_name'] = request.GET.get('case_name', None)
-        attrs['case_desc'] = request.GET.get('case_desc', None)
-        attrs['case_code'] = request.GET.get('case_code', None)
-        attrs['lat'] = request.GET.get('lat', None)
-        attrs['lon'] = request.GET.get('lon', None)
-        attrs['radius'] = request.GET.get('radius', None)
-        attrs['nums'] = request.GET.get('nums', None)
-        attrs['simulation_duration'] = request.GET.get('simulation_duration', None)
-        attrs['simulation_step'] = request.GET.get('simulation_step', None)
-        attrs['console_step'] = request.GET.get('console_step', None)
-        attrs['current_nondeterminacy'] = request.GET.get('current_nondeterminacy', None)
-        attrs['equation'] = request.GET.get('equation', None)
-        attrs['is_del'] = request.GET.get('is_del', None)
-        attrs['area'] = request.GET.get('area', None)
-        attrs['wind_coefficient'] = request.GET.get('wind_coefficient', None)
-        attrs['wind_dir'] = request.GET.get('wind_dir', None)
-        try:
-            # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
-            attrs = CaseOilInfo.validate(self, attrs)
-            if attrs is not None:
-                # 创建CaseOilInfo记录
-                case_result = CaseOilInfo.objects.create(root_path=attrs['root_path'],
-                                        case_path=attrs['case_path'], create_date=attrs['create_date'], forecast_date=attrs['forecast_date'],
-                                        case_name=attrs['case_name'], case_desc=attrs['case_desc'], case_code=attrs['case_code'],
-                                        lat=attrs['lat'], lon=attrs['lon'], radius=attrs['radius'], nums=attrs['nums'], simulation_duration=attrs['simulation_duration'],
-                                        simulation_step=attrs['simulation_step'], console_step=attrs['console_step'], current_nondeterminacy=attrs['current_nondeterminacy'],
-                                        equation=attrs['equation'], is_del=attrs['is_del'], area=attrs['area'], wind_coefficient=attrs['wind_coefficient'],
-                                        wind_dir=attrs['wind_dir'])
-                if case_result is not None:
-                    # 建立User、Case关系
-                    if type == 0:
-                        model = AuthOilRela
-                    else:
-                        model = AuthRescueRela
-                    rela = model.objects.create(uid_id=uid, did_id=case_result.id)
-                    if rela is not None:
-                        return case_result
-                    else:
-                        return None
-                else:
-                    return None
-        except:
-            pass
-
-    def set_jobinfo(self, request, uid: str):
-        '''
-            根据传入的 uid 与 request 添加或更新对应的job
-        :param uid:
-        :param request:
-        :return:
-        '''
-        type = int(request.GET.get('type', None))
-
-        # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
-        attrs = {}
-        attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
-        attrs['case_code'] = request.GET.get('case_code', None)
-        attrs['gmt_create'] = request.GET.get('gmt_create', None)
-        attrs['gmt_modified'] = request.GET.get('gmt_modified', None)
-        attrs['is_del'] = request.GET.get('is_del', None)
-        attrs['area'] = request.GET.get('area', None)
-        # TODO:[*] 20-02-25 rate不由前端提交，首次创建完 user_jobinfo 后之后，在 user_jobuserrate 中添加对应的初始记录(此时rate应为0)，以后更新rate在后台中执行
-        attrs['rate'] = 0
-        attrs['state'] = request.GET.get('state', None)
-        try:
-            attrs = JobInfo.validate(self, attrs)
-            if attrs is not None:
-                # 创建JobInfo记录
-                # TODO:[-] 20-02-25 添加JobInfo的同时还需要在 user_caseoilinfo 中添加相应记录——已在 set_caseinfo 方法中实现
-                jobinfo_result = JobInfo.objects.create(type=type, job_celery_id=attrs['job_celery_id'], case_code=attrs['case_code'],
-                                 gmt_create=attrs['gmt_create'], gmt_modified=attrs['gmt_modified'], is_del=attrs['is_del'], area=attrs['area'])
-                if jobinfo_result is not None:
-                    jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id, rate=attrs['rate'], state=attrs['state'],
-                                                    gmt_create=attrs['gmt_create'], gmt_modified=attrs['gmt_modified'])
-                    if jobrate_result is not None:
-                        return jobinfo_result
-                    else:
-                        return None
-                else:
-                    return None
-        except:
-            pass
-
     def post(self, request):
+        json_data = ''
         if hasattr(request, 'user'):
             user = getattr(request, 'user')
             if user:
@@ -297,23 +141,19 @@ class CaseListView(APIView):
                     case_result = self.set_caseinfo(request, uid)
                     job_result = self.set_jobinfo(request, uid)
                     if case_result is not None:
-                        return Response(case_result.case_code)
+                        self._status = 200
+                        json_data = case_result.case_code
+                        # return Response(case_result.case_code)
                     if job_result is not None:
-                        return Response(job_result.case_code)
+                        self._status = 200
+                        json_data = job_result.case_code
+                        # return Response(job_result.case_code)
                 except:
+                    json_data = '发生异常错误'
+                    # return Response(status=self._status)
                     pass
 
-
-
-
-
-
-
-
-
-
-
-
+        return Response(json_data, status=self._status)
 
 
 class CaseHistoryListView(CaseListView):
@@ -350,7 +190,18 @@ class CaseHistoryListView(CaseListView):
 # permission_classes = (IsAuthenticated,)
 
 class CaseModelView(CaseBaseView):
+    # 状态码
+    _status = 500
+
     def get(self, request):
+        '''
+            从 user_caseinfo表中找到对应的记录
+            TODO:[*] 20-04-22 此处注意修改 不能写死CaseOilInfo ，因为还有搜救的表
+        :param request:
+        :type request:
+        :return:
+        :rtype:
+        '''
         user = self.get_user(request)
         type = request.GET.get('type', None)
         code = request.GET.get('casecode', None)
@@ -361,3 +212,36 @@ class CaseModelView(CaseBaseView):
                 case_temp = cases[0]
         json_data = CaseSerializer(case_temp, many=False).data
         return Response(json_data)
+
+    def post(self, request):
+        '''
+            将之前写在 CaseListView 中的 post 中的内容放在此 view->post 中
+        :param request:
+        :type request:
+        :return:
+        :rtype:
+        '''
+        json_data = ''
+        if hasattr(request, 'user'):
+
+            user = getattr(request, 'user')
+            if user:
+                uid = user.id
+                try:
+                    case_result = self.set_caseinfo(request, uid)
+                    # 若上面的 case_result 为Null 下面的语句就不用执行
+                    job_result = self.set_jobinfo(request, uid) if case_result is not None else None
+                    if case_result is not None:
+                        self._status = 200
+                        json_data = case_result.case_code
+                        # return Response(case_result.case_code)
+                    if job_result is not None:
+                        self._status = 200
+                        json_data = job_result.case_code
+                    else:
+                        json_data = f'创建指定case时出错'
+                        # return Response(job_result.case_code)
+                except:
+                    pass
+
+        return Response(json_data, status=self._status)

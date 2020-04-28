@@ -7,9 +7,13 @@ from sqlalchemy.orm import relationship,sessionmaker
 
 import os
 from datetime import datetime
-from conf.settings import DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT, _WORK_SPACE
+import xarray as xar
+import netCDF4 as nc
+import pandas as pd
 
-engine = create_engine("mysql+mysqldb://root:admin123@localhost/searchrescue", encoding='utf-8', echo=True)
+from conf.settings import DOWNLOAD_ROOT, GEO_CURRENT_ROOT, GEO_WIND_ROOT, _WORK_SPACE
+from util.tools import local_to_utc, utc_to_local
+engine = create_engine("mysql+mysqldb://root:123456@localhost/searchrescue", encoding='utf-8', echo=True)
 
 # 生成基类
 Base = declarative_base()
@@ -116,22 +120,26 @@ def main():
     # file_name = 'nwp_cur_20200413.nc'
     # file_name = 'scs_cur_20200413.nc'
     # file_name = 'nmefc_wrf_2020041300.nc'
-
     target_dir = r'd:\data\SearchRescueSys\data\download\COMMON\DAILY\2020\4\13'
     # 记录UserTaskinfo状态
     userTaskInfo = UserTaskinfo()
     userTaskInfo.root_path = DOWNLOAD_ROOT
     userTaskInfo.case_path = target_dir[-(len(target_dir)-len(DOWNLOAD_ROOT)-1):]
-    userTaskInfo.create_date = datetime.now()
-    userTaskInfo.forecast_date = datetime.now().date()
+    userTaskInfo.create_date = local_to_utc(datetime.now())
+    file_path = os.path.join(target_dir, file_name)
+    ds = nc.Dataset(file_path)
+    ds_xr = xar.open_dataset(file_path)
+    forecast_date_utc = pd.to_datetime(ds_xr.coords['time'].values[0])
+    userTaskInfo.forecast_date = forecast_date_utc
     userTaskInfo.ext = 'nc'
     userTaskInfo.state = 2
     fileCode = file_name.split('_')
+    area_code = fileCode[0]
+    type_code = fileCode[1]
     if(len(fileCode) > 2):
-        if(fileCode[1] == 'cur'):
-            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
-            userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
-        elif(fileCode[1] == 'wrf'):
+        if(type_code == 'cur' or type_code == 'current' ):            userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+            userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code=area_code).first().code
+        elif(type_code == 'wrf'):
             userTaskInfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
             userTaskInfo.coverage_area = session.query(DictBase).filter_by(type_code='nwp').first().code
         session.add(userTaskInfo)
@@ -139,21 +147,41 @@ def main():
     # 记录GeoCoverageinfo状态
     geoCoverageinfo = GeoCoverageinfo()
     fileCode = file_name.split('_')
-    if (fileCode[1] == 'cur'):
-        geoCoverageinfo.root_path = GEO_CURRENT_ROOT
-    elif (fileCode[1] == 'wrf'):
+    if (fileCode[1] == 'cur'):        geoCoverageinfo.root_path = GEO_CURRENT_ROOT
+    elif (type_code == 'wrf'):
         geoCoverageinfo.root_path = GEO_WIND_ROOT
     geoCoverageinfo.relative_path = os.path.join(str(datetime.now().date().year),
                                 str(datetime.now().date().month), str(datetime.now().date().day))
     geoCoverageinfo.file_name = file_name
     file_size = os.path.getsize(os.path.join(target_dir, file_name))
     geoCoverageinfo.file_size = file_size
-    geoCoverageinfo.create_date = datetime.now()
+    geoCoverageinfo.create_date = local_to_utc(datetime.now())
+
     if (len(fileCode) > 2):
-        if (fileCode[1] == 'cur'):
-            geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
-            geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=fileCode[0]).first().code
-        elif (fileCode[1] == 'wrf'):
+        if (type_code == 'cur' or type_code == 'current' ):
+            if (('time' in ds.dimensions) and ('lat' in ds.dimensions) and ('lon' in ds.dimensions)):
+                dims = 'time,lat,lon'
+            else:
+                dims = ''
+            if (('u' in ds.variables) and ('v' in ds.variables)):
+                vars = 'u,v'
+            else:
+                vars = ''
+            geoCoverageinfo.dimessions = dims
+            geoCoverageinfo.variables = vars            geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='CURRENT').first().code
+
+            geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code=area_code).first().code
+        elif (type_code == 'wrf'):
+            if(('time' in ds.dimensions) and ('latitude' in ds.dimensions) and ('longitude' in ds.dimensions)):
+                dims = 'time,latitude,longitude'
+            else:
+                dims = ''
+            if (('U10' in ds.variables) and ('V10' in ds.variables)):
+                vars = 'U10,V10'
+            else:
+                vars = ''
+            geoCoverageinfo.dimessions = dims
+            geoCoverageinfo.variables = vars
             geoCoverageinfo.coverage_type = session.query(DictBase).filter_by(type_code='WIND').first().code
             geoCoverageinfo.coverage_area = session.query(DictBase).filter_by(type_code='nwp').first().code
         session.add(geoCoverageinfo)
@@ -161,9 +189,9 @@ def main():
     # 记录geoStoreinfo状态
     geoStoreinfo = GeoStoreinfo()
     fileCode = file_name.split('_')
-    if (fileCode[1] == 'cur'):
+    if (type_code == 'cur' or type_code == 'current' ):
         geoStoreinfo.work_space = _WORK_SPACE.get('CURRENT')
-    elif (fileCode[1] == 'wrf'):
+    elif (type_code == 'wrf'):
         geoStoreinfo.work_space = _WORK_SPACE.get('WIND')
     geoStoreinfo.store_name = file_name[:(len(file_name)-3)]
     geoStoreinfo.store_type = 301

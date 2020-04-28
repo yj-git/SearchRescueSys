@@ -10,6 +10,7 @@
 import os
 import wrapt
 import time
+import datetime
 from pathlib import Path
 
 
@@ -44,3 +45,27 @@ def exe_run_time():
         wrapped(*args, **kwargs)
         print(f'当前方法:{wrapped.__name__}耗时:{time.time() - local_time}')
     return wrapper
+
+def utc_to_local(utc_st):
+    '''
+        UTC时间转本地时间（+8: 00）
+    :param utc_st:
+    :return:
+    '''
+    now_stamp = time.time()
+    local_time = datetime.datetime.fromtimestamp(now_stamp)
+    utc_time = datetime.datetime.utcfromtimestamp(now_stamp)
+    offset = local_time - utc_time
+    local_st = utc_st + offset
+    return local_st
+
+
+def local_to_utc(local_st):
+    '''
+        本地时间转UTC时间（-8: 00）
+    :param local_st:
+    :return:
+    '''
+    time_struct = time.mktime(local_st.timetuple())
+    utc_st = datetime.datetime.utcfromtimestamp(time_struct)
+    return utc_st

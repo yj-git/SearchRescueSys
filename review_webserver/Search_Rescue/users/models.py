@@ -4,8 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
-from base.models import IIsDelModel
-from geo.models import CoverageModel
+from base.models import IIsDelModel, IArea
+from util.customer_exception import LackCoverageError
 
 
 # Create your models here.
@@ -39,23 +39,6 @@ class ICaseBaseModel(models.Model):
     case_desc = models.CharField(max_length=500)
     # case 的code
     case_code = models.CharField(max_length=50, editable=False, unique=True)
-
-    class Meta:
-        abstract = True
-
-
-class IArea(models.Model):
-    CHOISE_TYPE = (
-        (-1, 'NULL'),
-        (0, 'NORTHWEST'),  # 西北太
-        (1, 'CHINASEA'),
-        (2, 'EASTCHINASEA'),  # 东中国海
-        (3, 'BOHAISEA'),  # 东中国海
-        (4, 'INDIAN'),  # 印度洋
-        (5, 'SOUTHCHINASEA')  # 南海
-        # (6,'NORTHWESTPACIFIC')
-    )
-    area = models.IntegerField(choices=CHOISE_TYPE, default=-1)
 
     class Meta:
         abstract = True
@@ -100,6 +83,7 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
     '''
         case
     '''
+    id = models.AutoField(primary_key=True)
     wind_coefficient = models.FloatField(null=True, verbose_name="风偏系数")
     wind_dir = models.FloatField(null=True, verbose_name="风偏角度")
 
@@ -133,8 +117,12 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
         # 方式1:
         un_null_list = ['root_path', 'case_path', 'forecast_data', 'case_name', 'lat', 'lon', 'nums',
                         'wind_coefficient']
+        if not all([attrs.get('wind_coverage_id', None), attrs.get('current_coverage_id', None)]):
+            raise LackCoverageError('lack wind or current coverage id')
         if any([attrs.get(temp) is None for temp in un_null_list]):
             return None
+
+
 
         # 方式2：
         # for temp in un_null_list:
@@ -332,18 +320,3 @@ class TaskUserModel(ITask, ICaseBaseStore):
 
     class Meta:
         db_table = 'user_taskinfo'
-
-
-class RelaCaseOilCoverage(models.Model):
-    '''
-        TODO:[-] 20-04-27
-        用来关联 geo_coverageInfo 与 user_caseoilinfo 表
-        有两个外键 分别对应的是 geo_coverageInfo 代表的 流场+风场 的数据(可以为空，不可都为空)
-    '''
-    id = models.AutoField(primary_key=True)
-    wind_id = models.ForeignKey(CoverageModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-    current_id = models.ForeignKey(CoverageModel, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-    case_id = models.ForeignKey(CaseOilInfo, on_delete=models.SET_DEFAULT, default=DEFAULT_FK)
-
-    class Meta:
-        db_table = 'rela_case_oil'

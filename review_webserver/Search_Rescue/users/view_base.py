@@ -7,11 +7,13 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth.models import User
 from util.common import DEFAULT_FK
 from util.enum import TaskStateEnum
+from util.customer_exception import LackCoverageError
 from base.view_base import CoverageBaseView
 from base.tasks_base import TaskOpenDrift
 from users.models import TaskUserModel, AuthOilRela, AuthRescueRela, CaseOilInfo, CaseRescueInfo, ICaseBaseModel, \
     JobInfo, JobUserRate, \
     ICaseBaseStore
+from oilspilling.tasks import do_job
 
 
 class CaseBaseView(APIView):
@@ -114,9 +116,12 @@ class CaseBaseView(APIView):
         attrs['area'] = request.GET.get('area', None)
         attrs['wind_coefficient'] = request.GET.get('wind_coefficient', None)
         attrs['wind_dir'] = request.GET.get('wind_dir', None)
+        attrs['wind_coverage_id'] = request.GET.get('wind_coverage_id', None)
+        attrs['current_coverage_id'] = request.GET.get('current_coverage_id', None)
+        # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
+        attrs = CaseOilInfo.validate(self, attrs)
+
         try:
-            # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
-            attrs = CaseOilInfo.validate(self, attrs)
             if attrs is not None:
                 # 创建CaseOilInfo记录
                 case_result = CaseOilInfo.objects.create(root_path=attrs['root_path'],
@@ -179,6 +184,8 @@ class CaseBaseView(APIView):
                                                         gmt_create=attrs['gmt_create'],
                                                         gmt_modified=attrs['gmt_modified'], is_del=attrs['is_del'],
                                                         area=attrs['area'])
+                # TODO:[*] 20-04-28 执行实际的 do job 操作，由于执行实际的 do_job 操作主要是在 oilspilling app -> tasks ，需要调用该延时task
+                self._do_job(attrs)
                 if jobinfo_result is not None:
                     jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id,
                                                                 rate=attrs['rate'], state=attrs['state'],
@@ -194,8 +201,11 @@ class CaseBaseView(APIView):
             pass
 
     def _do_job(self, attrs: {}):
+
+        # TODO:[*] 20-04-28
+        do_job.delay()
         task_open_drift = TaskOpenDrift()
-        task_open_drift.job([attrs['lon'], attrs['lat']])
+        task_open_drift.job([attrs['lon'], attrs['lat']], )
 
 
 class TaskBaseView(CoverageBaseView):

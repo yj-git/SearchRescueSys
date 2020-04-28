@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'users',
     # TODO:[-] 20-02-15 加入了数据字典app
     'common',
-    'geo'
+    'geo',
+    'rela',
     # 'apps.user',
     # 'common'
 ]

@@ -16,3 +16,9 @@ class BaseSubmitDataError(Exception):
 
 class LackCoverageError(BaseSubmitDataError):
     pass
+
+class ConvertError(BaseSubmitDataError):
+    '''
+        转换异常
+    '''
+    pass

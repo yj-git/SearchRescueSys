@@ -63,7 +63,7 @@ class OilPyJob(NCJobBase):
     def handle_do_py(self, event: Event, **kwargs):
         print('模拟调用py文件，并传入相应参数')
         task_temp=TaskOpenDrift()
-        # task_temp.job()
+        task_temp.job()
         pass
 
 

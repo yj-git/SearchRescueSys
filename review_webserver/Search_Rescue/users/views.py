@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth.models import User
 from util.jobs import ForecastJob
-from util.customer_exception import LackCoverageError
+from util.customer_exception import LackCoverageError, ConvertError
 
 # from typing import List
 
@@ -246,7 +246,8 @@ class CaseModelView(CaseBaseView):
                         # return Response(job_result.case_code)
                 except LackCoverageError as e:
                     json_data = e.message
-
+                except ConvertError as e:
+                    json_data = e.message
                 except:
                     json_data = '发生异常错误'
                     pass

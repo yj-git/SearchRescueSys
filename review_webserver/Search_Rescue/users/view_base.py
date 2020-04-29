@@ -4,9 +4,11 @@ from rest_framework.decorators import APIView, api_view, authentication_classes,
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from django.contrib.auth.models import User
 from util.common import DEFAULT_FK
-from util.enum import TaskStateEnum
+from util.enum import TaskStateEnum, JobTypeEnum
 from util.customer_exception import LackCoverageError
 from base.view_base import CoverageBaseView
 from base.tasks_base import TaskOpenDrift
@@ -74,6 +76,7 @@ class CaseBaseView(APIView):
     def gen_casecode(self, code):
         '''
             根据传入的 code 参数，生成带时间戳的case_code编码
+            TODO:[-] 放在model中
         :param code:
         :return:
         '''
@@ -88,9 +91,10 @@ class CaseBaseView(APIView):
         :param request:
         :return:
         '''
-        type = request.GET.get('type', None)
-        if type is not None:
-            type = int(type)
+        type_job = request.GET.get('type', None)
+        type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
+        # if type is not None:
+        #     type = int(type)
         # TODO:[*] 20-02-25 以下部分建议改为通过model进行获取对应的参数，在model中添加验证方法，不用放在view
         # TODO:[*] 20-02-25 建议将root_path 与 case_path 通过工厂模式实现创建对应的 路径(路径不由前端传入，路径在后端根据传入的 user name 与当前的 yyyy/mm/dd 共同拼接而成。
         # eg: /user_name/yyyy/mm/dd/
@@ -140,7 +144,7 @@ class CaseBaseView(APIView):
                                                          wind_dir=attrs['wind_dir'])
                 if case_result is not None:
                     # 建立User、Case关系
-                    if type == 0:
+                    if type_job == JobTypeEnum.OIL.value:
                         model = AuthOilRela
                     else:
                         model = AuthRescueRela
@@ -149,10 +153,17 @@ class CaseBaseView(APIView):
                         return case_result
                     else:
                         return None
-        except:
+        except IntegrityError as e:
+            print(e.args)
+        except SQLAlchemyError as e:
+            print(e.args)
+        except Exception as e:
+            print(e.args)
             pass
-        finally:
-            return None
+        return None
+        # 注意此处不能使用finally 因为会在上面的 return 之后再返回 None
+        # finally:
+        #     return None
 
     def set_jobinfo(self, request, uid: str):
         '''
@@ -161,8 +172,8 @@ class CaseBaseView(APIView):
         :param request:
         :return:
         '''
-        type = int(request.GET.get('type', None))
-
+        type_job = request.GET.get('type', None)
+        type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
         # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
         attrs = {}
         attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
@@ -179,7 +190,7 @@ class CaseBaseView(APIView):
             if attrs is not None:
                 # 创建JobInfo记录
                 # TODO:[-] 20-02-25 添加JobInfo的同时还需要在 user_caseoilinfo 中添加相应记录——已在 set_caseinfo 方法中实现
-                jobinfo_result = JobInfo.objects.create(type=type, job_celery_id=attrs['job_celery_id'],
+                jobinfo_result = JobInfo.objects.create(type=type_job, job_celery_id=attrs['job_celery_id'],
                                                         case_code=attrs['case_code'],
                                                         gmt_create=attrs['gmt_create'],
                                                         gmt_modified=attrs['gmt_modified'], is_del=attrs['is_del'],
@@ -197,15 +208,20 @@ class CaseBaseView(APIView):
                         return None
                 else:
                     return None
-        except:
+
+        except IntegrityError as e:
+            print(e.args)
+        except SQLAlchemyError as e:
+            print(e.args)
+        except Exception as e:
+            print(e.args)
             pass
 
     def _do_job(self, attrs: {}):
 
-        # TODO:[*] 20-04-28
-        do_job.delay()
-        task_open_drift = TaskOpenDrift()
-        task_open_drift.job([attrs['lon'], attrs['lat']], )
+        # TODO:[*] 20-04-28,测试时先不使用延时调试
+        # do_job.delay()
+        do_job()
 
 
 class TaskBaseView(CoverageBaseView):

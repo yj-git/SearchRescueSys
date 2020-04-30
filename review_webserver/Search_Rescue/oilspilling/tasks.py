@@ -28,6 +28,7 @@ from util.common import get_path
 from util.reader import OilFileReader, create_reader
 # TODO:[*] 20-02-05 引发了一个错误，暂时去掉
 from django.contrib.auth.models import User
+from rela.views_base import RelaCaseOilView
 # TODO:[-] 20-04-23 加入了celery的异步作业调度
 from tasks.celery_con import app as celery_app
 from base.tasks_base import TaskOpenDrift
@@ -62,8 +63,13 @@ class OilPyJob(NCJobBase):
 
     def handle_do_py(self, event: Event, **kwargs):
         print('模拟调用py文件，并传入相应参数')
-        task_temp=TaskOpenDrift()
-        task_temp.job()
+        # TODO:[-] 20-04-30 获取传入的 attr￿s ，注意目前传入的 attrs 中缺少所需要的参数
+        task_temp = TaskOpenDrift()
+        attrs = kwargs.get('attrs')
+        # TODO:[*] 20-04-30 此处有遗留
+        task_temp.job(nc_files=attrs['nc_files'], latlon=attrs['latlon'], start_time=attrs['start_time'],
+                      end_time=attrs['end_time'], simluation_time_step=0,
+                      console_time_step=0, out_file=None, export_variables=[])
         pass
 
 
@@ -198,7 +204,7 @@ class OilDbJob(NCJobBase):
 # TODO:[-] 20-04-23 加入了 celery
 # @celery_app.task(bind=True)
 @shared_task
-def do_job():
+def do_job(attrs: {}):
     '''
         写入数据库只需要做如下工作：
                     -1 根据msg获取指定的nc文件名称
@@ -218,5 +224,5 @@ def do_job():
     # job_read_nc_file.handle(evt)
     for handle_name in ['do_py', 'check_file', 'read_nc', 'to_db']:
         evt = Event(handle_name)
-        job_db.handle(evt, msg=msg)
+        job_db.handle(evt, msg=msg, attrs=attrs)
     pass

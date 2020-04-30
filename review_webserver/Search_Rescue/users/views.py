@@ -140,7 +140,7 @@ class CaseListView(CaseBaseView):
                 uid = user.id
                 try:
                     case_result = self.set_caseinfo(request, uid)
-                    job_result = self.set_jobinfo(request, uid)
+                    job_result = self.set_jobinfo(request, uid, case_id=case_result.id)
                     if case_result is not None:
                         self._status = 200
                         json_data = case_result.case_code
@@ -232,8 +232,14 @@ class CaseModelView(CaseBaseView):
                 uid = user.id
                 try:
                     case_result = self.set_caseinfo(request, uid)
+                    # TODO:[-] 20-04-30 注意需要手动修改 request.GET['case_code']
+                    copy_request = request.GET.copy()
+                    copy_request['case_code'] = case_result.case_code
+                    request.GET = copy_request
                     # 若上面的 case_result 为Null 下面的语句就不用执行
-                    job_result = self.set_jobinfo(request, uid) if case_result is not None else None
+                    job_result = self.set_jobinfo(request, uid,
+                                                  case_result=case_result,
+                                                  case_id=case_result.id) if case_result is not None else None
                     if case_result is not None:
                         self._status = 200
                         json_data = case_result.case_code

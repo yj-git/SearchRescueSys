@@ -37,7 +37,7 @@ class TaskOpenDrift(ITaskBase):
         pass
 
     def job(self, nc_files: List[str], latlon: List[float], start_time: datetime, end_time: datetime,
-            simluation_time_step: int, console_time_step: int, out_file=None, export_variables=List[str], radius=50,
+            simluation_time_step: int, console_time_step: int, out_file=None, export_variables:List[str]=[], radius=50,
             number=3000, wind_drfit_dactor=.2):
         '''
             执行 open_drift 作业

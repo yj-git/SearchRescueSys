@@ -6,7 +6,7 @@ from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 
 # Create your models here.
 
-class RelaCaseOilCoverage(models.Model):
+class RelaCaseOilCoverageModel(models.Model):
     '''
         TODO:[-] 20-04-27
         用来关联 geo_coverageInfo 与 user_caseoilinfo 表

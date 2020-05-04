@@ -10,15 +10,15 @@ _DEBUG = True
 # -----
 # 路径相关
 # mac 15
-# DIR = r"/Users/liusihan/Documents/01project/SearchRescueSys/data/搜救结果"
+DIR = r"/Users/evaseemefly/Documents/03Data/nc/123/2020/04"
 # mac 13
 # DIR = r"/Users/drno/Documents/01Proj/SearchRescueSys/data/demo_data"
 # 7540
 # DIR = r"D:\02proj\SearchRescue\SearchRescueSys\data\demo_data"
 # aw
-DIR = r"D:\01proj\SearchRescue\SearchRescueSys\data\demo_data"
+# DIR = r"D:\01proj\SearchRescue\SearchRescueSys\data\demo_data"
 
 # 搜救
 # FILE_NAME = 'qz_ty1_100p.nc'
 # 溢油
-FILE_NAME = 'sanjioil.nc'
+FILE_NAME = 'os2020041912.nc'

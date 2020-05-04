@@ -4,7 +4,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
-from base.models import IIsDelModel
+from util.enum import TaskStateEnum
+from base.models import IIsDelModel, IArea
+from util.customer_exception import LackCoverageError, ConvertError
+import arrow
 
 
 # Create your models here.
@@ -35,26 +38,9 @@ class ICaseBaseModel(models.Model):
     '''
     # 保存case的部分提交的参数
     case_name = models.CharField(max_length=50)
-    case_desc = models.CharField(max_length=500)
+    case_desc = models.CharField(max_length=500, null=True)
     # case 的code
     case_code = models.CharField(max_length=50, editable=False, unique=True)
-
-    class Meta:
-        abstract = True
-
-
-class IArea(models.Model):
-    CHOISE_TYPE = (
-        (-1, 'NULL'),
-        (0, 'NORTHWEST'),  # 西北太
-        (1, 'CHINASEA'),
-        (2, 'EASTCHINASEA'),  # 东中国海
-        (3, 'BOHAISEA'),  # 东中国海
-        (4, 'INDIAN'),  # 印度洋
-        (5, 'SOUTHCHINASEA')  # 南海
-        # (6,'NORTHWESTPACIFIC')
-    )
-    area = models.IntegerField(choices=CHOISE_TYPE, default=-1)
 
     class Meta:
         abstract = True
@@ -99,48 +85,110 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
     '''
         case
     '''
+    id = models.AutoField(primary_key=True)
     wind_coefficient = models.FloatField(null=True, verbose_name="风偏系数")
     wind_dir = models.FloatField(null=True, verbose_name="风偏角度")
 
     # 油品，油量，水温
 
-    def validate(self, attrs: object):  # 对多个字段校验
+    def __gen_casecode(self, code):
+        '''
+            根据传入的 code 参数，生成带时间戳的case_code编码
+        :param code:
+        :return:
+        '''
+        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
+        case_code = code + '_' + dt_ms
+        return case_code
+
+    def _gen_casecode(self, code):
+        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
+        case_code = code + '_' + dt_ms
+        return case_code
+
+    def gen_casecode(self, code):
+        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
+        case_code = code + '_' + dt_ms
+        return case_code
+
+    def validate(self, attrs: {}):  # 对多个字段校验
         '''
             根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
+            目前实际就是判断不可为null的是否不为null
         :param attrs:
         :return:
         '''
-        if (attrs['root_path'] is '') or (attrs['case_path'] is '') or (attrs['create_date'] is '') or (
-                attrs['forecast_date'] is '') \
-                or (attrs['case_name'] is '') or (attrs['case_desc'] is '') or (attrs['case_code'] is '') or (
-                attrs['area'] is '') \
-                or (attrs['lat'] is '') or (attrs['lon'] is '') or (attrs['radius'] is '') or (attrs['nums'] is '') \
-                or (attrs['simulation_duration'] is '') or (attrs['simulation_step'] is '') or (
-                attrs['console_step'] is '') \
-                or (attrs['current_nondeterminacy'] is '') or (attrs['equation'] is '') or (attrs['is_del'] is '') \
-                or (attrs['wind_coefficient'] is '') or (attrs['wind_dir'] is ''):
+        # 此处应判断是否为null
+        # 对于字典的判断最好使用 xx.get('xx')的方式 否则不存在会抛出异常
+
+        # 此处准备改成列表推导
+        # 判断 attrs中是否有在指定list中的值为Null的对象，若有则返回None
+        # TODO:[-] 20-04-25 使用此种方式完成对于是否为空的判断
+        # 方式1:
+        un_null_list = ['root_path', 'case_path', 'forecast_date', 'case_name', 'lat', 'lon', 'nums',
+                        'wind_coefficient']
+        # TODO:[*] 20-04-28 住一次出存在一个问题就是若提交的 params中有 current_coverage_id 字段，但是为''，则还是会有问题
+        # 此处的逻辑为: 两个id 起码有一个为非空=不能全为空=!全为空
+        if all([attrs.get('wind_coverage_id', None) is None, attrs.get('current_coverage_id', None) is None]):
+            raise LackCoverageError('lack wind or current coverage id')
+        if any([attrs.get(temp) is None for temp in un_null_list]):
             return None
-        attrs['case_code'] = self.gen_casecode(attrs['case_code'])
-        attrs['create_date'] = datetime.strptime(attrs['create_date'], '%Y-%m-%d %H:%M:%S')
-        attrs['forecast_date'] = datetime.strptime(attrs['forecast_date'], '%Y-%m-%d %H:%M:%S')
-        attrs['lat'] = float(attrs['lat'])
-        attrs['lon'] = float(attrs['lon'])
-        attrs['radius'] = float(attrs['radius'])
-        attrs['nums'] = int(attrs['nums'])
-        attrs['simulation_duration'] = float(attrs['simulation_duration'])
-        attrs['simulation_step'] = float(attrs['simulation_step'])
-        attrs['console_step'] = float(attrs['console_step'])
-        attrs['current_nondeterminacy'] = float(attrs['current_nondeterminacy'])
-        attrs['equation'] = int(attrs['equation'])
-        attrs['wind_coefficient'] = float(attrs['wind_coefficient'])
-        attrs['wind_dir'] = float(attrs['wind_dir'])
-        if attrs['is_del'] == '0':
-            attrs['is_del'] = False
-        elif attrs['is_del'] == '1':
-            attrs['is_del'] = True
-        else:
-            return None
-        return attrs
+
+        # 方式2：
+        # for temp in un_null_list:
+        #     if attrs.get(temp) is None:
+        #         return None
+
+        # 方式3:
+        # if (attrs.get('root_path') or attrs.get('case_path') or attrs.get('create_date') or
+        #         attrs.get('forecast_date')
+        #         or attrs.get('case_name') or attrs.get('case_desc') or attrs.get('case_code') or
+        #         attrs.get('area')
+        #         or attrs.get('lat') or attrs.get(
+        #             'lon') or attrs.get('radius') or attrs.get('nums')
+        #         or attrs.get('simulation_duration') or
+        #         attrs.get('simulation_step') or
+        #         attrs.get('console_step')
+        #         or attrs.get('current_nondeterminacy') or
+        #         attrs.get('equation') or attrs.get('is_del')
+        #         or attrs.get('wind_coefficient') or
+        #         attrs.get('wind_dir')):
+        #     return None
+
+        # attrs['case_code'] = self.__gen_casecode(attrs.get('case_code'))
+        try:
+            attrs['case_code'] = self.gen_casecode(attrs.get('case_code'))
+
+            # 若自动创建的时间是utc时间
+            attrs['create_date'] = arrow.get(attrs.get('create_date')).datetime if attrs.get('create_date',
+                                                                                             None) not in ['',
+                                                                                                           None] else arrow.utcnow().datetime
+            # 预报时间由前台传入为 gmt 时间(非utc时间)
+            attrs['forecast_date'] = arrow.get(attrs.get('forecast_date')).datetime
+            attrs['lat'] = float(attrs.get('lat'))
+            attrs['lon'] = float(attrs.get('lon'))
+            attrs['radius'] = float(attrs.get('radius')) if attrs.get('radius') is not None else None
+            attrs['nums'] = int(attrs.get('nums')) if attrs.get('nums') is not None else None
+            attrs['simulation_duration'] = float(attrs.get('simulation_duration')) if attrs.get(
+                'simulation_duration') is not None else None
+            attrs['simulation_step'] = float(attrs.get('simulation_step')) if attrs.get(
+                'simulation_step') is not None else None
+            attrs['console_step'] = float(attrs.get('console_step')) if attrs.get('console_step') is not None else None
+            attrs['current_nondeterminacy'] = float(attrs.get('current_nondeterminacy')) if attrs.get(
+                'current_nondeterminacy') is not None else None
+            attrs['equation'] = int(attrs.get('equation')) if attrs.get('equation') is not None else None
+            attrs['wind_coefficient'] = float(attrs.get('wind_coefficient')) if attrs.get(
+                'wind_coefficient') is not None else None
+            attrs['wind_dir'] = float(attrs.get('wind_dir')) if attrs.get('wind_dir') is not None else None
+            if attrs['is_del'] == '0':
+                attrs['is_del'] = False
+            elif attrs['is_del'] == '1':
+                attrs['is_del'] = True
+            else:
+                attrs['is_del'] = False
+            return attrs
+        except Exception as e:
+            raise ConvertError('convert error')
 
     class Meta:
         db_table = 'user_caseoilinfo'
@@ -176,13 +224,13 @@ class IJobBaseInfo(models.Model):
     CHOISE_TYPE = (
         (0, 'oil'),
         (1, 'rescue'),
-        (2, 'coverage')  # TODO:[-] 20-04-03 +
+        (2, 'coverage')  # TODO:[*] 20-04-29 + 此处需要与 枚举类映射起来
     )
     id = models.AutoField(primary_key=True)
     # user_caseinfo的id
     # cid = models.IntegerField()
     # celery中保存的id
-    job_celery_id = models.CharField(max_length=200)
+    job_celery_id = models.CharField(max_length=200, null=True)
     # case 的code,注意code不允许重复
     case_code = models.CharField(max_length=50, editable=False, unique=True)
     gmt_create = models.DateTimeField(editable=False, auto_now_add=True)
@@ -201,27 +249,41 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
 
     '''
 
-    def validate(self, attrs: object):
+    def validate(self, attrs: {}):
         '''
             根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
         :param attrs:
         :return:
         '''
+        un_null_list = ['case_code']
+        if any([attrs.get(temp) is None for temp in un_null_list]):
+            return None
+
         if (attrs['job_celery_id'] is '') or (attrs['case_code'] is '') or (attrs['gmt_create'] is '') or (
                 attrs['gmt_modified'] is '') \
                 or (attrs['area'] is '') or (attrs['state'] is '') or (attrs['is_del'] is ''):
             return None
-        attrs['case_code'] = self.gen_casecode(attrs['case_code'])
-        attrs['gmt_create'] = datetime.strptime(attrs['gmt_create'], '%Y-%m-%d %H:%M:%S')
-        attrs['gmt_modified'] = datetime.strptime(attrs['gmt_modified'], '%Y-%m-%d %H:%M:%S')
+        attrs['case_code'] = attrs['case_code']
+        attrs['gmt_create'] = arrow.get(attrs.get('gmt_create')).datetime if attrs.get('gmt_create',
+                                                                                       None) not in ['',
+                                                                                                     None] else arrow.utcnow().datetime
+        attrs['gmt_modified'] = arrow.get(attrs.get('gmt_modified')).datetime if attrs.get('gmt_modified',
+                                                                                           None) not in ['',
+                                                                                                         None] else arrow.utcnow().datetime
         attrs['area'] = int(attrs['area'])
-        attrs['state'] = int(attrs['state'])
-        if attrs['is_del'] == '0':
-            attrs['is_del'] = False
-        elif attrs['is_del'] == '1':
-            attrs['is_del'] = True
-        else:
-            return None
+        # attrs['state'] = int(attrs['state'])
+        # attrs['state'] = attrs.get('state', None)
+        attrs['state'] = int(attrs['state']) if attrs['state'] is not None else TaskStateEnum.RUNNING.value
+        attrs['is_del'] = False
+        # TODO:[-] 20-04-30 注意将 rela_case_coverage 中需要判断的 current_id 与 wind_id 放在 users/models 中格式化
+        attrs['current_id']=int(attrs['current_id'] if attrs['current_id'] is not None else DEFAULT_NULL_KEY)
+        attrs['wind_id'] = int(attrs['wind_id'] if attrs['wind_id'] is not None else DEFAULT_NULL_KEY)
+        # if attrs['is_del'] == '0':
+        #     attrs['is_del'] = False
+        # elif attrs['is_del'] == '1':
+        #     attrs['is_del'] = True
+        # else:
+        #     return None
         return attrs
 
     class Meta:

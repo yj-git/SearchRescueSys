@@ -10,17 +10,19 @@
 _FTP = {
     '_URL': '128.5.6.142',
     '_USERNAME': 'Currents',
-    '_PWD': ''
+    '_PWD': '123'
 }
 # 增加风场FTP地址，caiwb 2020-04-13
 _FTP_WIND = {
     '_URL': '128.5.6.142',
     '_USERNAME': 'wind',
-    '_PWD': ''
+    '_PWD': '123'
 }
 # 用来存储 ftp 下载的文件的根目录(或放在数据库中？)
 # DOWNLOAD_ROOT = r'D:\01proj\SearchRescueSys\data\download'
-DOWNLOAD_ROOT = r'd:\data\SearchRescueSys\data\download'  #caiwb 2020-04-13
+# DOWNLOAD_ROOT = r'd:\data\SearchRescueSys\data\download'  #caiwb 2020-04-13
+DOWNLOAD_ROOT = r'/Users/evaseemefly/Documents/03Data/nc'
+
 
 # 用来存储要发布的nc文件
 GEO_CURRENT_ROOT = r'D:\03data\geoserver_data\current'

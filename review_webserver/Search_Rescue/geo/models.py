@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils.timezone import now
 # 本项目的
-from users.models import IIsDelModel, IArea
+
+from base.models import IArea
 from common.models import IIdModel, IDescModel
 from base.models import CHOICE_GEO_TYPE, IIsDelModel
 from users.models import TaskUserModel

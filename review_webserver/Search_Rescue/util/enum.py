@@ -15,3 +15,4 @@ class TaskStateEnum(Enum):
     WAITTING = 3
     ERROR = 4
     UNUSED = 5
+

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import sys
 from opendrift.readers import reader_netCDF_CF_generic
 from opendrift.models.openoil import OpenOil
+from typing import List
 
 
 # 此处获取所有的传入参数
@@ -36,12 +37,13 @@ lon = 4.6;
 lat = 60.0;  # Outside Bergen
 
 # time = datetime(2015, 9, 22, 6, 0, 0)
-time = [reader_arome.start_time,
-        reader_arome.start_time + timedelta(hours=30)]
+# 时间数组
+times: List[datetime, datetime] = [reader_arome.start_time,
+                                  reader_arome.start_time + timedelta(hours=30)]
 # time = reader_arome.start_time
 
 # Seed oil elements at defined position and time
-o.seed_elements(lon, lat, radius=50, number=3000, time=time,
+o.seed_elements(lon, lat, radius=50, number=3000, time=times,
                 wind_drift_factor=.02)
 
 # Adjusting some configuration

@@ -5,7 +5,7 @@
                 <div class="login-form-my">
                     <form>
                         <div>
-                            <span class="login-title-my">值班系统</span>
+                            <span class="login-title-my">搜救溢油系统</span>
                             <div class="login-wrap-my">
                                 <!-- <span>用户名</span> -->
                                 <label for="exampleInputName2">用户名</label>

@@ -18,6 +18,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.pagination import PageNumberPagination
 # rest_framework_mongoengine  相关
 from rest_framework_mongoengine import viewsets as drf_viewsets
+
+# 本项目的
 # 本项目的配置
 from Search_Rescue.settings import PAGINATION
 # 本项目的
@@ -27,13 +29,17 @@ from .serializers import OilspillingAvgModelSerializer, OilSpillingModelSerializ
     OilSpillingModelSerializerByEngine, OilSpillingTrackModelSerializer
 
 # 新加入的延时的任务
-# from apps.oilspilling.tasks.tasks import my_task
+# from apps.oilspilling.tasks_bakup.tasks_bakup import my_task
 from tasks.tasks import my_task
-# from .tasks.oil_task import do_job
-from oilspilling.tasks.oil_task import do_job
+# from .tasks_bakup.oil_task import do_job
+# from oilspilling.tasks_bakup.oil_task import do_job
 from util.reader import OilFileReader, create_reader
 from oilspilling.base_view import OilBaseView
 from util.enum import JobTypeEnum
+# TODO:[-] 20-04-23 通过 celery 调度的延时任务
+# from tasks.tasks import my_task
+from .tasks import do_job
+
 from util.guide import Guide
 
 # 7530
@@ -296,7 +302,9 @@ class CreateOilSpillingView(APIView):
                 try:
 
                     # 获取了用户名称之后，向celery提交耗时作业
-                    my_task.delay(username)
+                    # my_task.delay(username)
+                    # TODO:[-] 20-04-23 注意调用时，是调用指定的 延时def.delay(),而不是直接调用该方法！！切记！！
+                    do_job.delay()
                     pass
                     return Response('提交成功')
                 except TypeError:
@@ -361,5 +369,9 @@ class DoPyJobView(APIView):
     def get(self, request):
         # 直接调用tasks
         # TODO:[*] 20-02-06 此处只是执行提交操作，读取不在此处处理
+        # do_job()
+
+        # TODO:[*] 20-04-22 测试 celery
+        # my_task()
         do_job()
         return Response('写入成功')

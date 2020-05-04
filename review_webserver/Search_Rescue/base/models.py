@@ -21,3 +21,20 @@ class IIsDelModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class IArea(models.Model):
+    CHOISE_TYPE = (
+        (-1, 'NULL'),
+        (0, 'NORTHWEST'),  # 西北太
+        (1, 'CHINASEA'),
+        (2, 'EASTCHINASEA'),  # 东中国海
+        (3, 'BOHAISEA'),  # 东中国海
+        (4, 'INDIAN'),  # 印度洋
+        (5, 'SOUTHCHINASEA')  # 南海
+        # (6,'NORTHWESTPACIFIC')
+    )
+    area = models.IntegerField(choices=CHOISE_TYPE, default=-1)
+
+    class Meta:
+        abstract = True

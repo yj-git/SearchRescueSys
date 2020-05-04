@@ -5,7 +5,7 @@
                 <div class="login-form-my">
                     <form>
                         <div>
-                            <span class="login-title-my">值班系统</span>
+                            <span class="login-title-my">溢油搜救系统</span>
                             <div class="login-wrap-my">
                                 <!-- <span>用户名</span> -->
                                 <label for="exampleInputName2">用户名</label>
@@ -50,8 +50,8 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 @Component({})
 export default class Login extends Vue {
-    userName: string = ''
-    pwd: string = '123'
+    userName = ''
+    pwd = '123'
     // sdfsdf: string = 123
     mounted() {}
     login() {}

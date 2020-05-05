@@ -178,10 +178,11 @@ class CaseBaseView(APIView):
         type_job = request.GET.get('type', None)
         type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
         # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
+        # TODO:[*] 20-05-04 此种方式由于需要手动映射两次
         attrs = {}
         attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
         attrs['case_code'] = request.GET.get('case_code', None)
-        attrs['gmt_create'] = request.GET.get('gmt_create', None)
+        attrs['gmt_create'] = request.GET.get('forecast_date', None)
         attrs['gmt_modified'] = request.GET.get('gmt_modified', None)
         attrs['is_del'] = request.GET.get('is_del', None)
         attrs['area'] = request.GET.get('area', None)
@@ -190,6 +191,12 @@ class CaseBaseView(APIView):
         attrs['state'] = request.GET.get('state', None)
         attrs['wind_id'] = request.GET.get('wind_id', None)
         attrs['current_id'] = request.GET.get('current_id', None)
+        # TODO:[-] 20-05-03 + 新加的 经纬度信息
+        attrs['lat'] = request.GET.get('lat', None)
+        attrs['lon'] = request.GET.get('lon', None)
+        # TODO:[*] 20-05-04 + 此处最好改为自动将 request.GET中的字典映射到attrs中
+        attrs['start_time'] = request.GET.get('start_time', None)
+        attrs['end_time'] = request.GET.get('end_time', None)
         try:
             attrs = JobInfo.validate(self, attrs)
             if attrs is not None:
@@ -209,7 +216,7 @@ class CaseBaseView(APIView):
                                                                  [attrs['wind_id'], attrs['current_id']]] if
                                      temp_path is not None]
 
-                self._do_job(attrs=attrs)
+                self.__do_job(attrs=attrs)
                 if jobinfo_result is not None:
                     jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id,
                                                                 rate=attrs['rate'], state=attrs['state'],
@@ -230,7 +237,7 @@ class CaseBaseView(APIView):
             print(e.args)
             pass
 
-    def _do_job(self, attrs: {}):
+    def __do_job(self, attrs: {}):
 
         # TODO:[*] 20-04-28,测试时先不使用延时调试
         # do_job.delay()

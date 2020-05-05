@@ -271,12 +271,19 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
                                                                                            None) not in ['',
                                                                                                          None] else arrow.utcnow().datetime
         attrs['area'] = int(attrs['area'])
+        attrs['start_time'] = arrow.get(attrs.get('start_time')).datetime if attrs.get('start_time',
+                                                                                       None) not in ['',
+                                                                                                     None] else arrow.utcnow().datetime
+        attrs['end_time'] = arrow.get(attrs.get('end_time')).datetime if attrs.get('end_time',
+                                                                                   None) not in ['',
+                                                                                                 None] else arrow.utcnow().datetime
+        attrs['area'] = int(attrs['area'])
         # attrs['state'] = int(attrs['state'])
         # attrs['state'] = attrs.get('state', None)
         attrs['state'] = int(attrs['state']) if attrs['state'] is not None else TaskStateEnum.RUNNING.value
         attrs['is_del'] = False
         # TODO:[-] 20-04-30 注意将 rela_case_coverage 中需要判断的 current_id 与 wind_id 放在 users/models 中格式化
-        attrs['current_id']=int(attrs['current_id'] if attrs['current_id'] is not None else DEFAULT_NULL_KEY)
+        attrs['current_id'] = int(attrs['current_id'] if attrs['current_id'] is not None else DEFAULT_NULL_KEY)
         attrs['wind_id'] = int(attrs['wind_id'] if attrs['wind_id'] is not None else DEFAULT_NULL_KEY)
         # if attrs['is_del'] == '0':
         #     attrs['is_del'] = False

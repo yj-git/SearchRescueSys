@@ -66,10 +66,12 @@ class OilPyJob(NCJobBase):
         # TODO:[-] 20-04-30 获取传入的 attr￿s ，注意目前传入的 attrs 中缺少所需要的参数
         task_temp = TaskOpenDrift()
         attrs = kwargs.get('attrs')
+        # TODO:[-] 20-05-03 处理经纬度
+        latlons = [float(temp) for temp in [attrs['lat'], attrs['lon']]]
         # TODO:[*] 20-04-30 此处有遗留
-        task_temp.job(nc_files=attrs['nc_files'], latlon=attrs['latlon'], start_time=attrs['start_time'],
-                      end_time=attrs['end_time'], simluation_time_step=0,
-                      console_time_step=0, out_file=None, export_variables=[])
+        task_temp.job(nc_files=attrs['nc_files'], latlon=latlons, start_time=attrs['start_time'],
+                      end_time=attrs['end_time'], simluation_time_step=1800,
+                      console_time_step=3600, out_file='openoil.nc', export_variables=[])
         pass
 
 

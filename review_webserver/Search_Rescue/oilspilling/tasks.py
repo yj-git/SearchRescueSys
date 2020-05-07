@@ -26,12 +26,14 @@ from users.models import JobInfo, JobUserRate, AuthOilRela, CaseOilInfo
 from oilspilling.models import MassModel, OilModel, OilspillingAvgModel, OilSpillingModel
 from util.common import get_path
 from util.reader import OilFileReader, create_reader
+from util.enum import JobTypeEnum, TaskStateEnum
 # TODO:[*] 20-02-05 引发了一个错误，暂时去掉
 from django.contrib.auth.models import User
 from rela.views_base import RelaCaseOilView
 # TODO:[-] 20-04-23 加入了celery的异步作业调度
 from tasks.celery_con import app as celery_app
 from base.tasks_base import TaskOpenDrift
+from util.customer_wrapt import provide_job_rate
 
 
 def check_case_name(user_id: str, case_name: str) -> bool:
@@ -61,6 +63,7 @@ class OilPyJob(NCJobBase):
         主要执行执行py作业脚本的操作
     '''
 
+    @provide_job_rate(20, TaskStateEnum.RUNNING, JobTypeEnum.OIL)
     def handle_do_py(self, event: Event, **kwargs):
         print('模拟调用py文件，并传入相应参数')
         # TODO:[-] 20-04-30 获取传入的 attr￿s ，注意目前传入的 attrs 中缺少所需要的参数

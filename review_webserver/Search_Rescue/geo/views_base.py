@@ -28,7 +28,7 @@ class CoverageBaseView:
 
     def get_coverage_fullpath(self, id: int) -> str:
         '''
-            根据传入的id 获取对应的 coverage 的存储路径
+            根据传入的id 获取对应的 coverage 的存储路径(从 geo_coverageinfo表中读取)
         :param id:
         :type id:
         :return:

@@ -298,6 +298,7 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
 
 
 # 状态共有：1-执行，2-等待，3-结束，4-失败 四种
+# TODO:[*] 20-05-07 此处与枚举 enmu.py -> TaskStateEnum 相对应，此处如果处理使 enum -> 元祖
 CHOICE_STATUS = (
     (1, 'RUNNING'),
     (2, 'COMPLETED'),

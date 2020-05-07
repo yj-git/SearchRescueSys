@@ -38,7 +38,7 @@ class RelaCaseOilView:
         if wind_id != DEFAULT_NULL_KEY:
             return CoverageBaseView().get_coverage(wind_id)
 
-    def get_wind_path(self, id: int) -> str:
+    def get_coverage_path(self, id: int) -> str:
         '''
             根据 id 获取对应的 wind 栅格数据存储路径
         :param id:

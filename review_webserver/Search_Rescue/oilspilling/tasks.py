@@ -79,6 +79,7 @@ class OilPyJob(NCJobBase):
 
 
 class OilExistNcFile(NCJobBase):
+    @provide_job_rate(50, TaskStateEnum.RUNNING, JobTypeEnum.OIL)
     def handle_check_file(self, event: Event, **kwargs):
         '''
             -1 根据msg获取指定的nc文件名称
@@ -86,6 +87,7 @@ class OilExistNcFile(NCJobBase):
         :param msg:
         :return:
         '''
+        # TODO:[*] 20-05-08 最新的修改，不再使用msg传递，使用attrs，其中包含了所需的全部数据
         msg: Msg = kwargs.get('msg')
         finial_file = None
         # 文件名称为job_name+created
@@ -116,6 +118,7 @@ class OilExistNcFile(NCJobBase):
 
 
 class OilReadNcJob(NCJobBase):
+    @provide_job_rate(70, TaskStateEnum.RUNNING, JobTypeEnum.OIL)
     def handle_read_nc(self, event: Event, **kwargs):
         '''
             -3 存在读取获取每个时刻的均值
@@ -139,6 +142,7 @@ class OilDbJob(NCJobBase):
         -4 将每个时刻的均值写入数据
     '''
 
+    @provide_job_rate(90, TaskStateEnum.RUNNING, JobTypeEnum.OIL)
     def handle_to_db(self, event: Event, **kwargs):
         '''
 

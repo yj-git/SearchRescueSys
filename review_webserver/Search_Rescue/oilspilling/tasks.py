@@ -86,6 +86,7 @@ class OilExistNcFile(NCJobBase):
         '''
             -1 根据msg获取指定的nc文件名称
             -2 读取指定的msg文件是否存在
+            TODO:[-] 20-05-08 现已去掉，不再需要判断是否存在直接放在 中间model 中判断了
         :param msg:
         :return:
         '''

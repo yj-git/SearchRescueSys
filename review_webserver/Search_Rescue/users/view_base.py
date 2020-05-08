@@ -12,6 +12,7 @@ from util.enum import TaskStateEnum, JobTypeEnum
 from util.customer_exception import LackCoverageError
 from base.view_base import CoverageBaseView
 from base.tasks_base import TaskOpenDrift
+from base.middle_model import TaskMsg
 from users.models import TaskUserModel, AuthOilRela, AuthRescueRela, CaseOilInfo, CaseRescueInfo, ICaseBaseModel, \
     JobInfo, JobUserRate, \
     ICaseBaseStore
@@ -203,19 +204,19 @@ class CaseBaseView(APIView):
         temp_rela_ins.add_info(case_id, wind_id=wind_id, current_id=current_id)
         return temp_rela_ins
 
-    def set_jobinfo(self, request, uid: str, **kwargs):
+    def _copy_request_to_msg(self, request, **kwargs) -> TaskMsg:
         '''
-            根据传入的 uid 与 request 添加或更新对应的job
-        :param uid:
+            将 request 传入的参数赋值给 TaskMsg 消息传递 中间model
         :param request:
+        :type request:
+        :param kwargs:
+        :type kwargs:
         :return:
+        :rtype:
         '''
-        case_id: int = kwargs.get('case_id')
-        type_job = request.GET.get('type', None)
-        # type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
-        # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
-        # TODO:[*] 20-05-04 此种方式由于需要手动映射两次
+        # 以下作为备份
         attrs = {}
+        uid = kwargs.get('uid')
         attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
         attrs['case_code'] = request.GET.get('case_code', None)
         attrs['gmt_create'] = request.GET.get('forecast_date', None)
@@ -234,30 +235,45 @@ class CaseBaseView(APIView):
         attrs['start_time'] = request.GET.get('start_time', None)
         attrs['end_time'] = request.GET.get('end_time', None)
         attrs['uid'] = uid
+        attrs['type_job'] = request.GET.get('type', None)
+        msg = TaskMsg()
+        msg.attrs = attrs
+        return msg
 
-        job_mid: JobMidModel = JobMidModel(attrs['case_code'], attrs['area'], type_job)
+    def set_jobinfo(self, request, uid: str, **kwargs):
+        '''
+            根据传入的 uid 与 request 添加或更新对应的job
+        :param uid:
+        :param request:
+        :return:
+        '''
+        case_id: int = kwargs.get('case_id')
+
+        # type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
+        # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
+        # TODO:[*] 20-05-04 此种方式由于需要手动映射两次
+
+        # 将 获取各类参数放在一个单独的方法中
+
+        task_msg = self._copy_request_to_msg(request, uid=uid)
+
+        job_mid: JobMidModel = JobMidModel(task_msg.case_code, task_msg.area, task_msg.type_job)
         try:
-            attrs = JobInfo.validate(self, attrs)
+            attrs = JobInfo().validate(task_msg.attrs)
             if attrs is not None:
                 # 创建JobInfo记录
                 # TODO:[-] 20-02-25 添加JobInfo的同时还需要在 user_caseoilinfo 中添加相应记录——已在 set_caseinfo 方法中实现
                 # TODO:[-] 20-05-07封装为 self._create_job
-                # jobinfo_result = JobInfo.objects.create(type=type_job, job_celery_id=attrs['job_celery_id'],
-                #                                         case_code=attrs['case_code'],
-                #                                         gmt_create=attrs['gmt_create'],
-                #                                         gmt_modified=attrs['gmt_modified'], is_del=attrs['is_del'],
-                #                                         area=attrs['area'])
                 jobinfo_result = self._create_job(job_mid)
-                attrs['jid'] = jobinfo_result.id
+                task_msg.jid = jobinfo_result.id
+                # attrs['jid'] = jobinfo_result.id
                 # TODO:[*] 20-04-28 执行实际的 do job 操作，由于执行实际的 do_job 操作主要是在 oilspilling app -> tasks ，需要调用该延时task
                 # TODO:[-] 20-04-30 注意前台传入时需要指定  风场 + 流场 的id!
                 # TODO:[-] 20-05-07 此处封装在 self._insert_rela_case_oil 方法中
-                # temp_rela_ins = RelaCaseOilView()
-                # temp_rela_ins.add_info(case_id, wind_id=attrs['wind_id'], current_id=attrs['current_id'])
-                temp_rela_ins = self._insert_rela_case_oil(case_id, attrs['wind_id'], attrs['current_id'])
+                temp_rela_ins = self._insert_rela_case_oil(case_id, task_msg.wind_id, task_msg.current_id)
                 # 获取所有栅格数据( wind+current)的文件所在路径集合，并过滤掉所有None
-                attrs['nc_files'] = [temp_path for temp_path in [temp_rela_ins.get_coverage_path(temp_id) for temp_id in
-                                                                 [attrs['wind_id'], attrs['current_id']]] if
+                task_msg.nc_files = [temp_path for temp_path in [temp_rela_ins.get_coverage_path(temp_id) for temp_id in
+                                                                 [task_msg.wind_id, task_msg.current_id]] if
                                      temp_path is not None]
 
                 self.__do_job(attrs=attrs)

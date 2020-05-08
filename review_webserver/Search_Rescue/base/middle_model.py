@@ -6,6 +6,8 @@
 # @Site    : 
 # @File    : middle_model.py
 # @Software: PyCharm
+from typing import List
+
 
 class TaskMsg:
     def __init__(self, attrs: {} = {}):
@@ -60,6 +62,14 @@ class TaskMsg:
         self._attrs['state'] = val
 
     @property
+    def type_job(self):
+        return self._attrs.get('type_job', None)
+
+    @type_job.setter
+    def type_job(self, val):
+        self._attrs['type_job'] = val
+
+    @property
     def uid(self):
         return self._attrs.get('uid', None)
 
@@ -82,3 +92,55 @@ class TaskMsg:
     @end_time.setter
     def end_time(self, val):
         self._attrs['end_time'] = val
+
+    @property
+    def jid(self):
+        '''
+            user_jobinfo 表中的 -> id
+        :return:
+        :rtype:
+        '''
+        return self._attrs.get('jid', None)
+
+    @jid.setter
+    def jid(self, val):
+        self._attrs['jid'] = val
+
+    @property
+    def wind_id(self):
+        '''
+            对应的是 geo_coverageinfo 表
+        :return:
+        :rtype:
+        '''
+        return self._attrs.get('wind_id', None)
+
+    @wind_id.setter
+    def wind_id(self, val):
+        self._attrs['wind_id'] = val
+
+    @property
+    def current_id(self):
+        '''
+            对应的是 geo_coverageinfo 表
+        :return:
+        :rtype:
+        '''
+        return self._attrs.get('current_id', None)
+
+    @current_id.setter
+    def current_id(self, val):
+        self._attrs['current_id'] = val
+
+    @property
+    def nc_files(self) -> List[str]:
+        '''
+            对应的是 geo_coverageinfo 表
+        :return:
+        :rtype:
+        '''
+        return self._attrs.get('nc_files', [])
+
+    @nc_files.setter
+    def nc_files(self, val: List[str]):
+        self._attrs['nc_files'] = val

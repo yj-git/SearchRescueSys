@@ -94,6 +94,22 @@ class TaskMsg:
         self._attrs['end_time'] = val
 
     @property
+    def lat(self):
+        return self._attrs.get('lat', None)
+
+    @lat.setter
+    def lat(self, val):
+        self._attrs['lat'] = val
+
+    @property
+    def lon(self):
+        return self._attrs.get('lon', None)
+
+    @lon.setter
+    def lon(self, val):
+        self._attrs['lon'] = val
+
+    @property
     def jid(self):
         '''
             user_jobinfo 表中的 -> id

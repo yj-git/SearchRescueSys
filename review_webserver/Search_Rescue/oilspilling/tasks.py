@@ -33,6 +33,7 @@ from rela.views_base import RelaCaseOilView
 # TODO:[-] 20-04-23 加入了celery的异步作业调度
 from tasks.celery_con import app as celery_app
 from base.tasks_base import TaskOpenDrift
+from base.middle_model import TaskMsg
 from util.customer_wrapt import provide_job_rate
 
 
@@ -68,12 +69,12 @@ class OilPyJob(NCJobBase):
         print('模拟调用py文件，并传入相应参数')
         # TODO:[-] 20-04-30 获取传入的 attr￿s ，注意目前传入的 attrs 中缺少所需要的参数
         task_temp = TaskOpenDrift()
-        attrs = kwargs.get('attrs')
+        task_msg: TaskMsg = kwargs.get('task_msg')
         # TODO:[-] 20-05-03 处理经纬度
-        latlons = [float(temp) for temp in [attrs['lat'], attrs['lon']]]
+        latlons = [float(temp) for temp in [task_msg.lat, task_msg.lon]]
         # TODO:[*] 20-04-30 此处有遗留
-        task_temp.job(nc_files=attrs['nc_files'], latlon=latlons, start_time=attrs['start_time'],
-                      end_time=attrs['end_time'], simluation_time_step=1800,
+        task_temp.job(nc_files=task_msg.nc_files, latlon=latlons, start_time=task_msg.start_time,
+                      end_time=task_msg.end_time, simluation_time_step=1800,
                       console_time_step=3600, out_file='openoil.nc', export_variables=[])
         pass
 
@@ -88,6 +89,7 @@ class OilExistNcFile(NCJobBase):
         :return:
         '''
         # TODO:[*] 20-05-08 最新的修改，不再使用msg传递，使用attrs，其中包含了所需的全部数据
+        task_msg: TaskMsg = kwargs.get('task_msg')
         msg: Msg = kwargs.get('msg')
         finial_file = None
         # 文件名称为job_name+created
@@ -227,11 +229,17 @@ def do_job(attrs: {}):
     job_db = OilDbJob(job_read_nc_file)
     msg: Msg = Msg('code_test', 'test_case', '123', now(), JobState.RUNNING,
                    r'D:\04git仓库\SearchRescueSys_new\SearchRescueSys\data\demo_data', OilModelMsg())
+    task_msg = None
+    if isinstance(attrs, TaskMsg):
+        task_msg = attrs
+
     # TODO:[-] 20-02-04 注意此处只需要调用最终的那个job即可，不需要每个都调用
     # job_oil.handle(evt)
     # job_check_nc_file.handle(evt)
     # job_read_nc_file.handle(evt)
     for handle_name in ['do_py', 'check_file', 'read_nc', 'to_db']:
         evt = Event(handle_name)
-        job_db.handle(evt, msg=msg, attrs=attrs)
+
+        # TODO:[*] 20-05-08 以后不再操作msg，改为直接通过 task_msg 获取通信的message
+        job_db.handle(evt, msg=msg, task_msg=task_msg)
     pass

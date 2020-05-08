@@ -276,7 +276,8 @@ class CaseBaseView(APIView):
                                                                  [task_msg.wind_id, task_msg.current_id]] if
                                      temp_path is not None]
 
-                self.__do_job(attrs=attrs)
+                # 此处将之前传入的 attrs -> task_msg 实例对象
+                self._do_job(attrs=task_msg)
                 if jobinfo_result is not None:
                     jobrate_result = JobUserRate.objects.create(uid_id=uid, jid_id=jobinfo_result.id,
                                                                 rate=attrs['rate'], state=attrs['state'],
@@ -297,8 +298,7 @@ class CaseBaseView(APIView):
             print(e.args)
             pass
 
-    def __do_job(self, attrs: {}):
-
+    def _do_job(self, attrs: {}):
         # TODO:[*] 20-04-28,测试时先不使用延时调试
         # do_job.delay()
         do_job(attrs)

@@ -7,6 +7,9 @@
 # @File    : middle_model.py
 # @Software: PyCharm
 from typing import List
+from os import path
+from pathlib import Path
+from Search_Rescue.settings import _ROOT_DIR
 
 
 class TaskMsg:
@@ -160,3 +163,59 @@ class TaskMsg:
     @nc_files.setter
     def nc_files(self, val: List[str]):
         self._attrs['nc_files'] = val
+
+    @property
+    def forecast_file_dir(self) -> str:
+        '''
+            生成的预报产品的最终目录(不含名称)
+        :return:
+        :rtype:
+        '''
+        save_dir = path.join(_ROOT_DIR, str(self.uid), 'FORECAST', 'OIL', str(self.start_time.date().year),
+                             str(self.start_time.date().month), str(self.start_time.date().day))
+        # 需要判断是否存在指定路径，若不存在则创建
+        nc_folder = Path(save_dir)
+        if not nc_folder.exists():
+            nc_folder.mkdir(parents=True, exist_ok=True)
+        return save_dir
+
+    # @forecast_file_dir.setter
+    # def forecast_file_dir(self, val: str):
+    #     '''
+    #         生成的预报产品的最终目录(不含名称)
+    #     :return:
+    #     :rtype:
+    #     '''
+    #     self._attrs['forecast_file_dir'] = val
+
+    @property
+    def forecast_file_name(self):
+        '''
+            生成的预报产品的文件名称(含 ext)
+        :return:
+        :rtype:
+        '''
+        # 此处应根据 case_code 拼接 nc即可
+        return '.'.join([self.case_code, 'nc'])
+        # return self._attrs.get('forecast_file_name')
+
+    # @forecast_file_name.setter
+    # def forecast_file_name(self, val: str):
+    #     self._attrs['forecast_file_name'] = val
+
+    @property
+    def forecast_full_path(self) -> str:
+        '''
+            生成的最终的预报文件路径(full path)
+        :return:
+        :rtype:
+        '''
+        return path.join(self.forecast_file_dir, self.forecast_file_name)
+
+    @property
+    def track_list(self):
+        return self._attrs.get('track_list', None)
+
+    @track_list.setter
+    def track_list(self, val):
+        self._attrs['track_list'] = val

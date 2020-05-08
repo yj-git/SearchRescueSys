@@ -35,6 +35,7 @@ from tasks.celery_con import app as celery_app
 from base.tasks_base import TaskOpenDrift
 from base.middle_model import TaskMsg
 from util.customer_wrapt import provide_job_rate
+from Search_Rescue.settings import _ROOT_DIR
 
 
 def check_case_name(user_id: str, case_name: str) -> bool:
@@ -75,7 +76,7 @@ class OilPyJob(NCJobBase):
         # TODO:[*] 20-04-30 此处有遗留
         task_temp.job(nc_files=task_msg.nc_files, latlon=latlons, start_time=task_msg.start_time,
                       end_time=task_msg.end_time, simluation_time_step=1800,
-                      console_time_step=3600, out_file='openoil.nc', export_variables=[])
+                      console_time_step=3600, out_file=task_msg.forecast_full_path, export_variables=[])
         pass
 
 
@@ -90,7 +91,7 @@ class OilExistNcFile(NCJobBase):
         '''
         # TODO:[*] 20-05-08 最新的修改，不再使用msg传递，使用attrs，其中包含了所需的全部数据
         task_msg: TaskMsg = kwargs.get('task_msg')
-        msg: Msg = kwargs.get('msg')
+        # msg: Msg = kwargs.get('msg')
         finial_file = None
         # 文件名称为job_name+created
         # TODO:[*] 20-02-05 注意最后需要替换回去
@@ -127,16 +128,22 @@ class OilReadNcJob(NCJobBase):
         :param msg:
         :return:
         '''
-        msg: Msg = kwargs.get('msg')
+        # msg: Msg = kwargs.get('msg')
+        #
+        # finial_file = msg.msg.other['finial_file']
+        task_temp = TaskOpenDrift()
+        task_msg: TaskMsg = kwargs.get('task_msg')
         # 获取目标路径
-        finial_file = msg.msg.other['finial_file']
+        finial_file = task_msg.forecast_full_path
         # 使用xarray读取指定文件
         # 直接调用 util.reader直接读取并写入数据库
         reader_func = create_reader('file')
-        reader = reader_func(msg.dir_path, msg.file_name)
-        track_list = reader.read_avg_track(msg.job_name)
+        reader = reader_func(task_msg.forecast_file_dir, task_msg.forecast_file_name)
+        track_list = reader.read_avg_track(task_msg.case_code)
         # 存入msg中
-        msg.msg.other['track_list'] = track_list
+        task_msg.track_list = track_list
+        # 此处改为通过 task_msg传递
+        # msg.msg.other['track_list'] = track_list
 
 
 class OilDbJob(NCJobBase):
@@ -151,14 +158,16 @@ class OilDbJob(NCJobBase):
         :param msg:
         :return:
         '''
-        msg: Msg = kwargs.get('msg')
+        # msg: Msg = kwargs.get('msg')
+        task_temp = TaskOpenDrift()
+        task_msg: TaskMsg = kwargs.get('task_msg')
         # 1- 判断指定case_name 是否存在于数据库中
         # 调用user app中的相应方法
         # TODO[*] 20-02-04 先给定一个写死的user_id
-        user_id: str = '1'
+        user_id: str = task_msg.uid
         nc_file_name: str = None
-        if isinstance(msg.msg, OilModelMsg):
-            is_match = check_case_name(user_id, msg.job_name)
+        if not task_msg:
+            is_match = check_case_name(user_id, task_msg.case_code)
             # is_match = operate.my_do()
             # if hasattr(msg.msg, 'other'):
             #     if hasattr(msg.msg.other, 'finial_file')
@@ -171,9 +180,9 @@ class OilDbJob(NCJobBase):
                 # 调用父节点
                 # 先把写入方法放在此处
                 # 先将所有的平均轨迹点写入mongo，再在mysql中记录
-                if msg.msg.other.get('track_list'):
+                if task_msg.track_list:
                     # if hasattr(msg.msg.other, 'track_list'):
-                    track_list: List[OilSpillingAvgMidModelbak] = msg.msg.other.get('track_list')
+                    track_list: List[OilSpillingAvgMidModelbak] = task_msg.track_list
                     # 取出track_list并写入mongoDb中
                     for temp_track in track_list:
                         self._create_model(temp_track)
@@ -212,6 +221,12 @@ class OilDbJob(NCJobBase):
         oil_avg_model.save()
 
 
+class OilDoneJob(NCJobBase):
+    @provide_job_rate(100, TaskStateEnum.COMPLETED, JobTypeEnum.OIL)
+    def handle_to_done(self, event: Event, **kwargs):
+        pass
+
+
 # TODO:[-] 20-04-23 加入了 celery
 # @celery_app.task(bind=True)
 @shared_task
@@ -224,11 +239,13 @@ def do_job(attrs: {}):
                     -4 将每个时刻的均值写入数据
     '''
     job_oil = OilPyJob()
-    job_check_nc_file = OilExistNcFile(job_oil)
-    job_read_nc_file = OilReadNcJob(job_check_nc_file)
+    # 不再需要check了，放在 middle_model 中了
+    # job_check_nc_file = OilExistNcFile(job_oil)
+    job_read_nc_file = OilReadNcJob(job_oil)
     job_db = OilDbJob(job_read_nc_file)
-    msg: Msg = Msg('code_test', 'test_case', '123', now(), JobState.RUNNING,
-                   r'D:\04git仓库\SearchRescueSys_new\SearchRescueSys\data\demo_data', OilModelMsg())
+    job_done = OilDoneJob(job_db)
+    # msg: Msg = Msg('code_test', 'test_case', '123', now(), JobState.RUNNING,
+    #                r'D:\04git仓库\SearchRescueSys_new\SearchRescueSys\data\demo_data', OilModelMsg())
     task_msg = None
     if isinstance(attrs, TaskMsg):
         task_msg = attrs
@@ -237,9 +254,9 @@ def do_job(attrs: {}):
     # job_oil.handle(evt)
     # job_check_nc_file.handle(evt)
     # job_read_nc_file.handle(evt)
-    for handle_name in ['do_py', 'check_file', 'read_nc', 'to_db']:
+    for handle_name in ['do_py', 'read_nc', 'to_db', 'done']:
         evt = Event(handle_name)
 
         # TODO:[*] 20-05-08 以后不再操作msg，改为直接通过 task_msg 获取通信的message
-        job_db.handle(evt, msg=msg, task_msg=task_msg)
+        job_done.handle(evt, msg={}, task_msg=task_msg)
     pass

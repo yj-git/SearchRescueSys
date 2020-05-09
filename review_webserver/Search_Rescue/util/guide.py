@@ -1,5 +1,5 @@
 # 本模块主要用来生成文件所在的路径
-import path
+# import path
 import os
 
 from typing import List, Generic, TypeVar

@@ -42,6 +42,7 @@ class TaskOpenDrift(ITaskBase):
             number=3000, wind_drfit_dactor=.2):
         '''
             执行 open_drift 作业
+            TODO:[*] 20-05-10
         :param nc_files: 风场+流场的nc文件所在路径(绝对路径集合)
         :type nc_files:
         :param latlon: 经纬度集合

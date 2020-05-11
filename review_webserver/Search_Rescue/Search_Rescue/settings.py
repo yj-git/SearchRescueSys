@@ -108,10 +108,10 @@ DATABASES = {
         # mac
         'USER': 'root',  # 账号
         # 7530,mac
-        # 'PASSWORD': 'admin123',
+        'PASSWORD': 'admin123',
         # 5820
         # p52s
-        'PASSWORD': '123456',
+        # 'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
         # 'PASSWORD': '123456',

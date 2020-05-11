@@ -237,6 +237,7 @@ class CaseBaseView(APIView):
         attrs['uid'] = uid
         attrs['type_job'] = request.GET.get('type', None)
         msg = TaskMsg()
+        # 此处应改为直接拓展字典
         msg.attrs = attrs
         return msg
 

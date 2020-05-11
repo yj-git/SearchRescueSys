@@ -14,7 +14,13 @@ from Search_Rescue.settings import _ROOT_DIR
 
 class TaskMsg:
     def __init__(self, attrs: {} = {}):
-        self._attrs = attrs
+        self._attrs: {} = attrs
+        # TODO:[*] 20-05-11
+        self._attrs['export_variables'] = ['x_wind', 'y_wind', 'status', 'x_sea_water_velocity', 'y_sea_water_velocity',
+                                           'mass_oil',
+                                           'mass_evaporated', 'mass_dispersed', 'oil_film_thickness', 'density',
+                                           'sea_water_temperature',
+                                           'water_fraction']
 
     @property
     def attrs(self):
@@ -22,7 +28,9 @@ class TaskMsg:
 
     @attrs.setter
     def attrs(self, val):
-        self._attrs = val
+        self._attrs.update(val)
+        pass
+        # self._attrs = val
 
     @property
     def celery_id(self):
@@ -219,3 +227,23 @@ class TaskMsg:
     @track_list.setter
     def track_list(self, val):
         self._attrs['track_list'] = val
+
+    @property
+    def export_variables(self) -> List[str]:
+        '''
+            调用 opendrift 的输入的参数,需要给个默认值
+        :return:
+        :rtype:
+        '''
+        return self._attrs.get('export_variables', None)
+
+    @export_variables.setter
+    def export_variables(self, val: List[str]):
+        '''
+            调用opendrift 时的输入参数(若不给定则是默认指定 status)
+        :param val:
+        :type val:
+        :return:
+        :rtype:
+        '''
+        self._attrs['export_variables'] = val

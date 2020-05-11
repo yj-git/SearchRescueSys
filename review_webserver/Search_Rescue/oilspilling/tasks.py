@@ -76,7 +76,7 @@ class OilPyJob(NCJobBase):
         # TODO:[*] 20-04-30 此处有遗留
         task_temp.job(nc_files=task_msg.nc_files, latlon=latlons, start_time=task_msg.start_time,
                       end_time=task_msg.end_time, simluation_time_step=1800,
-                      console_time_step=3600, out_file=task_msg.forecast_full_path, export_variables=[])
+                      console_time_step=3600, out_file=task_msg.forecast_full_path, export_variables=task_msg.export_variables)
         pass
 
 

@@ -10,6 +10,7 @@ from typing import List
 import types
 from os import path
 from pathlib import Path
+import arrow
 from Search_Rescue.settings import _ROOT_DIR
 
 
@@ -51,12 +52,11 @@ class TaskMsg:
 
     @property
     def area(self):
-        area_temp=self._attrs.get('area')
-        if type(area_temp)==str:
+        area_temp = self._attrs.get('area')
+        if type(area_temp) == str:
             return int(area_temp)
-        elif type(area_temp)==int:
+        elif type(area_temp) == int:
             return area_temp
-
 
     @area.setter
     def area(self, val):
@@ -93,6 +93,23 @@ class TaskMsg:
     @uid.setter
     def uid(self, val):
         self._attrs['uid'] = val
+
+    @property
+    def user_name(self) -> str:
+        '''
+            用户名称
+        :return:
+        '''
+        return self._attrs.get('user_name', None)
+
+    @user_name.setter
+    def user_name(self, val: str):
+        '''
+            user_name
+        :param val:
+        :return:
+        '''
+        self._attrs['user_name'] = val
 
     @property
     def start_time(self):
@@ -185,8 +202,11 @@ class TaskMsg:
         :return:
         :rtype:
         '''
-        save_dir = path.join(_ROOT_DIR, str(self.uid), 'FORECAST', 'OIL', str(self.start_time.date().year),
-                             str(self.start_time.date().month), str(self.start_time.date().day))
+        # TODO:[-] 20-05-12 此处引发了bug需要注意(月少了一位)
+        # save_dir = path.join(_ROOT_DIR, self.user_name, 'FORECAST', 'OIL', str(self.start_time.date().year),
+        #                      str(self.start_time.date().month), str(self.start_time.date().day))
+        date_str=arrow.get(self.start_time).format('YYYY/MM/DD')
+        save_dir=Path(_ROOT_DIR)/self.user_name/'FORECAST'/'OIL'/date_str
         # 需要判断是否存在指定路径，若不存在则创建
         nc_folder = Path(save_dir)
         if not nc_folder.exists():

@@ -3,14 +3,49 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+import arrow
+import pathlib
+from computed_property import ComputedCharField
+
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from util.enum import TaskStateEnum
 from base.models import IIsDelModel, IArea
 from util.customer_exception import LackCoverageError, ConvertError
-import arrow
+from Search_Rescue.settings import _ROOT_DIR
 
 
 # Create your models here.
+
+class ICaseFileBaseStore(models.Model):
+    file_name = ComputedCharField(compute_from='get_file_name', max_length=200, default=None, null=True)
+
+    absolute_path = models.CharField(max_length=200, default=None, null=True)
+    # 存储的全路径
+    # full_path = models.CharField(max_length=200, default=None, null=True)
+
+    full_path = ComputedCharField(compute_from='get_full_path', max_length=200, default=None, null=True)
+
+    @property
+    def get_file_name(self):
+        case_name = getattr(self, 'case_code')
+        ext = getattr(self, 'ext')
+        file_name = ''.join([case_name, ext])
+        return file_name
+
+    # TODO:[-] 20-05-12 注意由于需要传入 uid，暂时没有办法接受外部传入的参数
+    @property
+    def get_full_path(self):
+        absolute_path = getattr(self, 'absolute_path', None)
+        file_name = getattr(self, 'file_name', None)
+        full_path = None
+        if any([absolute_path, file_name]) is None:
+            pass
+        else:
+            full_path = pathlib.Path(absolute_path) / file_name
+        return full_path
+
+    class Meta:
+        abstract = True
 
 
 class ICaseBaseStore(models.Model):
@@ -23,9 +58,7 @@ class ICaseBaseStore(models.Model):
     # 创建的case目录
     case_path = models.CharField(max_length=100)
     # 文件名称
-    file_name = models.CharField(max_length=100, default=None, null=True)
-    # 存储的全路径
-    full_path = models.CharField(max_length=200, default=None, null=True)
+    # file_name = models.CharField(max_length=100, default=None, null=True)
     # case创建时间
     create_date = models.DateTimeField(editable=False, auto_now_add=True)
     # 预报的时间
@@ -86,7 +119,8 @@ class ICaseBaseInfo(models.Model):
         abstract = True
 
 
-class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInfo, IIsDelModel, IArea):
+class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInfo, IIsDelModel, IArea,
+                  ICaseFileBaseStore):
     '''
         case
     '''

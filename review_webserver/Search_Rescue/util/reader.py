@@ -14,7 +14,7 @@ import numpy.ma as ma
 import xarray as xar
 from oilspilling.middle_model import OilSpillingAvgMidModel, OilSpillingTrackMidModel, OilSpillingAvgMidModelbak
 from util.tools import exe_run_time
-
+import pathlib
 from oilspilling.models import OilspillingAvgModel
 from util.enum import JobTypeEnum
 
@@ -87,7 +87,8 @@ class OilFileReader(OilReaderBase, IOilReader, IOilScatter):
         :return:
         '''
         if None not in [self.root_path, self.file_name]:
-            return os.path.join(self.root_path, self.file_name)
+            return pathlib.Path(self.root_path)/self.file_name
+            # return os.path.join(self.root_path, self.file_name)
         return None
 
     def _init_dataset(self):

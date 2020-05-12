@@ -7,6 +7,9 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from django.contrib.auth.models import User
+import arrow
+import pathlib
+
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from util.enum import TaskStateEnum, JobTypeEnum
 from util.customer_exception import LackCoverageError
@@ -19,6 +22,7 @@ from users.models import TaskUserModel, AuthOilRela, AuthRescueRela, CaseOilInfo
 from oilspilling.tasks import do_job
 from rela.views_base import RelaCaseOilView
 from .middle_model import JobMidModel
+from Search_Rescue.settings import _ROOT_DIR
 
 
 class CaseBaseView(APIView):
@@ -105,7 +109,10 @@ class CaseBaseView(APIView):
         attrs = {}
         users = User.objects.filter(id=uid)
         attrs['root_path'] = users[0].username
-        attrs['case_path'] = datetime.now().strftime('%Y/%m')
+        attrs['user_name']=users[0].username
+        # TODO:[-] 20-05-12 注意修改此处的 case_path 是由传入的 start_time 决定的
+        start_time:datetime=arrow.get(request.GET.get('start_time'))
+        attrs['case_path'] = start_time.strftime('%Y/%m/%d')
         attrs['create_date'] = request.GET.get('create_date', None)
         attrs['forecast_date'] = request.GET.get('forecast_date', None)
         attrs['case_name'] = request.GET.get('case_name', None)
@@ -129,9 +136,26 @@ class CaseBaseView(APIView):
         # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
         attrs = CaseOilInfo().validate(attrs)
         # 注意此处需要修改 request -> case_code ，修改为 attrs.get('case_code') 中的修改后的添加了时间戳的code
-
+        # task_msg = self._copy_request_to_msg(attrs, uid=uid)
         try:
             if attrs is not None:
+                # TODO:[-] 20-05-12 在此处生成 full_path (之前是写在 CaseOilInfo model 中的属性方法)
+                def get_absolute_path(attrs)->str:
+                    # root_path 是第一级的目录 实际是 user_name
+                    root_path=attrs.get('root_path', None)
+                    case_path = attrs.get('case_path', None)
+                    # file_name = attrs.get('file_name', None)
+                    # root_path = getattr(attrs, 'root_path', None)
+                    # case_path = getattr(attrs, 'case_path', None)
+                    # file_name = getattr(attrs, 'file_name', None)
+                    absolute_path = None
+                    if any([root_path, case_path]) is None:
+                        pass
+                    else:
+                        absolute_path = pathlib.Path(_ROOT_DIR) /root_path/ 'FORECAST' / 'OIL' / case_path
+                    return absolute_path
+
+                absolute_path=get_absolute_path(attrs)
                 # 创建CaseOilInfo记录
                 case_result = CaseOilInfo.objects.create(root_path=attrs['root_path'],
                                                          case_path=attrs['case_path'], create_date=attrs['create_date'],
@@ -146,7 +170,10 @@ class CaseBaseView(APIView):
                                                          current_nondeterminacy=attrs['current_nondeterminacy'],
                                                          equation=attrs['equation'], is_del=attrs['is_del'],
                                                          area=attrs['area'], wind_coefficient=attrs['wind_coefficient'],
-                                                         wind_dir=attrs['wind_dir'])
+                                                         wind_dir=attrs['wind_dir'],
+                                                         absolute_path=absolute_path,
+                                                         ext='.nc'
+                                                         )
                 if case_result is not None:
                     # 建立User、Case关系
                     # 对于默认不传入type的应该设置为OilRela
@@ -220,6 +247,7 @@ class CaseBaseView(APIView):
         # 以下作为备份
         attrs = {}
         uid = kwargs.get('uid')
+        user_name=kwargs.get('user_name')
         attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
         attrs['case_code'] = request.GET.get('case_code', None)
         attrs['gmt_create'] = request.GET.get('forecast_date', None)
@@ -238,7 +266,9 @@ class CaseBaseView(APIView):
         attrs['start_time'] = request.GET.get('start_time', None)
         attrs['end_time'] = request.GET.get('end_time', None)
         attrs['uid'] = uid
+        attrs['user_name'] =user_name
         attrs['type_job'] = request.GET.get('type', None)
+
         msg = TaskMsg()
         # 此处应改为直接拓展字典
         msg.attrs = attrs
@@ -252,14 +282,14 @@ class CaseBaseView(APIView):
         :return:
         '''
         case_id: int = kwargs.get('case_id')
-
+        user_name:str=kwargs.get('user_name')
         # type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
         # TODO:[*] 20-02-25 此处需要对case_code进行加密(现在的case_code为 'xx')，需要在追加一个唯一的字符串 'xx'->'xx_afhjkashfjkas'，最好创建一个方法，根据时间戳或者其他方式生成唯一的字符串标识码
         # TODO:[*] 20-05-04 此种方式由于需要手动映射两次
 
         # 将 获取各类参数放在一个单独的方法中
 
-        task_msg = self._copy_request_to_msg(request, uid=uid)
+        task_msg = self._copy_request_to_msg(request, uid=uid,user_name=user_name)
 
         # 不再使用 JobMidModel进行消息传递
         # job_mid: JobMidModel = JobMidModel(task_msg.case_code, task_msg.area, task_msg.type_job)

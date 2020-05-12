@@ -53,7 +53,10 @@ def check_case_name(user_id: str, case_name: str) -> bool:
         case_names: List[str] = []
         if len(rela_user_case) > 0:
             # 获取所有的CaseInfo
-            case_names = [CaseOilInfo.objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
+            for temp in rela_user_case:
+                if len(CaseOilInfo.objects.filter(id=temp.did_id))>0:
+                    case_names.append(CaseOilInfo.objects.filter(id=temp.did.id)[0].case_code)
+            # case_names = [CaseOilInfo().objects.filter(id=temp.did.id)[0].case_name for temp in rela_user_case]
         # 判断传入的case_name 是否存在在user的关系中
         if case_name in case_names:
             return True
@@ -76,7 +79,8 @@ class OilPyJob(NCJobBase):
         # TODO:[*] 20-04-30 此处有遗留
         task_temp.job(nc_files=task_msg.nc_files, latlon=latlons, start_time=task_msg.start_time,
                       end_time=task_msg.end_time, simluation_time_step=1800,
-                      console_time_step=3600, out_file=task_msg.forecast_full_path, export_variables=task_msg.export_variables)
+                      console_time_step=3600, out_file=task_msg.forecast_full_path,
+                      export_variables=task_msg.export_variables)
         pass
 
 
@@ -167,27 +171,31 @@ class OilDbJob(NCJobBase):
         # TODO[*] 20-02-04 先给定一个写死的user_id
         user_id: str = task_msg.uid
         nc_file_name: str = None
-        if not task_msg:
+        if task_msg is not None:
             is_match = check_case_name(user_id, task_msg.case_code)
-            # is_match = operate.my_do()
-            # if hasattr(msg.msg, 'other'):
-            #     if hasattr(msg.msg.other, 'finial_file')
-            #         nc_file_name = msg.msg.other.finial_file
-            if is_match:
-                # 若数据库中已经存在则直接从数据库中读取即可
-                pass
-            else:
-                # 若数据库中不存在则重新创建并写入数据
-                # 调用父节点
-                # 先把写入方法放在此处
-                # 先将所有的平均轨迹点写入mongo，再在mysql中记录
-                if task_msg.track_list:
-                    # if hasattr(msg.msg.other, 'track_list'):
-                    track_list: List[OilSpillingAvgMidModelbak] = task_msg.track_list
-                    # 取出track_list并写入mongoDb中
-                    for temp_track in track_list:
-                        self._create_model(temp_track)
-                        pass
+            # TODO:[*] 20-05-11 由于逻辑修改此处注释掉
+            # if is_match:
+            #     # 若数据库中已经存在则直接从数据库中读取即可
+            #     pass
+            # else:
+            #     # 若数据库中不存在则重新创建并写入数据
+            #     # 调用父节点
+            #     # 先把写入方法放在此处
+            #     # 先将所有的平均轨迹点写入mongo，再在mysql中记录
+            #     if task_msg.track_list:
+            #         # if hasattr(msg.msg.other, 'track_list'):
+            #         track_list: List[OilSpillingAvgMidModelbak] = task_msg.track_list
+            #         # 取出track_list并写入mongoDb中
+            #         for temp_track in track_list:
+            #             self._create_model(temp_track)
+            #             pass
+            #     pass
+            # TODO:[*] 20-05-11 此处逻辑重新修改，上面的判断全部去掉，因为case_code为加上时间戳的case所以不会有重复的问题，直接向mongo中写入即可
+                # if hasattr(msg.msg.other, 'track_list'):
+            track_list: List[OilSpillingAvgMidModelbak] = task_msg.track_list
+            # 取出track_list并写入mongoDb中
+            for temp_track in track_list:
+                self._create_model(temp_track)
                 pass
         pass
 
@@ -255,7 +263,7 @@ def do_job(attrs: {}):
     # job_oil.handle(evt)
     # job_check_nc_file.handle(evt)
     # job_read_nc_file.handle(evt)
-    for handle_name in ['do_py', 'read_nc', 'to_db', 'done']:
+    for handle_name in ['do_py', 'read_nc', 'to_db', 'to_done']:
         evt = Event(handle_name)
 
         # TODO:[*] 20-05-08 以后不再操作msg，改为直接通过 task_msg 获取通信的message

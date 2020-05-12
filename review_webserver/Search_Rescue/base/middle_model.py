@@ -7,6 +7,7 @@
 # @File    : middle_model.py
 # @Software: PyCharm
 from typing import List
+import types
 from os import path
 from pathlib import Path
 from Search_Rescue.settings import _ROOT_DIR
@@ -50,7 +51,12 @@ class TaskMsg:
 
     @property
     def area(self):
-        return self._attrs.get('area', None)
+        area_temp=self._attrs.get('area')
+        if type(area_temp)==str:
+            return int(area_temp)
+        elif type(area_temp)==int:
+            return area_temp
+
 
     @area.setter
     def area(self, val):

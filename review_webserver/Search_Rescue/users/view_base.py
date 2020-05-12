@@ -127,7 +127,7 @@ class CaseBaseView(APIView):
         attrs['wind_coverage_id'] = request.GET.get('wind_coverage_id', None)
         attrs['current_coverage_id'] = request.GET.get('current_coverage_id', None)
         # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
-        attrs = CaseOilInfo.validate(self, attrs)
+        attrs = CaseOilInfo().validate(attrs)
         # 注意此处需要修改 request -> case_code ，修改为 attrs.get('case_code') 中的修改后的添加了时间戳的code
 
         try:
@@ -149,10 +149,13 @@ class CaseBaseView(APIView):
                                                          wind_dir=attrs['wind_dir'])
                 if case_result is not None:
                     # 建立User、Case关系
-                    if type_job == JobTypeEnum.OIL.value:
+                    # 对于默认不传入type的应该设置为OilRela
+                    if int(type_job) == JobTypeEnum.RESCUE.value:
+                        model = AuthRescueRela
+                    elif int(type_job) == JobTypeEnum.OIL.value:
                         model = AuthOilRela
                     else:
-                        model = AuthRescueRela
+                        model = AuthOilRela
                     rela = model.objects.create(uid_id=uid, did_id=case_result.id)
                     if rela is not None:
                         return case_result
@@ -170,7 +173,7 @@ class CaseBaseView(APIView):
         # finally:
         #     return None
 
-    def _create_job(self, job_mid: JobMidModel):
+    def _create_job(self, attrs: {}):
         '''
             创建指定 jobinfo (对应表 user_jobinfo)
         :param job_mid:
@@ -178,11 +181,11 @@ class CaseBaseView(APIView):
         :return:
         :rtype:
         '''
-        jobinfo_result = JobInfo.objects.create(type=job_mid.job_type_val, job_celery_id='',
-                                                case_code=job_mid.case_code,
-                                                gmt_create=datetime.utcnow(),
-                                                gmt_modified=datetime.utcnow(), is_del=False,
-                                                area=job_mid.area)
+        jobinfo_result = JobInfo.objects.create(type=attrs['type_job'], job_celery_id='',
+                                                case_code=attrs['case_code'],
+                                                gmt_create=attrs['gmt_create'],
+                                                gmt_modified=attrs['gmt_modified'], is_del=False,
+                                                area=attrs['area'])
         return jobinfo_result
 
     def _insert_rate(self, job_mid: JobMidModel):
@@ -258,14 +261,15 @@ class CaseBaseView(APIView):
 
         task_msg = self._copy_request_to_msg(request, uid=uid)
 
-        job_mid: JobMidModel = JobMidModel(task_msg.case_code, task_msg.area, task_msg.type_job)
+        # 不再使用 JobMidModel进行消息传递
+        # job_mid: JobMidModel = JobMidModel(task_msg.case_code, task_msg.area, task_msg.type_job)
         try:
             attrs = JobInfo().validate(task_msg.attrs)
             if attrs is not None:
                 # 创建JobInfo记录
                 # TODO:[-] 20-02-25 添加JobInfo的同时还需要在 user_caseoilinfo 中添加相应记录——已在 set_caseinfo 方法中实现
                 # TODO:[-] 20-05-07封装为 self._create_job
-                jobinfo_result = self._create_job(job_mid)
+                jobinfo_result = self._create_job(attrs)
                 task_msg.jid = jobinfo_result.id
                 # attrs['jid'] = jobinfo_result.id
                 # TODO:[*] 20-04-28 执行实际的 do job 操作，由于执行实际的 do_job 操作主要是在 oilspilling app -> tasks ，需要调用该延时task

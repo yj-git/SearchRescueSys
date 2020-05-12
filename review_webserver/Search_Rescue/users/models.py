@@ -19,8 +19,13 @@ class ICaseBaseStore(models.Model):
     '''
     # 根目录
     root_path = models.CharField(max_length=100)
+    #
     # 创建的case目录
     case_path = models.CharField(max_length=100)
+    # 文件名称
+    file_name = models.CharField(max_length=100, default=None, null=True)
+    # 存储的全路径
+    full_path = models.CharField(max_length=200, default=None, null=True)
     # case创建时间
     create_date = models.DateTimeField(editable=False, auto_now_add=True)
     # 预报的时间
@@ -91,26 +96,41 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
 
     # 油品，油量，水温
 
-    def __gen_casecode(self, code):
+    # def __gen_casecode(self, code):
+    #     '''
+    #         根据传入的 code 参数，生成带时间戳的case_code编码
+    #     :param code:
+    #     :return:
+    #     '''
+    #     dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
+    #     case_code = code + '_' + dt_ms
+    #     return case_code
+
+    # def _gen_casecode(self, code):
+    #     dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
+    #     case_code = code + '_' + dt_ms
+    #     return case_code
+
+    # @classmethod
+    def gen_casecode(self, code: str, current: datetime):
         '''
-            根据传入的 code 参数，生成带时间戳的case_code编码
+            TODO:[-] 20-05-11 此处之前存在一个逻辑bug，不可以通过获取当前的事件生成gen_casecode ，由于再多处调用，会存在生成的code不唯一的问题
         :param code:
+        :param current:
         :return:
         '''
-        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
-        case_code = code + '_' + dt_ms
+        # 此处的 时间的标识改为时间戳
+        datetime_arrow = arrow.get(current)
+
+        dt_ms = datetime_arrow.timestamp
+        case_code = code + '_' + str(dt_ms)
         return case_code
 
-    def _gen_casecode(self, code):
-        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
-        case_code = code + '_' + dt_ms
-        return case_code
+    # @classmethod
+    def _test_gen(cls):
+        return 'ceshi'
 
-    def gen_casecode(self, code):
-        dt_ms = datetime.now().strftime('%Y%m%d%H%M%S%f')
-        case_code = code + '_' + dt_ms
-        return case_code
-
+    # @classmethod
     def validate(self, attrs: {}):  # 对多个字段校验
         '''
             根据传入的 attrs 字典，验证并返回符合入库要求的参数字典
@@ -157,12 +177,14 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
 
         # attrs['case_code'] = self.__gen_casecode(attrs.get('case_code'))
         try:
-            attrs['case_code'] = self.gen_casecode(attrs.get('case_code'))
 
             # 若自动创建的时间是utc时间
             attrs['create_date'] = arrow.get(attrs.get('create_date')).datetime if attrs.get('create_date',
                                                                                              None) not in ['',
                                                                                                            None] else arrow.utcnow().datetime
+            #
+            attrs['case_code'] = self.gen_casecode(attrs.get('case_code'), attrs['create_date'])
+            # test_code = self._test_gen()
             # 预报时间由前台传入为 gmt 时间(非utc时间)
             attrs['forecast_date'] = arrow.get(attrs.get('forecast_date')).datetime
             attrs['lat'] = float(attrs.get('lat'))
@@ -285,6 +307,8 @@ class JobInfo(IJobBaseInfo, IIsDelModel, IArea):
         # TODO:[-] 20-04-30 注意将 rela_case_coverage 中需要判断的 current_id 与 wind_id 放在 users/models 中格式化
         attrs['current_id'] = int(attrs['current_id'] if attrs['current_id'] is not None else DEFAULT_NULL_KEY)
         attrs['wind_id'] = int(attrs['wind_id'] if attrs['wind_id'] is not None else DEFAULT_NULL_KEY)
+        # TODO:[-] 20-05-11 新加入了 type_job
+        attrs['type_job'] = int(attrs.get('type_job'))
         # if attrs['is_del'] == '0':
         #     attrs['is_del'] = False
         # elif attrs['is_del'] == '1':

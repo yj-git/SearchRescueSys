@@ -255,7 +255,7 @@ class CaseModelView(CaseBaseView):
                     json_data = e.message
                 except ConvertError as e:
                     json_data = e.message
-                except:
+                except Exception as e:
                     json_data = '发生异常错误'
                     pass
 

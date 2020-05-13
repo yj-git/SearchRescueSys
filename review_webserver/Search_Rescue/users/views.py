@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth.models import User
 from util.jobs import ForecastJob
-from util.customer_exception import LackCoverageError, ConvertError
+from util.customer_exception import LackCoverageError, ConvertError, LackNecessaryFactorError
 
 # from typing import List
 
@@ -240,7 +240,7 @@ class CaseModelView(CaseBaseView):
                     request.GET = copy_request
                     # TODO:[-] 此处重新修改将 request 在外侧转换为 task_msg
                     # 若上面的 case_result 为Null 下面的语句就不用执行
-                    job_result = self.set_jobinfo(request, uid,user_name=user_name,
+                    job_result = self.set_jobinfo(request, uid, user_name=user_name,
                                                   case_result=case_result,
                                                   case_id=case_result.id) if case_result is not None else None
                     if case_result is not None:
@@ -254,6 +254,8 @@ class CaseModelView(CaseBaseView):
                         json_data = f'创建指定case时出错'
                         # return Response(job_result.case_code)
                 except LackCoverageError as e:
+                    json_data = e.message
+                except LackNecessaryFactorError as e:
                     json_data = e.message
                 except ConvertError as e:
                     json_data = e.message

@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'common',
     'geo',
     'rela',
+    # TODO:[-] 20-05-12 新加入了计算属性
+    'computed_property'
     # 'apps.user',
     # 'common'
 ]

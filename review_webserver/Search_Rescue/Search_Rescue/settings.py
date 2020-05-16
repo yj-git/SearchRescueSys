@@ -235,9 +235,10 @@ NC_OPTIONS = {
 }
 # 7530
 # _ROOT_DIR = r'D:\03data\search'
-# _ROOT_DIR = r'/Users/evaseemefly/Documents/03Data/nc'
-# 5820
-_ROOT_DIR = r'D:\03data\search'
+# mac
+_ROOT_DIR = r'/Users/evaseemefly/Documents/03Data/nc'
+# 500
+# _ROOT_DIR = r'D:\03data\search'
 # 5510
 # _ROOT_DIR = r'C:\01Proj\SearchRescueSys\data\demo_data'
 # p52s

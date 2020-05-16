@@ -179,8 +179,8 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
         # 判断 attrs中是否有在指定list中的值为Null的对象，若有则返回None
         # TODO:[-] 20-04-25 使用此种方式完成对于是否为空的判断
         # 方式1:
-        un_null_list = [ 'forecast_date', 'case_name', 'lat', 'lon', 'nums',
-                        'wind_coefficient']
+        un_null_list = ['forecast_date', 'case_name', 'lat', 'lon', 'nums',
+                        'wind_coefficient', 'type']
         # TODO:[*] 20-04-28 住一次出存在一个问题就是若提交的 params中有 current_coverage_id 字段，但是为''，则还是会有问题
         # 此处的逻辑为: 两个id 起码有一个为非空=不能全为空=!全为空
         if all([attrs.get('wind_coverage_id', None) is None, attrs.get('current_coverage_id', None) is None]):

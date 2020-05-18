@@ -3,5 +3,9 @@
 // value 为 type_code (全大写)，key为 code (数字)
 export enum DictEnum {
     COVERAGE_TYPE = 400,
-    COVERAGE_AREA = 500
+    COVERAGE_AREA = 500,
+    // coverage 流场
+    COVERAGE_TYPE_CURRENT = 401,
+    // coverage 风场
+    COVERAGE_TYPE_WIND = 402
 }

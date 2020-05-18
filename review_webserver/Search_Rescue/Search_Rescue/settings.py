@@ -110,10 +110,10 @@ DATABASES = {
         # mac
         'USER': 'root',  # 账号
         # 7530,mac
-        'PASSWORD': 'admin123',
+        # 'PASSWORD': 'admin123',
         # 5820
         # p52s
-        # 'PASSWORD': '123456',
+        'PASSWORD': '123456',
         # by cwb
         # 'USER': 'root',  # 账号
         # 'PASSWORD': '123456',
@@ -236,9 +236,9 @@ NC_OPTIONS = {
 # 7530
 # _ROOT_DIR = r'D:\03data\search'
 # mac
-_ROOT_DIR = r'/Users/evaseemefly/Documents/03Data/nc'
+# _ROOT_DIR = r'/Users/evaseemefly/Documents/03Data/nc'
 # 500
-# _ROOT_DIR = r'D:\03data\search'
+_ROOT_DIR = r'D:\03data\search'
 # 5510
 # _ROOT_DIR = r'C:\01Proj\SearchRescueSys\data\demo_data'
 # p52s

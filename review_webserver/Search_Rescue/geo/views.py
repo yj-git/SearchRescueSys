@@ -3,15 +3,18 @@ from typing import List
 from django.shortcuts import render
 from rest_framework.decorators import APIView, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-
+import arrow
+from datetime import datetime
 # from geoserver.catalog import Catalog
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from util.enum import TaskStateEnum
+from util.customer_wrapt import request_need_factors_wrapper
 from geo.models import CoverageModel, RGeoInfo, GeoLayerModel, GeoServerBaseModel
 from geo.serializers import CoverageSerializer, LayerSerializer, GeoserverSerializer
 from users.view_base import TaskBaseView
 from users.models import TaskUserModel
 from base.view_base import CoverageBaseView
+from .views_base import CoverageBaseView as GeoBaseView
 
 
 # Create your views here.
@@ -64,6 +67,23 @@ class GeoInfoView(TaskBaseView):
             # match_list.extend(CoverageModel.objects.filter(id=temp_task.coverage_id).all())
         json_data = LayerSerializer(match_list, many=True).data
         return Response(json_data)
+
+
+class CoverageFileListView(APIView, GeoBaseView):
+    '''
+        20-05-17 新加入的根据传入的 datetime 获取指定时间范围内的所有 coverage files 列表
+    '''
+
+    @request_need_factors_wrapper(['current'], 'GET')
+    def get(self, request):
+        current_str: str = request.GET.get('current')
+        current_dt = arrow.get(current_str)
+        start, end = self.get_datetime_range(current_dt)
+        coverage_list = CoverageModel.objects.filter(gmt_forecast_start__gt=start.datetime,
+                                                     gmt_forecast_start__lte=end.datetime)
+        json_data = CoverageSerializer(coverage_list, many=True).data
+        return Response(json_data)
+        pass
 
 
 class GeoServerView(APIView):

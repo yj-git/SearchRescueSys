@@ -8,10 +8,13 @@
 # @Software: PyCharm
 from datetime import datetime
 import wrapt
+from typing import List
+from rest_framework.request import Request
 from .enum import TaskStateEnum, JobTypeEnum
 from users.models import JobInfo, JobUserRate
 from rela.views_base import RelaCaseOilView
 from base.middle_model import TaskMsg
+from util.customer_exception import LackNeedSubmitFactorsError
 
 
 def provide_job_rate(rate: int, state: TaskStateEnum, job_type=JobTypeEnum, jid: int = None):
@@ -41,4 +44,23 @@ def provide_job_rate(rate: int, state: TaskStateEnum, job_type=JobTypeEnum, jid:
 
         return wrapped(*args, **kwrags)
 
+    return wrapper
+
+
+def request_need_factors_wrapper(need_factors: List[str], method_type: str = 'GET'):
+    '''
+        判断是否所需要的要素全部包含在request中
+    :param need_factors:
+    :return:
+    '''
+
+    @wrapt.decorator
+    def wrapper(wrapped, instance, args, kwargs):
+        request: Request = args[0]
+        if all([temp_need in getattr(request,method_type) for temp_need in need_factors]):
+            return wrapped(*args, **kwargs)
+        else:
+            raise LackNeedSubmitFactorsError(f'lack needs in :{need_factors}')
+
+    # request = kwargs.get('request')
     return wrapper

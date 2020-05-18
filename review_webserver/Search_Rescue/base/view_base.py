@@ -39,3 +39,15 @@ class CoverageBaseView(APIView):
         forecast_datetime: datetime = arrow.get(
             forecast_datetime_str).datetime if forecast_datetime_str is not None else datetime.now()
         return coverage_type, coverage_area, forecast_datetime
+
+
+class NecessaryFactorsView:
+    need_factors=['']
+    def check_need_factors(self,request):
+        '''
+            根据request 判断是否在当前的必要的要素列表中
+        :param request:
+        :return:
+        '''
+        is_ok=False
+        pass

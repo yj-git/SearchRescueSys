@@ -3,20 +3,28 @@
         <el-form label-width="120px" :label-position="labelPosition">
             <el-form-item label="模拟步长">
                 <span class="demonstration">{{ form.simulationStep }}</span>
-                <el-slider v-model="form.simulationStep"></el-slider>
+                <el-slider
+                    v-model="form.simulationStep"
+                    :max="formDefaultOption.simulationStepMax"
+                ></el-slider>
             </el-form-item>
             <el-form-item label="输出步长">
                 <span class="demonstration">{{ form.consoleStep }}</span>
-                <el-slider v-model="form.consoleStep"></el-slider>
+                <el-slider
+                    v-model="form.consoleStep"
+                    :max="formDefaultOption.simulationStepMax"
+                ></el-slider>
             </el-form-item>
-            <el-form-item label="风场不确定性">
-                <!-- <span class="demonstration">{{ windNon }}</span> -->
-                <el-input-number size="medium" v-model="form.windNon"></el-input-number>
-            </el-form-item>
-            <el-form-item label="流场不确定性">
-                <!-- <span class="demonstration">{{ currentNon }}</span> -->
-                <el-input-number size="medium" v-model="form.currentNon"></el-input-number>
-            </el-form-item>
+            <div class="coverage_filter_form">
+                <el-form-item label="风场不确定性">
+                    <!-- <span class="demonstration">{{ windNon }}</span> -->
+                    <el-input-number size="medium" v-model="form.windNon"></el-input-number>
+                </el-form-item>
+                <el-form-item label="流场不确定性">
+                    <!-- <span class="demonstration">{{ currentNon }}</span> -->
+                    <el-input-number size="medium" v-model="form.currentNon"></el-input-number>
+                </el-form-item>
+            </div>
             <el-form-item label="求解方法">
                 <el-select placeholder="请选择" v-model="form.equation">
                     <el-option
@@ -53,9 +61,16 @@ export default class OilCaseModelForm extends Vue {
             label: 'xx_1'
         }
     ]
+    formDefaultOption: {
+        simulationStepMax: number
+        nondeterminacyMax: number
+    } = {
+        simulationStepMax: 3600,
+        nondeterminacyMax: 5
+    }
     form: IFormOilCaseModel = {
-        simulationStep: 0,
-        consoleStep: 0,
+        simulationStep: 60,
+        consoleStep: 60,
         windNon: 0,
         currentNon: 0,
         optionEquationType: 0
@@ -81,4 +96,6 @@ export default class OilCaseModelForm extends Vue {
     }
 }
 </script>
-<style scoped></style>
+<style scoped>
+@import '../../../../../../styles/base-form.less';
+</style>

@@ -20,6 +20,11 @@ class LackNecessaryFactorError(BaseSubmitDataError):
     '''
     pass
 
+class LackNeedSubmitFactorsError(BaseSubmitDataError):
+    '''
+        缺少请求所需的必要要素
+    '''
+    pass
 
 class LackCoverageError(BaseSubmitDataError):
     pass

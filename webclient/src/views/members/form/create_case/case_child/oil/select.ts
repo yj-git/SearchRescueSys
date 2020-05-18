@@ -6,10 +6,18 @@ export interface IFormOilCaseInfo {
     lat: number
     lon: number
     forecastdate: Date
+
+    /**
+     *模拟时长
+     *
+     * @type {number}
+     * @memberof IFormOilCaseInfo
+     */
     duration: number
     goodType: number
     radius: number
     nums: number
+    // dateDuration: number
 }
 export interface IFormOilCaseModel {
     simulationStep: number

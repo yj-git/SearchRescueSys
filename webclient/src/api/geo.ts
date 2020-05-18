@@ -49,4 +49,20 @@ const loadGeoserverInfo = () => {
     })
 }
 
-export { loadCoverageList, loadCoverageInfo, loadGeoserverInfo }
+/**
+ * 根据 指定时间获取符合条件[-7,+2]天的所有 nc 的列表
+ *
+ * @param {Date} current
+ * @returns
+ */
+const loadFilterCoverageList = (current: Date) => {
+    const url = `${host}${area}/coverage/files/filter/`
+    return axios.get(url, {
+        headers: authHeader(),
+        params: {
+            current: current
+        }
+    })
+}
+
+export { loadCoverageList, loadCoverageInfo, loadGeoserverInfo, loadFilterCoverageList }

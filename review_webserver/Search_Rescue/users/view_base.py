@@ -13,7 +13,7 @@ import pathlib
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from util.enum import TaskStateEnum, JobTypeEnum
 from util.customer_exception import LackCoverageError
-from base.view_base import CoverageBaseView
+from base.view_base import CoverageBaseView, get_val_from_request_data
 from base.tasks_base import TaskOpenDrift
 from base.middle_model import TaskMsg
 from users.models import TaskUserModel, AuthOilRela, AuthRescueRela, CaseOilInfo, CaseRescueInfo, ICaseBaseModel, \
@@ -109,6 +109,8 @@ class CaseBaseView(APIView):
         attrs = {}
 
         # TODO:[-] 20-05-12 注意修改此处的 case_path 是由传入的 start_time 决定的
+        # TODO:[-] 20-05-19 此处的获取抽象至  base/view_base.py -> get_val_from_request_data 方法中
+        ss = get_val_from_request_data(request, 'start_time')
         start_time: datetime = arrow.get(request.GET.get('start_time'))
         attrs['create_date'] = request.GET.get('create_date', None)
         attrs['forecast_date'] = request.GET.get('forecast_date', None)

@@ -110,29 +110,15 @@ class CaseBaseView(APIView):
 
         # TODO:[-] 20-05-12 注意修改此处的 case_path 是由传入的 start_time 决定的
         # TODO:[-] 20-05-19 此处的获取抽象至  base/view_base.py -> get_val_from_request_data 方法中
-        ss = get_val_from_request_data(request, 'start_time')
-        start_time: datetime = arrow.get(request.GET.get('start_time'))
-        attrs['create_date'] = request.GET.get('create_date', None)
-        attrs['forecast_date'] = request.GET.get('forecast_date', None)
-        attrs['case_name'] = request.GET.get('case_name', None)
-        attrs['case_desc'] = request.GET.get('case_desc', None)
-        attrs['case_code'] = request.GET.get('case_code', None)
-        attrs['lat'] = request.GET.get('lat', None)
-        attrs['lon'] = request.GET.get('lon', None)
-        attrs['radius'] = request.GET.get('radius', None)
-        attrs['nums'] = request.GET.get('nums', None)
-        attrs['simulation_duration'] = request.GET.get('simulation_duration', None)
-        attrs['simulation_step'] = request.GET.get('simulation_step', None)
-        attrs['console_step'] = request.GET.get('console_step', None)
-        attrs['current_nondeterminacy'] = request.GET.get('current_nondeterminacy', None)
-        attrs['equation'] = request.GET.get('equation', None)
-        attrs['is_del'] = request.GET.get('is_del', None)
-        attrs['area'] = request.GET.get('area', None)
-        attrs['wind_coefficient'] = request.GET.get('wind_coefficient', None)
-        attrs['wind_dir'] = request.GET.get('wind_dir', None)
-        attrs['wind_coverage_id'] = request.GET.get('wind_coverage_id', None)
-        attrs['current_coverage_id'] = request.GET.get('current_coverage_id', None)
-        attrs['type'] = request.GET.get('type', None)
+        # ss = get_val_from_request_data(request, 'start_time')
+        attrs_names = ['create_date', 'forecast_date', 'case_name', 'case_desc', 'case_code', 'lat', 'lon', 'radius',
+                       'nums', 'simulation_duration', 'simulation_step', 'console_step', 'current_nondeterminacy',
+                       'equation', 'is_del', 'area', 'wind_coefficient', 'wind_dir', 'wind_coverage_id',
+                       'current_coverage_id', 'type']
+        for temp_name in attrs_names:
+            attrs[temp_name] = get_val_from_request_data(request, temp_name)
+
+        start_time: datetime = arrow.get(get_val_from_request_data(request, 'start_time'))
         # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
         attrs = CaseOilInfo().validate(attrs)
         users = User.objects.filter(id=uid)

@@ -1,8 +1,17 @@
 <template>
     <div>
+        <!-- <el-dialog
+            title="创建作业"
+            :visible.sync="dialogVisible"
+            width="45%"
+            :before-close="handleClose"
+        > -->
+        <!-- <CreatedCaseForm ref="caseForm"></CreatedCaseForm> -->
+        <!-- 此部分替换为 CreateCaseForm 组件中的部分 -->
         <el-tabs v-model="activeTemp" @tab-click="handleClick">
             <el-tab-pane label="搜救case" name="OIL">
                 <CreateRescueCaseForm></CreateRescueCaseForm>
+
                 <!-- <el-tabs :tab-position="childTablPosition">
                     <el-tab-pane label="搜救信息参数">
                         <OilCaseInfoForm></OilCaseInfoForm>
@@ -25,6 +34,11 @@
                 <CreateOilCaseForm ref="oil"></CreateOilCaseForm>
             </el-tab-pane>
         </el-tabs>
+        <!-- <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submitCaseModel">确 定</el-button>
+        </span> -->
+        <!-- </el-dialog> -->
     </div>
 </template>
 <script lang="ts">
@@ -59,7 +73,8 @@ export default class CreatedCaseForm extends Vue {
         resource: '',
         desc: ''
     }
-
+    @Prop(Boolean)
+    // dialogVisible = false
     // 失事类型
     optionWreckType: [
         {

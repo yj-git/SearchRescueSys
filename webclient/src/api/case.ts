@@ -60,6 +60,16 @@ const createCaseInfo = (type: number, oilModel: IMerageOilCase): Promise<AxiosRe
     })
 }
 
+const createOilCase = (params: any): Promise<AxiosResponse<any>> => {
+    const url = `${host}${area}/case/model/`
+    return axios.post(url, {
+        headers: authHeader(),
+        params: {
+            case: params
+        }
+    })
+}
+
 const loadCaseModelInfo = (code: string) => {
     const url = `${host}${area}/case/model/`
     return axios.get(url, {
@@ -70,4 +80,4 @@ const loadCaseModelInfo = (code: string) => {
     })
 }
 
-export { loadCaseListByUser, loadCaseHistory, createCaseInfo, loadCaseModelInfo }
+export { loadCaseListByUser, loadCaseHistory, createCaseInfo, loadCaseModelInfo, createOilCase }

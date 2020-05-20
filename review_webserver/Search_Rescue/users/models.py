@@ -12,6 +12,8 @@ from util.enum import TaskStateEnum
 from base.models import IIsDelModel, IArea
 from util.customer_exception import LackCoverageError, ConvertError, LackNecessaryFactorError
 from Search_Rescue.settings import _ROOT_DIR
+# TODO:[-] 从 app/geo -> CoverageBaseView
+# from geo.views_base import CoverageBaseView
 
 
 # Create your models here.
@@ -179,8 +181,7 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
         # 判断 attrs中是否有在指定list中的值为Null的对象，若有则返回None
         # TODO:[-] 20-04-25 使用此种方式完成对于是否为空的判断
         # 方式1:
-        un_null_list = ['forecast_date', 'case_name', 'lat', 'lon', 'nums',
-                        'wind_coefficient', 'type']
+        un_null_list = ['forecast_date', 'case_name', 'lat', 'lon', 'nums', 'type']
         # TODO:[*] 20-04-28 住一次出存在一个问题就是若提交的 params中有 current_coverage_id 字段，但是为''，则还是会有问题
         # 此处的逻辑为: 两个id 起码有一个为非空=不能全为空=!全为空
         if all([attrs.get('wind_coverage_id', None) is None, attrs.get('current_coverage_id', None) is None]):
@@ -189,28 +190,6 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
             raise LackNecessaryFactorError('lack neccessary facotr from case oil')
             return None
 
-        # 方式2：
-        # for temp in un_null_list:
-        #     if attrs.get(temp) is None:
-        #         return None
-
-        # 方式3:
-        # if (attrs.get('root_path') or attrs.get('case_path') or attrs.get('create_date') or
-        #         attrs.get('forecast_date')
-        #         or attrs.get('case_name') or attrs.get('case_desc') or attrs.get('case_code') or
-        #         attrs.get('area')
-        #         or attrs.get('lat') or attrs.get(
-        #             'lon') or attrs.get('radius') or attrs.get('nums')
-        #         or attrs.get('simulation_duration') or
-        #         attrs.get('simulation_step') or
-        #         attrs.get('console_step')
-        #         or attrs.get('current_nondeterminacy') or
-        #         attrs.get('equation') or attrs.get('is_del')
-        #         or attrs.get('wind_coefficient') or
-        #         attrs.get('wind_dir')):
-        #     return None
-
-        # attrs['case_code'] = self.__gen_casecode(attrs.get('case_code'))
         try:
 
             # 若自动创建的时间是utc时间
@@ -218,7 +197,7 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
                                                                                              None) not in ['',
                                                                                                            None] else arrow.utcnow().datetime
             #
-            attrs['case_code'] = self.gen_casecode(attrs.get('case_code'), attrs['create_date'])
+            attrs['case_code'] = self.gen_casecode(attrs.get('case_name'), attrs['create_date'])
             # test_code = self._test_gen()
             # 预报时间由前台传入为 gmt 时间(非utc时间)
             attrs['forecast_date'] = arrow.get(attrs.get('forecast_date')).datetime
@@ -237,12 +216,19 @@ class CaseOilInfo(ICaseBaseStore, ICaseBaseModel, ICaseGeoBaseInfo, ICaseBaseInf
             attrs['wind_coefficient'] = float(attrs.get('wind_coefficient')) if attrs.get(
                 'wind_coefficient') is not None else None
             attrs['wind_dir'] = float(attrs.get('wind_dir')) if attrs.get('wind_dir') is not None else None
-            if attrs['is_del'] == '0':
-                attrs['is_del'] = False
-            elif attrs['is_del'] == '1':
-                attrs['is_del'] = True
-            else:
-                attrs['is_del'] = False
+            attrs['area'] = attrs.get('area') if attrs.get('area') is not None else None
+            is_del_dict = {
+                '0': False,
+                '1': True
+            }
+            # TODO:[-] 20-05-20 使用新的方式来获取 is_del
+            attrs['is_del'] = False if attrs.get('is_del', None) is None else is_del_dict.get(attrs.get('is_del'))
+            # if attrs['is_del'] == '0':
+            #     attrs['is_del'] = False
+            # elif attrs['is_del'] == '1':
+            #     attrs['is_del'] = True
+            # else:
+            #     attrs['is_del'] = False
             return attrs
         except Exception as e:
             raise ConvertError('convert error')

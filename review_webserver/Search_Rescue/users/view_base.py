@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 from rest_framework.decorators import APIView, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -14,6 +14,7 @@ from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
 from util.enum import TaskStateEnum, JobTypeEnum
 from util.customer_exception import LackCoverageError
 from base.view_base import CoverageBaseView, get_val_from_request_data
+from geo.views_base import CoverageBaseView as GeoCoverageView
 from base.tasks_base import TaskOpenDrift
 from base.middle_model import TaskMsg
 from users.models import TaskUserModel, AuthOilRela, AuthRescueRela, CaseOilInfo, CaseRescueInfo, ICaseBaseModel, \
@@ -98,7 +99,7 @@ class CaseBaseView(APIView):
         :param request:
         :return:
         '''
-        type_job = request.GET.get('type', None)
+
         # 以后获取type_job 放在middle_model.py -> JobMidModel 中
         # type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
         # if type is not None:
@@ -110,15 +111,38 @@ class CaseBaseView(APIView):
 
         # TODO:[-] 20-05-12 注意修改此处的 case_path 是由传入的 start_time 决定的
         # TODO:[-] 20-05-19 此处的获取抽象至  base/view_base.py -> get_val_from_request_data 方法中
+        # TODO:[-] 20-05-20 由于前后端存在字段名称不同的问题，需要加入前后端字段的映射,以下备注
         # ss = get_val_from_request_data(request, 'start_time')
-        attrs_names = ['create_date', 'forecast_date', 'case_name', 'case_desc', 'case_code', 'lat', 'lon', 'radius',
-                       'nums', 'simulation_duration', 'simulation_step', 'console_step', 'current_nondeterminacy',
-                       'equation', 'is_del', 'area', 'wind_coefficient', 'wind_dir', 'wind_coverage_id',
-                       'current_coverage_id', 'type']
-        for temp_name in attrs_names:
-            attrs[temp_name] = get_val_from_request_data(request, temp_name)
+        # attrs_names = ['create_date', 'forecast_date', 'case_name', 'case_desc', 'case_code', 'lat', 'lon', 'radius',
+        #                'nums', 'simulation_duration', 'simulation_step', 'console_step', 'current_nondeterminacy',
+        #                'equation', 'is_del', 'area', 'wind_coefficient', 'wind_dir', 'wind_coverage_id',
+        #                'current_coverage_id', 'type']
+        # for temp_name in attrs_names:
+        #     attrs[temp_name] = get_val_from_request_data(request, temp_name)
 
-        start_time: datetime = arrow.get(get_val_from_request_data(request, 'start_time'))
+        # TODO:[-] 20-05-20 由于前后端存在字段名称不同的问题，需要加入前后端字段的映射
+        attrs_dicts: Dict[str, str] = {'simulation_step': 'simulationStep', 'console_step': 'consoleStep',
+                                       'case_name': 'caseName', 'lat': 'lat', 'lon': 'lon',
+                                       'forecast_date': 'forecastdate', 'nums': 'nums',
+                                       'simulation_duration': 'duration', 'current_coverage_id': 'currentId',
+                                       'wind_coverage_id': 'windId', 'type': 'goodType', 'radius': 'radius',
+                                       'case_desc': 'caseDesc'}
+        for server, client in attrs_dicts.items():
+            print(f'server:{server}|client:{client}')
+            attrs[server] = get_val_from_request_data(request, client)
+
+        # 获取起始时间
+        start_time: datetime = arrow.get(get_val_from_request_data(request, 'forecastdate'))
+        # 获取 oil or search
+        type_job = attrs['type'] if attrs['type'] is not None else JobTypeEnum.OIL.value
+        # 获取区域
+        coverage_area = DEFAULT_NULL_KEY
+        # TODO:[-] 20-05-20 只要传入了 wind_coverage_id 或 current 就查询该id对应的 geo_coverageinfo -> coverage_area
+        for temp_coverage in [attrs.get('wind_coverage_id', None), attrs.get('current_coverage_id', None)]:
+            if temp_coverage not in [None, DEFAULT_NULL_KEY]:
+                coverage = GeoCoverageView()
+                coverage_area = coverage.get_coverage(temp_coverage).coverage_area
+        attrs['area'] = coverage_area
         # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
         attrs = CaseOilInfo().validate(attrs)
         users = User.objects.filter(id=uid)

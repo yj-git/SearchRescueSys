@@ -1,5 +1,6 @@
 import { loadSelectByType } from '@/api/select'
 import { SelectTypeEnum } from '@/enum/select'
+import { DEFAULT_COVERAGE_ID } from '@/const/common'
 export interface IFormOilCaseInfo {
     caseName: string
     caseDesc: string
@@ -19,7 +20,29 @@ export interface IFormOilCaseInfo {
     nums: number
     // dateDuration: number
 }
+
+export class FormOilCaseInfo implements IFormOilCaseInfo {
+    caseName: string
+    caseDesc: string
+    lat: number
+    lon: number
+    forecastdate: Date
+    duration: number
+    goodType: number
+    radius: number
+    nums: number
+    currentId = DEFAULT_COVERAGE_ID
+    windId = DEFAULT_COVERAGE_ID
+}
 export interface IFormOilCaseModel {
+    simulationStep: number
+    consoleStep: number
+    windNon: number
+    currentNon: number
+    optionEquationType: number
+}
+
+export class FormOilCaseModel implements IFormOilCaseModel {
     simulationStep: number
     consoleStep: number
     windNon: number

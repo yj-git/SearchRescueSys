@@ -42,7 +42,7 @@
             </div>
             <div class="coverage_filter_form">
                 <el-form-item label="风场">
-                    <el-select placeholder="请选择" v-model="form.equation">
+                    <el-select placeholder="请选择" v-model="form.windId">
                         <el-option
                             v-for="item in getCoverageListByType(myEnum.COVERAGE_TYPE_WIND)"
                             :key="item.value"
@@ -52,7 +52,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="流场">
-                    <el-select placeholder="请选择" v-model="form.equation">
+                    <el-select placeholder="请选择" v-model="form.currentId">
                         <el-option
                             v-for="item in getCoverageListByType(myEnum.COVERAGE_TYPE_CURRENT)"
                             :key="item.value"
@@ -116,11 +116,14 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { loadSelectByType } from '@/api/select'
 import { SelectTypeEnum } from '@/enum/select'
 import { DictEnum } from '@/enum/dict'
+import { DEFAULT_COVERAGE_ID } from '@/const/common'
 import { SelectMidModel } from '@/middle_model/select'
 import {
     IFormOilCaseInfo,
     IInitSelectFunc,
-    loadSelectionByType
+    loadSelectionByType,
+    FormOilCaseInfo,
+    FormOilCaseModel
 } from '@/views/members/form/create_case/case_child/oil/select'
 import { loadFilterCoverageList } from '@/api/geo'
 import { Form } from 'element-ui'
@@ -156,7 +159,7 @@ export default class OilCaseInfoForm extends Vue {
         numsMax: 5000,
         durationMax: 148
     }
-    form: IFormOilCaseInfo = {
+    form: FormOilCaseInfo = {
         caseName: 'default_case',
         caseDesc: 'default_case',
         lat: 12,
@@ -166,7 +169,9 @@ export default class OilCaseInfoForm extends Vue {
         radius: 50,
         nums: 2000,
         // 模拟时长
-        duration: 72
+        duration: 72,
+        currentId: DEFAULT_COVERAGE_ID,
+        windId: DEFAULT_COVERAGE_ID
     }
     // 失事类型
     optionWreckType: Array<{ value: string; label: string }> = [

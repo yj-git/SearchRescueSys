@@ -235,7 +235,8 @@ class CaseModelView(CaseBaseView):
                     case_result = self.set_caseinfo(request, uid)
                     # TODO:[-] 20-04-30 注意需要手动修改 request.GET['case_code']
                     # TODO:[*] 20-05-03 此处为什么明明是post请求的，但是提交的parmas只能在GET中找到？
-                    copy_request = request.GET.copy()
+                    copy_request = request.data.copy()
+                    # copy_request = request.GET.copy()
                     copy_request['case_code'] = case_result.case_code
                     request.GET = copy_request
                     # TODO:[-] 此处重新修改将 request 在外侧转换为 task_msg

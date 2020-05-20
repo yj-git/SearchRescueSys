@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Tuple, List, Dict
 from rest_framework.decorators import APIView, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
@@ -92,14 +93,15 @@ class CaseBaseView(APIView):
         case_code = code + '_' + dt_ms
         return case_code
 
-    def set_caseinfo(self, request, uid: str):
+    def copy_request_2_attrs(self, request: Request, attrs: {}, **kwargs):
         '''
-            根据传入的 uid 与 request 添加或更新对应的case
-        :param uid:
+            将部分需要由 request.data 中获取的数据写入指定的字典 attrs 中
+            注意: 需要传入 uid
         :param request:
+        :param attrs:
         :return:
         '''
-
+        uid = kwargs.get('uid')
         # 以后获取type_job 放在middle_model.py -> JobMidModel 中
         # type_job = int(type_job) if type_job is not None else JobTypeEnum.OIL.value
         # if type is not None:
@@ -107,7 +109,6 @@ class CaseBaseView(APIView):
         # TODO:[*] 20-02-25 以下部分建议改为通过model进行获取对应的参数，在model中添加验证方法，不用放在view
         # TODO:[*] 20-02-25 建议将root_path 与 case_path 通过工厂模式实现创建对应的 路径(路径不由前端传入，路径在后端根据传入的 user name 与当前的 yyyy/mm/dd 共同拼接而成。
         # eg: /user_name/yyyy/mm/dd/
-        attrs = {}
 
         # TODO:[-] 20-05-12 注意修改此处的 case_path 是由传入的 start_time 决定的
         # TODO:[-] 20-05-19 此处的获取抽象至  base/view_base.py -> get_val_from_request_data 方法中
@@ -122,33 +123,49 @@ class CaseBaseView(APIView):
 
         # TODO:[-] 20-05-20 由于前后端存在字段名称不同的问题，需要加入前后端字段的映射
         attrs_dicts: Dict[str, str] = {'simulation_step': 'simulationStep', 'console_step': 'consoleStep',
-                                       'case_name': 'caseName', 'lat': 'lat', 'lon': 'lon',
+                                       'lat': 'lat', 'lon': 'lon',
                                        'forecast_date': 'forecastdate', 'nums': 'nums',
-                                       'simulation_duration': 'duration', 'current_coverage_id': 'currentId',
-                                       'wind_coverage_id': 'windId', 'type': 'goodType', 'radius': 'radius',
-                                       'case_desc': 'caseDesc'}
+                                       'simulation_duration': 'duration', 'current_id': 'currentId',
+                                       'wind_id': 'windId', 'type_job': 'goodType', 'radius': 'radius',
+                                       'case_desc': 'caseDesc', 'case_code': 'caseName', 'case_name': 'caseName',
+                                       'gmt_create': 'gmt_create', 'gmt_modified': 'gmt_modified', 'state': 'state'}
         for server, client in attrs_dicts.items():
             print(f'server:{server}|client:{client}')
             attrs[server] = get_val_from_request_data(request, client)
 
         # 获取起始时间
         start_time: datetime = arrow.get(get_val_from_request_data(request, 'forecastdate'))
-        # 获取 oil or search
-        type_job = attrs['type'] if attrs['type'] is not None else JobTypeEnum.OIL.value
         # 获取区域
         coverage_area = DEFAULT_NULL_KEY
-        # TODO:[-] 20-05-20 只要传入了 wind_coverage_id 或 current 就查询该id对应的 geo_coverageinfo -> coverage_area
-        for temp_coverage in [attrs.get('wind_coverage_id', None), attrs.get('current_coverage_id', None)]:
+        # TODO:[-] 20-05-20 只要传入了 wind_id 或 current 就查询该id对应的 geo_coverageinfo -> coverage_area
+        for temp_coverage in [attrs.get('wind_id', None), attrs.get('current_id', None)]:
             if temp_coverage not in [None, DEFAULT_NULL_KEY]:
                 coverage = GeoCoverageView()
                 coverage_area = coverage.get_coverage(temp_coverage).coverage_area
         attrs['area'] = coverage_area
-        # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
-        attrs = CaseOilInfo().validate(attrs)
         users = User.objects.filter(id=uid)
         attrs['root_path'] = users[0].username
         attrs['user_name'] = users[0].username
         attrs['case_path'] = start_time.strftime('%Y/%m/%d')
+        attrs['start_time'] = start_time
+        # TODO:[-] 20-05-20 注意 end_time 是 start_time + 模拟时长
+        attrs['end_time'] = arrow.get(start_time).shift(hours=attrs['duration'])
+        pass
+
+    def set_caseinfo(self, request, uid: str, attrs: {}):
+        '''
+            根据传入的 uid 与 request 添加或更新对应的case
+        :param uid:
+        :param request:
+        :return:
+        '''
+
+        # 以下代码全部封装至 CaseBaseView -> copy_request_2_attrs 方法中
+
+        # TODO:[*] 20-02-25此处验证操作放在 对应的 model中进行验证
+        attrs = CaseOilInfo().validate(attrs)
+        # 获取 oil or search
+        type_job = attrs['type_job'] if attrs['type_job'] is not None else JobTypeEnum.OIL.value
         # 注意此处需要修改 request -> case_code ，修改为 attrs.get('case_code') 中的修改后的添加了时间戳的code
         # task_msg = self._copy_request_to_msg(attrs, uid=uid)
         try:
@@ -248,7 +265,7 @@ class CaseBaseView(APIView):
         temp_rela_ins.add_info(case_id, wind_id=wind_id, current_id=current_id)
         return temp_rela_ins
 
-    def _copy_request_to_msg(self, request, **kwargs) -> TaskMsg:
+    def _copy_request_to_msg(self, request: {}, **kwargs) -> TaskMsg:
         '''
             将 request 传入的参数赋值给 TaskMsg 消息传递 中间model
         :param request:
@@ -259,29 +276,32 @@ class CaseBaseView(APIView):
         :rtype:
         '''
         # 以下作为备份
-        attrs = {}
+        attrs = kwargs.get('attrs')
+
         uid = kwargs.get('uid')
         user_name = kwargs.get('user_name')
-        attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
-        attrs['case_code'] = request.GET.get('case_code', None)
-        attrs['gmt_create'] = request.GET.get('forecast_date', None)
-        attrs['gmt_modified'] = request.GET.get('gmt_modified', None)
-        attrs['is_del'] = request.GET.get('is_del', None)
-        attrs['area'] = request.GET.get('area', None)
         # TODO:[*] 20-02-25 rate不由前端提交，首次创建完 user_jobinfo 后之后，在 user_jobuserrate 中添加对应的初始记录(此时rate应为0)，以后更新rate在后台中执行
         attrs['rate'] = 0
-        attrs['state'] = request.GET.get('state', None)
-        attrs['wind_id'] = request.GET.get('wind_id', None)
-        attrs['current_id'] = request.GET.get('current_id', None)
-        # TODO:[-] 20-05-03 + 新加的 经纬度信息
-        attrs['lat'] = request.GET.get('lat', None)
-        attrs['lon'] = request.GET.get('lon', None)
-        # TODO:[*] 20-05-04 + 此处最好改为自动将 request.GET中的字典映射到attrs中
-        attrs['start_time'] = request.GET.get('start_time', None)
-        attrs['end_time'] = request.GET.get('end_time', None)
         attrs['uid'] = uid
         attrs['user_name'] = user_name
-        attrs['type_job'] = request.GET.get('type', None)
+
+        # TODO:[-] 20-05-20 以下部分重构
+        attrs['job_celery_id'] = request.GET.get('job_celery_id', None)
+        # 以下为重复的变量
+        # attrs['case_code'] = request.GET.get('case_code', None)
+        # attrs['is_del'] = request.GET.get('is_del', None)
+        # attrs['area'] = request.GET.get('area', None)
+        # attrs['wind_id'] = request.GET.get('wind_id', None)
+        # attrs['current_id'] = request.GET.get('current_id', None)
+        # TODO:[-] 20-05-03 + 新加的 经纬度信息
+        # attrs['lat'] = request.GET.get('lat', None)
+        # attrs['lon'] = request.GET.get('lon', None)
+        # attrs['type_job'] = request.GET.get('type', None)
+
+        # TODO:[-] 20-05-20 已封装至 copy_request_2_attrs 方法中
+
+        # TODO:[-] 20-05-20 由于之前在 set_caseinfo 中已经进行了读取，那么此处不需要再重复读取
+        # attrs_dicts: Dict[str, str] = {'job_celery_id'}
 
         msg = TaskMsg()
         # 此处应改为直接拓展字典

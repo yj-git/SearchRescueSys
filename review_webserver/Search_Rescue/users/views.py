@@ -231,8 +231,11 @@ class CaseModelView(CaseBaseView):
             if user:
                 uid = user.id
                 user_name: str = user.username
+                attrs = {}
                 try:
-                    case_result = self.set_caseinfo(request, uid)
+                    # 此处修改了，attrs在外侧创建，并通过引用类型，在 set_caseinfo 方法中对其进行修改(也可以改造为 task_msg 的那种方式，暂时先不使用)
+                    self.copy_request_2_attrs(request, attrs, uid=uid)
+                    case_result = self.set_caseinfo(request, uid, attrs)
                     # TODO:[-] 20-04-30 注意需要手动修改 request.GET['case_code']
                     # TODO:[*] 20-05-03 此处为什么明明是post请求的，但是提交的parmas只能在GET中找到？
                     copy_request = request.data.copy()

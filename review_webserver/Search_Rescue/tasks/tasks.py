@@ -9,6 +9,8 @@ from datetime import datetime
 from abc import ABCMeta, abstractmethod
 # 当前项目
 from tasks.celery_con import app
+from base.middle_model import TaskMsg
+
 TASK_DIR = r'D:/02proj/SearchRescue/SearchRescueSys/background/04byRabbitmq/'
 sys.path.append(TASK_DIR)
 
@@ -96,6 +98,7 @@ class NCJobBase:
 
     def __init__(self, parent=None):
         self.parent = parent
+        self._task_msg: TaskMsg = None
 
     def handle(self, even: Event, **kwargs):
         # 找到的可选参数
@@ -116,6 +119,14 @@ class NCJobBase:
     # @abstractmethod
     def handle_default(self, msg: Msg):
         pass
+
+    @property
+    def task_msg(self) -> TaskMsg:
+        return self._task_msg
+
+    @task_msg.setter
+    def task_msg(self, val: TaskMsg):
+        self._task_msg = val
 
 
 # @shared_task

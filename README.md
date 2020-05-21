@@ -100,4 +100,38 @@ eg:
 
 现将调用 `opendrift` 的task代码准备放在 `/Search_Rescue/base/` 目录下 命名为 `task_base.py`
 
+### 采用面向切面的方式实现对于job的支持化操作
+
+当前的调用规则
+
+```
+|__ Search_Rescue
+	|__ base/
+		|__ common.py
+		|__ enmu.py			所有枚举
+		|__ tasks_base.py		所有 taks的父类
+			|__ TaskOpenDrift
+				|__ job					执行调用opendrift的方法
+	|__ common/
+	|__ oilspiling/				溢油app
+		|__ tasks.py				溢油的相关的任务
+			|__ do_job				外部直接调用do_job 方法，加入了celery
+			|__ XXXJob				do_job 在循环调用 XXXJob 方法，其中OilPyJob中调用了 TaskOpenDrift.job 方法
+	|__ tasks/						防止需要通过celery调用的代码块
+		|__ celery_con.py		用来创建Celery并设置
+		|__ settings.py			celery相关配置
+		|__ tasks.py				任务task
+	|__ users/
+		|__ views_base.py
+			|__ CaseBaseview
+				|__ __do_job		调用 -> oilspilling/tasks.py -> OilPyJob -> TaskopenDrift.job 方法
+				|__ set_jobinfo 调用 -> self.__do_job ,并创建 JobInfo(对应user_jobinfo)
+		|__ views.py -> CaseModelView.post 调用-> CaseBaseView.set_jobinfo
+			|__ 
+	|__ util/
+	mainage.py
+```
+
+将 users/views_base.py 中的CaseBaseView.set_jobinfo 的create jobinfo 操作修改为装饰器的形式
+
 ### 规约

@@ -37,10 +37,12 @@ class TaskOpenDrift(ITaskBase):
         pass
 
     def job(self, nc_files: List[str], latlon: List[float], start_time: datetime, end_time: datetime,
-            simluation_time_step: int, console_time_step: int, out_file=None, export_variables:List[str]=[], radius=50,
+            simluation_time_step: int, console_time_step: int, out_file=None, export_variables: List[str] = [],
+            radius=50,
             number=3000, wind_drfit_dactor=.2):
         '''
             执行 open_drift 作业
+            TODO:[*] 20-05-10
         :param nc_files: 风场+流场的nc文件所在路径(绝对路径集合)
         :type nc_files:
         :param latlon: 经纬度集合
@@ -62,13 +64,20 @@ class TaskOpenDrift(ITaskBase):
         '''
         drift_temp = OpenOil(loglevel=0)
         # wind + current 的场文件
-        list_reader = []
+        list_reader: List[reader_netCDF_CF_generic.Reader] = []
         for file_temp in nc_files:
             if pathlib.Path(file_temp).is_file():
                 list_reader.append(reader_netCDF_CF_generic.Reader(file_temp))
         drift_temp.add_reader(list_reader)
         # TODO:[*] 20-04-26 起止时间还需要做一个判断
-        times: List[datetime, datetime] = [start_time, end_time]
+        # 可行办法1:
+        # times: List[datetime, datetime] = [list_reader[0].start_time, list_reader[0].start_time + timedelta(hours=73)]
+        # 可行办法2:
+        # times: List[datetime, datetime] = [datetime(2020, 4, 10, 9, 0),
+        #                                    datetime(2020, 4, 10, 9, 0) + timedelta(hours=73)]
+        # 注意此处的 datetime 是包含时区的，需要去掉时区
+        # 使用 .replace(tzinfo=None)
+        times: List[datetime, datetime] = [start_time.replace(tzinfo=None), end_time.replace(tzinfo=None)]
         drift_temp.seed_elements(latlon[1], latlon[0], radius=radius, number=number, time=times,
                                  wind_drift_factor=wind_drfit_dactor)
 
@@ -78,7 +87,7 @@ class TaskOpenDrift(ITaskBase):
         drift_temp.set_config('drift:current_uncertainty', .1)
         drift_temp.set_config('drift:wind_uncertainty', 1)
 
-        drift_temp.run(end_time=end_time, time_step=simluation_time_step,
+        drift_temp.run(end_time=list_reader[0].end_time, time_step=simluation_time_step,
                        time_step_output=console_time_step, outfile=out_file,
                        export_variables=export_variables)
 

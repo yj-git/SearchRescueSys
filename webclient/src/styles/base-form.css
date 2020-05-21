@@ -1,0 +1,10 @@
+/* 搜救信息 form 中的 时间+区域的 样式 */
+.coverage_filter_form {
+  display: flex;
+}
+.coverage_filter_form .el-form-item {
+  flex: 6;
+}
+.coverage_filter_form .el-form-item .elf-form-item__content {
+  width: 100%;
+}

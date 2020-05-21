@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth.models import User
 from util.jobs import ForecastJob
-from util.customer_exception import LackCoverageError, ConvertError
+from util.customer_exception import LackCoverageError, ConvertError, LackNecessaryFactorError
 
 # from typing import List
 
@@ -230,14 +230,21 @@ class CaseModelView(CaseBaseView):
             user = getattr(request, 'user')
             if user:
                 uid = user.id
+                user_name: str = user.username
+                attrs = {}
                 try:
-                    case_result = self.set_caseinfo(request, uid)
+                    # 此处修改了，attrs在外侧创建，并通过引用类型，在 set_caseinfo 方法中对其进行修改(也可以改造为 task_msg 的那种方式，暂时先不使用)
+                    self.copy_request_2_attrs(request, attrs, uid=uid)
+                    case_result = self.set_caseinfo(request, uid, attrs)
                     # TODO:[-] 20-04-30 注意需要手动修改 request.GET['case_code']
-                    copy_request = request.GET.copy()
+                    # TODO:[*] 20-05-03 此处为什么明明是post请求的，但是提交的parmas只能在GET中找到？
+                    copy_request = request.data.copy()
+                    # copy_request = request.GET.copy()
                     copy_request['case_code'] = case_result.case_code
                     request.GET = copy_request
+                    # TODO:[-] 此处重新修改将 request 在外侧转换为 task_msg
                     # 若上面的 case_result 为Null 下面的语句就不用执行
-                    job_result = self.set_jobinfo(request, uid,
+                    job_result = self.set_jobinfo(request, uid, user_name=user_name,
                                                   case_result=case_result,
                                                   case_id=case_result.id) if case_result is not None else None
                     if case_result is not None:
@@ -252,9 +259,11 @@ class CaseModelView(CaseBaseView):
                         # return Response(job_result.case_code)
                 except LackCoverageError as e:
                     json_data = e.message
+                except LackNecessaryFactorError as e:
+                    json_data = e.message
                 except ConvertError as e:
                     json_data = e.message
-                except:
+                except Exception as e:
                     json_data = '发生异常错误'
                     pass
 

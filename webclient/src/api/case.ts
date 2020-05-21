@@ -60,6 +60,12 @@ const createCaseInfo = (type: number, oilModel: IMerageOilCase): Promise<AxiosRe
     })
 }
 
+const createOilCase = (params: any): Promise<AxiosResponse<any>> => {
+    const url = `${host}${area}/case/model/`
+    // TODO:[-] 20-05-19 注意 axios的post与get的添加参数及header的写法有所区别
+    return axios.post(url, params, { headers: authHeader() })
+}
+
 const loadCaseModelInfo = (code: string) => {
     const url = `${host}${area}/case/model/`
     return axios.get(url, {
@@ -70,4 +76,4 @@ const loadCaseModelInfo = (code: string) => {
     })
 }
 
-export { loadCaseListByUser, loadCaseHistory, createCaseInfo, loadCaseModelInfo }
+export { loadCaseListByUser, loadCaseHistory, createCaseInfo, loadCaseModelInfo, createOilCase }

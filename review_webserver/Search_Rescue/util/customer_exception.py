@@ -14,8 +14,21 @@ class BaseSubmitDataError(Exception):
     pass
 
 
+class LackNecessaryFactorError(BaseSubmitDataError):
+    '''
+        缺少必要的要素异常
+    '''
+    pass
+
+class LackNeedSubmitFactorsError(BaseSubmitDataError):
+    '''
+        缺少请求所需的必要要素
+    '''
+    pass
+
 class LackCoverageError(BaseSubmitDataError):
     pass
+
 
 class ConvertError(BaseSubmitDataError):
     '''

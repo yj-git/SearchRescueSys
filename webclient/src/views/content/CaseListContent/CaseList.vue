@@ -150,19 +150,23 @@
       </div>-->
             <JobListUser></JobListUser>
         </div>
-        <el-dialog
-            title="创建作业"
-            :visible.sync="dialogVisible"
-            width="45%"
-            :before-close="handleClose"
-        >
-            <CreatedCaseForm ref="caseForm"></CreatedCaseForm>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <!-- <el-button type="primary" @click="dialogVisible = false">确 定</el-button> -->
-                <el-button type="primary" @click="submitCaseModel">确 定</el-button>
-            </span>
-        </el-dialog>
+        <!-- 新添加了创建 case 的 dialog -->
+        <div class="dialog-create-case">
+            <!-- TODO:[-] 20-05-19 将 el-dialog 封装至组件中 -->
+            <el-dialog
+                title="创建作业"
+                :visible.sync="dialogVisible"
+                width="45%"
+                :before-close="handleClose"
+            >
+                <CreatedCaseForm ref="caseForm"></CreatedCaseForm>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="submitCaseModel">确 定</el-button>
+                </span>
+            </el-dialog>
+            <!-- <CreatedCaseForm :dialogVisible="dialogVisible"></CreatedCaseForm> -->
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -179,7 +183,7 @@ import CaseHistoryForm from '@/views/members/form/CaseHistoryForm.vue'
 import JobListUser from '@/views/members/table/JobListByUser.vue'
 import CreatedCaseForm from '@/views/members/form/create_case/CreateCaseForm.vue'
 import { getAuthTest, loadCaseListByUser, loadCaseHistory } from '@/api/api'
-import { createCaseInfo } from '@/api/case'
+import { createCaseInfo, createOilCase } from '@/api/case'
 // 引入部分枚举
 import { AreaEnum, getAreaVal } from '@/enum/area'
 import { StatueEnum, getStatueVal } from '@/enum/status'
@@ -329,7 +333,8 @@ export default class CaseListView extends Vue {
         const submitForm = { ...formInfo, ...formModel }
         console.log(submitForm)
         // createCaseInfo(,submitForm)
-        // TODO:[*] 20-02-17 完成提交操作
+        // TODO:[*] 20-05-19 完成提交操作
+        createOilCase(submitForm)
     }
     get computedTest() {
         return null

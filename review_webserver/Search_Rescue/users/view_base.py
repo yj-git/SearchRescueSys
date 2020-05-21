@@ -9,6 +9,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from django.contrib.auth.models import User
 import arrow
+from arrow.arrow import Arrow
 import pathlib
 
 from util.common import DEFAULT_FK, DEFAULT_NULL_KEY
@@ -128,13 +129,14 @@ class CaseBaseView(APIView):
                                        'simulation_duration': 'duration', 'current_id': 'currentId',
                                        'wind_id': 'windId', 'type_job': 'goodType', 'radius': 'radius',
                                        'case_desc': 'caseDesc', 'case_code': 'caseName', 'case_name': 'caseName',
-                                       'gmt_create': 'gmt_create', 'gmt_modified': 'gmt_modified', 'state': 'state'}
+                                       'gmt_create': 'gmt_create', 'gmt_modified': 'gmt_modified', 'state': 'state',
+                                       'duration': 'duration'}
         for server, client in attrs_dicts.items():
             print(f'server:{server}|client:{client}')
             attrs[server] = get_val_from_request_data(request, client)
 
         # 获取起始时间
-        start_time: datetime = arrow.get(get_val_from_request_data(request, 'forecastdate'))
+        start_time: Arrow = arrow.get(get_val_from_request_data(request, 'forecastdate'))
         # 获取区域
         coverage_area = DEFAULT_NULL_KEY
         # TODO:[-] 20-05-20 只要传入了 wind_id 或 current 就查询该id对应的 geo_coverageinfo -> coverage_area
@@ -149,7 +151,7 @@ class CaseBaseView(APIView):
         attrs['case_path'] = start_time.strftime('%Y/%m/%d')
         attrs['start_time'] = start_time
         # TODO:[-] 20-05-20 注意 end_time 是 start_time + 模拟时长
-        attrs['end_time'] = arrow.get(start_time).shift(hours=attrs['duration'])
+        attrs['end_time'] = start_time.shift(hours=attrs['duration'])
         pass
 
     def set_caseinfo(self, request, uid: str, attrs: {}):
